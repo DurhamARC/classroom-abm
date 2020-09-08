@@ -4,7 +4,7 @@ Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ];
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list Output_file]
+Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list Output_file] ; add any new global params to export-results
 
 
 to setup
@@ -149,18 +149,23 @@ to export-results ; create output file
   ; export patches to csv
   file-open Output_file
   file-print Current_file
-  file-print csv:to-row (list "id" "inattentiveness" "hyper_impulsive" "start_maths" "end_maths" "ability")
+  file-print "------------"
+
+  file-print "GLOBALS"
+  file-print csv:to-row (list "Teach-control" "Teach-quality")
+  file-print csv:to-row (list Teach-control Teach-quality)
+  file-print ""
+
+  file-print "STUDENTS"
+  let class_name remove ".txt" Current_file
+  file-print csv:to-row (list "id" "class" "end_maths")
   ask patches [
-    file-print csv:to-row (list id inattentiveness hyper_impulsive start_maths end_maths ability)
+    file-print csv:to-row (list id class_name end_maths)
   ]
 
-  file-print "Means"
-  let inattentiveness_mean Mean [inattentiveness] of patches
-  let hyper_impulsive_mean Mean [hyper_impulsive] of patches
-  let start_maths_mean Mean [start_maths] of patches
   let end_maths_mean Mean [end_maths] of patches
-  let ability_mean Mean [ability] of patches
-  file-print csv:to-row (list "" inattentiveness_mean hyper_impulsive_mean start_maths_mean end_maths_mean ability_mean)
+  file-print csv:to-row (list "Mean" class_name end_maths_mean)
+  file-print "------------"
   file-print ""
   file-close
 
