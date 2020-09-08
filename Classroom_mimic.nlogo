@@ -1,10 +1,10 @@
-extensions [ csv pathdir ]
+extensions [ csv pathdir time ]
 
 Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ]; patches are students
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list]
+Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list Output_file]
 
 
 to setup
@@ -16,6 +16,8 @@ to setup
   reset-all
 
   read-patches-from-csv
+
+  get-output-file
 
 end
 
@@ -136,29 +138,47 @@ To go ; needs adjustment of the random parameters
 
         ask patches [set end_maths start_maths]
       ]
-      [stop] ; otherwise we're done
+      [ ; otherwise we're done
+        stop
+      ]
   ]
 end
 
 to export-results ; create output file
 
+  ; export patches to csv
+  file-open Output_file
+  file-print Current_file
+  file-print csv:to-row (list "id" "inattentiveness" "hyper_impulsive" "start_maths" "end_maths" "ability")
+  ask patches [
+    file-print csv:to-row (list id inattentiveness hyper_impulsive start_maths end_maths ability)
+  ]
+
+  file-print "Means"
+  let inattentiveness_mean Mean [inattentiveness] of patches
+  let hyper_impulsive_mean Mean [hyper_impulsive] of patches
+  let start_maths_mean Mean [start_maths] of patches
+  let end_maths_mean Mean [end_maths] of patches
+  let ability_mean Mean [ability] of patches
+  file-print csv:to-row (list "" inattentiveness_mean hyper_impulsive_mean start_maths_mean end_maths_mean ability_mean)
+  file-print ""
+  file-close
+
+end
+
+to get-output-file ; generate filename for output
+
   if (not pathdir:isDirectory? "classes_output")[
     pathdir:create "classes_output"
   ]
 
-  ; build output filename from input filename (there might be a nicer way to do this, but string processing capabilities seem to be limited)
-  let filename remove "patches" Current_file
-  set filename remove "txt" filename
-  set filename (word "final" filename "csv")
-
+  let date time:create ""
+  let filename (word "output" (time:show date "yyyy-MM-dd_HHmmss") ".csv")
   let sep pathdir:get-separator
-
-  let full_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
-
-  ; export
-  export-world full_file
+  set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
 end
+
 
 to learn
   ; learn final amount gives about the right average scores at the end
