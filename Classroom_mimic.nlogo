@@ -4,7 +4,7 @@ Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ];
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list Output_file] ; add any new global params to export-results
+Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list Output_file Means]
 
 
 to setup
@@ -17,7 +17,9 @@ to setup
 
   read-patches-from-csv
 
-  get-output-file
+  create-output-file
+
+  set Means (list)
 
 end
 
@@ -139,30 +141,39 @@ To go ; needs adjustment of the random parameters
         ask patches [set end_maths start_maths]
       ]
       [ ; otherwise we're done
+        export-means
         stop
       ]
   ]
 end
 
-to export-results ; create output file
+to export-results ; export current results
 
   ; export patches to csv
   file-open Output_file
-  file-print Current_file
   let class_name remove ".txt" Current_file
-  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality")
   ask patches [
     file-print csv:to-row (list id class_name end_maths Teach-control Teach-quality)
   ]
 
   let end_maths_mean Mean [end_maths] of patches
-  file-print csv:to-row (list "Mean" class_name end_maths_mean)
-  file-print ""
+  set Means lput (list class_name end_maths_mean Teach-control Teach-quality) Means
   file-close
 
 end
 
-to get-output-file ; generate filename for output
+to export-means;
+  file-open Output_file
+  file-print ""
+  file-print "Class Means"
+  file-print csv:to-row (list "class" "end_maths" "Teach-control" "Teach-quality")
+  foreach Means [
+    m -> file-print csv:to-row m
+  ]
+  file-close
+end
+
+to create-output-file ; generate filename for output
 
   if (not pathdir:isDirectory? "classes_output")[
     pathdir:create "classes_output"
@@ -173,8 +184,12 @@ to get-output-file ; generate filename for output
   let sep pathdir:get-separator
   set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
-end
+  file-open Output_file
+  file-print "Student Data"
+  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality")
+  file-close
 
+end
 
 to learn
   ; learn final amount gives about the right average scores at the end
