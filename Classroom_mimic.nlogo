@@ -149,23 +149,14 @@ to export-results ; create output file
   ; export patches to csv
   file-open Output_file
   file-print Current_file
-  file-print "------------"
-
-  file-print "GLOBALS"
-  file-print csv:to-row (list "Teach-control" "Teach-quality")
-  file-print csv:to-row (list Teach-control Teach-quality)
-  file-print ""
-
-  file-print "STUDENTS"
   let class_name remove ".txt" Current_file
-  file-print csv:to-row (list "id" "class" "end_maths")
+  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality")
   ask patches [
-    file-print csv:to-row (list id class_name end_maths)
+    file-print csv:to-row (list id class_name end_maths Teach-control Teach-quality)
   ]
 
   let end_maths_mean Mean [end_maths] of patches
   file-print csv:to-row (list "Mean" class_name end_maths_mean)
-  file-print "------------"
   file-print ""
   file-close
 
