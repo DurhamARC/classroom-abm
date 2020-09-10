@@ -185,7 +185,6 @@ to create-output-file ; generate filename for output
   set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
   file-open Output_file
-  file-print "Student Data"
   file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality")
   file-close
 
