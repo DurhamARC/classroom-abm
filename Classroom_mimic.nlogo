@@ -138,9 +138,7 @@ To go ; needs adjustment of the random parameters
 
         ask patches [set end_maths start_maths]
       ]
-      [ ; otherwise we're done
-        stop
-      ]
+      [stop] ; otherwise we're done
   ]
 end
 
@@ -156,7 +154,7 @@ to export-results ; export current results
 
 end
 
-to create-output-file ; generate filename for output
+to create-output-file ; generate filename and create blank output file
 
   if (not pathdir:isDirectory? "classes_output")[
     pathdir:create "classes_output"
