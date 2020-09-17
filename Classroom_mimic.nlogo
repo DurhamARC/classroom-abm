@@ -4,10 +4,10 @@ Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ];
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Globals [Teach-control Teach-quality Current Current_class_id Number_of_classes Output_file Students_by_class]
+Globals [Teach-control Teach-quality Current Current_class_id Chosen_class Number_of_classes Input_file Output_file Class_list Students_by_class]
 
 
-to setup
+to select-input-file
 
   clear-all
 
@@ -15,7 +15,31 @@ to setup
 
   reset-all
 
+  set Input_file user-file
   read-patches-from-csv
+
+end
+
+to-report truncate-input-file
+  ifelse length Input_file > 35 [
+    report (word (substring Input_file 0 13) "..." (substring Input_file (length Input_file - 20) (length Input_file)))
+  ][
+    report Input_file
+  ]
+end
+
+to setup
+
+  set Chosen_class user-one-of "Select a class" fput "All" Class_list
+  ifelse (Chosen_class = "All")[
+    set Number_of_classes length Class_list
+    set Current_class_id item Current Class_list
+  ] [
+    set Current position Chosen_class Class_list
+  ]
+  read-data
+
+  ask patches [set end_maths start_maths]
 
   create-output-file
 
@@ -53,21 +77,20 @@ to read-patches-from-csv
 
   Set Current 0 ; This is the counter for the current class
 
-  ;fixme: can we add a file chooser?
-  let full_file (word pathdir:get-CWD-path pathdir:get-separator Input_file)
-
   set Students_by_class []
+  set Class_list []
   let current_class_students []
   let current_class 0
   let prev_class -1
 
-  foreach csv:from-file full_file [
+  foreach csv:from-file Input_file [
     row ->
     if is-number? item 0 row [
       set current_class item 2 row
       if prev_class = -1 [set prev_class current_class]
 
       if current_class != prev_class [
+        set Class_list lput current_class Class_list
         set Students_by_class lput current_class_students Students_by_class
         set prev_class current_class
         set current_class_students []
@@ -78,27 +101,22 @@ to read-patches-from-csv
   ]
 
   set Students_by_class lput current_class_students Students_by_class
-  set Number_of_classes length Students_by_class
-
-  read-data
-
-  ask patches [set end_maths start_maths]
 end
 
 to read-data ;Load current class
 
-  let current_class item Current Students_by_class
+  set Current_class_id item Current Class_list
+  let current_class_students item Current Students_by_class
   let s_count 0
   let x 0
   let y 0
-  foreach current_class [
+  foreach current_class_students [
     s -> if s_count < count patches [ ; for now we limit to 30 but later we will allow for different class sizes
       set x floor (s_count / 6)
       set y (s_count mod 6)
 
       if not member? " " s [ ; if any values are missing, ignore this student
         ; CSV order is: start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive
-        if s_count = 0 [set Current_class_id item 2 s]
         ask patch x y [
           set start_maths item 0 s
           set id item 1 s
@@ -138,7 +156,7 @@ To go ; needs adjustment of the random parameters
 
     export-results
 
-    ifelse (Current < Number_of_classes - 1) ; if "all" case and we have not just processed the last file
+    ifelse (Chosen_class = "All") and (Current < Number_of_classes - 1) ; if "all" case and we have not just processed the last file
       [
         reset-all
 
@@ -221,10 +239,10 @@ ticks
 1.0
 
 BUTTON
-16
-29
-83
-62
+101
+28
+168
+61
 Set up
 setup
 NIL
@@ -238,10 +256,10 @@ NIL
 1
 
 BUTTON
-95
-29
-158
-62
+176
+28
+239
+61
 Go
 go
 T
@@ -256,9 +274,9 @@ NIL
 
 MONITOR
 16
-397
+277
 128
-442
+322
 Average maths
 Mean [end_maths] of patches
 1
@@ -277,9 +295,9 @@ Yellow Passive\nGreen learning\nRed disruptive\n
 
 SLIDER
 16
-303
+180
 188
-336
+213
 Random_select
 Random_select
 5
@@ -292,56 +310,64 @@ HORIZONTAL
 
 MONITOR
 16
-445
+333
 128
-490
+378
 SD maths
 Standard-deviation [end_maths] of patches
 2
 1
 11
 
-CHOOSER
-16
-105
-161
-150
-Class
-Class
-"all" "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l"
-0
-
-INPUTBOX
-16
-95
-245
-155
-Input_file
-classes_input/test_input_short.csv
-1
-0
-String
-
 MONITOR
 16
-349
+222
 128
-394
+267
 Current class ID
 Current_class_id
 0
 1
 11
 
-CHOOSER
+BUTTON
 16
-168
-154
-213
-Class
-Class
-"All"
-0
+28
+93
+61
+Choose file
+select-input-file
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+16
+71
+240
+116
+Input File
+truncate-input-file
+17
+1
+11
+
+MONITOR
+16
+125
+111
+170
+Chosen class
+Chosen_class
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
