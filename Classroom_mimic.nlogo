@@ -4,7 +4,7 @@ Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ];
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list Output_file]
+Globals [Teach-control Teach-quality Current Current_class_id Number_of_classes Output_file Students_by_class]
 
 
 to setup
@@ -27,10 +27,7 @@ to reset-all ; But make sure not to call clear-all, as this also clears the glob
   clear-turtles
 
   ; create a classroom
-  ask patches [
-    if (pxcor > -3 and pxcor < 3 and  pycor > -3 and pycor < 4)
-      [ set pcolor yellow] ; set up 30 patches for student places. yellow is passive
-    ]
+  ask patches [ set pcolor yellow] ; set up 30 patches for student places. yellow is passive
   Ask patches with [pcolor = yellow ][sprout-students 1 [set color black]] ; this is just for show
 
   ; Focus on maths and start with the maths levels on starting school
@@ -54,52 +51,66 @@ end
 ; procedure to read some turtle properties from a file
 to read-patches-from-csv
 
-  Set Current 0 ; This is the counter for the file list in the "all" case. As it is a global variable we always set it.
+  Set Current 0 ; This is the counter for the current class
 
-  if (Class = "all")[ ; get list of files in input folder and assign first as current
-    set Class_list  pathdir:list "classes_input"
-    set Number_of_classes length Class_list
-    set Current_file item Current Class_list
+  ;fixme: can we add a file chooser?
+  let input_file (word pathdir:get-CWD-path pathdir:get-separator "test_input.csv")
+
+  set Students_by_class []
+  let current_class_students []
+  let current_class 0
+  let prev_class -1
+
+  foreach csv:from-file input_file [
+    row ->
+    if is-number? item 0 row [
+      set current_class item 2 row
+      if prev_class = -1 [set prev_class current_class]
+
+      if current_class != prev_class [
+        set Students_by_class lput current_class_students Students_by_class
+        set prev_class current_class
+        set current_class_students []
+      ]
+
+      set current_class_students lput row current_class_students
+    ]
   ]
-  if (Class = "a")  [set Current_file "patches_1_114.txt"] ; open  file with the patches data
-  if (Class = "b")  [set Current_file "patches_7_147.txt"] ; open  file with the patches data
-  if (Class = "c")  [set Current_file "patches_17_130.txt"] ; open  file with the patches data
-  if (Class = "d")  [set Current_file "patches_25_13.txt"] ; open  file with the patches data
-  if (Class = "e")  [set Current_file "patches_14_114.txt"] ; open  file with the patches data
-  if (Class = "f")  [set Current_file "patches_34_114.txt"] ; open  file with the patches data
-  if (Class = "g")  [set Current_file "patches_53_14.txt"] ; open  file with the patches data
-  if (Class = "h")  [set Current_file "patches_44_103.txt"] ; open  file with the patches data
-  if (Class = "i")  [set Current_file "patches_62_114.txt"] ; open  file with the patches data
-  if (Class = "j")  [set Current_file "patches_68_114.txt"] ; open  file with the patches data
-  if (Class = "k")  [set Current_file "patches_70_16.txt"] ; open  file with the patches data
-  if (Class = "l")  [set Current_file "patches_73_29.txt"] ; open  file with the patches data
+
+  set Students_by_class lput current_class_students Students_by_class
+  set Number_of_classes length Students_by_class
 
   read-data
 
   ask patches [set end_maths start_maths]
 end
 
-to read-data ;Read current input file
+to read-data ;Load current class
 
-  file-close-all ; close all open files ()
+  let current_class item Current Students_by_class
+  let s_count 0
+  let x 0
+  let y 0
+  foreach current_class [
+    s -> if s_count < count patches [ ; for now we limit to 30 but later we will allow for different class sizes
+      set x floor (s_count / 6)
+      set y (s_count mod 6)
 
-  let sep pathdir:get-separator
+      if not member? " " s [ ; if any values are missing, ignore this student
+        ; CSV order is: start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive
+        if s_count = 0 [set Current_class_id item 2 s]
+        ask patch x y [
+          set start_maths item 0 s
+          set id item 1 s
+          set ability item 4 s
+          set inattentiveness item 5 s
+          set hyper_impulsive item 6 s
+        ]
 
-  let full_file (word pathdir:get-CWD-path sep "classes_input" sep Current_file)
-
-  ; Check if file exists, otherwise give error message
-  if not file-exists? full_file [
-    user-message "No file 'patches.txt' exists! Try pressing WRITE-PATCHES-TO-CSV."
-    stop
+        set s_count s_count + 1
+      ]
+    ]
   ]
-
-  file-open full_file
-
-  ; We'll read all the data in a single loop
-  while [ not file-at-end?]  [
-    ask patch file-read file-read  [ set id file-read set  inattentiveness file-read set hyper_impulsive file-read set start_maths file-read set ability file-read]
-  ]
-  file-close ; make sure to close the file
 
 end
 
@@ -127,12 +138,11 @@ To go ; needs adjustment of the random parameters
 
     export-results
 
-    ifelse (Class = "all") and (Current != Number_of_classes - 1) ; if "all" case and we have not just processed the last file
+    ifelse (Current < Number_of_classes - 1) ; if "all" case and we have not just processed the last file
       [
         reset-all
 
         set Current Current + 1 ; increment file counter
-        set Current_file item Current Class_list ; set current file to next file
 
         read-data
 
@@ -146,9 +156,8 @@ to export-results ; export current results
 
   ; export patches to csv
   file-open Output_file
-  let class_name remove ".txt" Current_file
   ask patches [
-    file-print csv:to-row (list id class_name end_maths Teach-control Teach-quality)
+    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality)
   ]
   file-close
 
@@ -186,9 +195,9 @@ end
 @#$#@#$#@
 GRAPHICS-WINDOW
 273
-14
+13
 540
-333
+332
 -1
 -1
 51.8
@@ -198,13 +207,13 @@ GRAPHICS-WINDOW
 1
 1
 0
+0
+0
 1
-1
-1
--2
-2
--2
-3
+0
+4
+0
+5
 1
 1
 1
