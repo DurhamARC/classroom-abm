@@ -1,10 +1,10 @@
-extensions [ csv pathdir ]
+extensions [ csv pathdir time ]
 
 Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ]; patches are students
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list]
+Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list Output_file]
 
 
 to setup
@@ -16,6 +16,8 @@ to setup
   reset-all
 
   read-patches-from-csv
+
+  create-output-file
 
 end
 
@@ -140,23 +142,32 @@ To go ; needs adjustment of the random parameters
   ]
 end
 
-to export-results ; create output file
+to export-results ; export current results
+
+  ; export patches to csv
+  file-open Output_file
+  let class_name remove ".txt" Current_file
+  ask patches [
+    file-print csv:to-row (list id class_name end_maths Teach-control Teach-quality)
+  ]
+  file-close
+
+end
+
+to create-output-file ; generate filename and create blank output file
 
   if (not pathdir:isDirectory? "classes_output")[
     pathdir:create "classes_output"
   ]
 
-  ; build output filename from input filename (there might be a nicer way to do this, but string processing capabilities seem to be limited)
-  let filename remove "patches" Current_file
-  set filename remove "txt" filename
-  set filename (word "final" filename "csv")
-
+  let date time:create ""
+  let filename (word "output" (time:show date "yyyy-MM-dd_HHmmss") ".csv")
   let sep pathdir:get-separator
+  set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
-  let full_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
-
-  ; export
-  export-world full_file
+  file-open Output_file
+  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality")
+  file-close
 
 end
 
