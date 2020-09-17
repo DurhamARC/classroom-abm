@@ -54,14 +54,14 @@ to read-patches-from-csv
   Set Current 0 ; This is the counter for the current class
 
   ;fixme: can we add a file chooser?
-  let input_file (word pathdir:get-CWD-path pathdir:get-separator "test_input.csv")
+  let full_file (word pathdir:get-CWD-path pathdir:get-separator Input_file)
 
   set Students_by_class []
   let current_class_students []
   let current_class 0
   let prev_class -1
 
-  foreach csv:from-file input_file [
+  foreach csv:from-file full_file [
     row ->
     if is-number? item 0 row [
       set current_class item 2 row
@@ -221,9 +221,9 @@ ticks
 1.0
 
 BUTTON
-13
+16
 29
-80
+83
 62
 Set up
 setup
@@ -238,10 +238,10 @@ NIL
 1
 
 BUTTON
-97
-31
-160
-64
+95
+29
+158
+62
 Go
 go
 T
@@ -255,10 +255,10 @@ NIL
 1
 
 MONITOR
-12
-337
-200
-382
+16
+397
+128
+442
 Average maths
 Mean [end_maths] of patches
 1
@@ -276,25 +276,25 @@ Yellow Passive\nGreen learning\nRed disruptive\n
 1
 
 SLIDER
-24
-289
-196
-322
+16
+303
+188
+336
 Random_select
 Random_select
 5
 6
-6.0
+5.0
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-82
-384
-147
-429
+16
+445
+128
+490
 SD maths
 Standard-deviation [end_maths] of patches
 2
@@ -302,13 +302,45 @@ Standard-deviation [end_maths] of patches
 11
 
 CHOOSER
-23
-86
+16
+105
 161
-131
+150
 Class
 Class
 "all" "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l"
+0
+
+INPUTBOX
+16
+95
+245
+155
+Input_file
+classes_input/test_input_short.csv
+1
+0
+String
+
+MONITOR
+16
+349
+128
+394
+Current class ID
+Current_class_id
+0
+1
+11
+
+CHOOSER
+16
+168
+154
+213
+Class
+Class
+"All"
 0
 
 @#$#@#$#@
@@ -339,7 +371,7 @@ Look for the difference that changing Control and Teach_Quality make
 
 The individual studenst could be give characteristics such as their conscienciousness and propensity to disrupt.
 
-At a more complex level 12 classes are run one after another with student data taken from PIPS with with the teacher Teaching and Control variable randomly chosen from a normal distribution. 
+At a more complex level 12 classes are run one after another with student data taken from PIPS with with the teacher Teaching and Control variable randomly chosen from a normal distribution.
 
 ## NETLOGO FEATURES
 
