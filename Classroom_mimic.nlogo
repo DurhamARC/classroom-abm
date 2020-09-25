@@ -179,13 +179,20 @@ To calculate-holidays
 
   set Current_week 0
   set Current_day 0
+  set Is_holiday False
 end
 
 To go ; needs adjustment of the random parameters
 
+  let Was_holiday Is_holiday
   set Is_holiday check-if-holiday
 
   if not Is_holiday [
+    if Was_holiday [ ; new week, so reset student status
+      show (word "Week: " Current_week " day: " Current_day_of_week "; resetting")
+      ask patches [ set pcolor yellow ];
+    ]
+
     ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
     ;   If teaching is good  If attentiveness is good
     ask patches [if  ((((Random Random_select) + 1) < Teach-quality) and ((Random Random_select) + 1) > inattentiveness and pcolor = yellow) [set pcolor green]]
