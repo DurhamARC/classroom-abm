@@ -30,13 +30,19 @@ end
 
 to setup
 
+  reset-all
+
   set Chosen_class user-one-of "Select a class" fput "All" Class_list
   ifelse (Chosen_class = "All")[
     set Number_of_classes length Class_list
     set Current_class_id item Current Class_list
+    set Current 0
   ] [
+    set Number_of_classes 1
+    set Current_class_id Chosen_class
     set Current position Chosen_class Class_list
   ]
+
   read-data
 
   ask patches [set end_maths start_maths]
@@ -152,7 +158,7 @@ To go ; needs adjustment of the random parameters
   tick
 
   ;stop the program after a year of taught minutes (3 terms 12 weeks in a term, 5.5 hours a week 60 mins in an hour approx)
-  if (ticks = 4000) [
+  if (ticks >= 4000) [
 
     export-results
 
