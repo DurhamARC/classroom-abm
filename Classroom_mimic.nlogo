@@ -4,10 +4,10 @@ Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ];
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Globals [Teach-control Teach-quality Current_file Current Number_of_classes Class_list Output_file]
+Globals [Teach-control Teach-quality Current Current_class_id Chosen_class Number_of_classes Input_file Output_file Class_list Students_by_class]
 
 
-to setup
+to select-input-file
 
   clear-all
 
@@ -15,7 +15,37 @@ to setup
 
   reset-all
 
+  set Input_file user-file
   read-patches-from-csv
+
+end
+
+to-report truncate-input-file
+  ifelse length Input_file > 35 [
+    report (word (substring Input_file 0 13) "..." (substring Input_file (length Input_file - 20) (length Input_file)))
+  ][
+    report Input_file
+  ]
+end
+
+to setup
+
+  reset-all
+
+  set Chosen_class user-one-of "Select a class" fput "All" Class_list
+  ifelse (Chosen_class = "All")[
+    set Number_of_classes length Class_list
+    set Current_class_id item Current Class_list
+    set Current 0
+  ] [
+    set Number_of_classes 1
+    set Current_class_id Chosen_class
+    set Current position Chosen_class Class_list
+  ]
+
+  read-data
+
+  ask patches [set end_maths start_maths]
 
   create-output-file
 
@@ -27,10 +57,7 @@ to reset-all ; But make sure not to call clear-all, as this also clears the glob
   clear-turtles
 
   ; create a classroom
-  ask patches [
-    if (pxcor > -3 and pxcor < 3 and  pycor > -3 and pycor < 4)
-      [ set pcolor yellow] ; set up 30 patches for student places. yellow is passive
-    ]
+  ask patches [ set pcolor yellow] ; set up 30 patches for student places. yellow is passive
   Ask patches with [pcolor = yellow ][sprout-students 1 [set color black]] ; this is just for show
 
   ; Focus on maths and start with the maths levels on starting school
@@ -54,52 +81,60 @@ end
 ; procedure to read some turtle properties from a file
 to read-patches-from-csv
 
-  Set Current 0 ; This is the counter for the file list in the "all" case. As it is a global variable we always set it.
+  Set Current 0 ; This is the counter for the current class
 
-  if (Class = "all")[ ; get list of files in input folder and assign first as current
-    set Class_list  pathdir:list "classes_input"
-    set Number_of_classes length Class_list
-    set Current_file item Current Class_list
+  set Students_by_class []
+  set Class_list []
+  let current_class_students []
+  let current_class 0
+  let prev_class -1
+
+  foreach csv:from-file Input_file [
+    row ->
+    if is-number? item 0 row [
+      set current_class item 2 row
+      if prev_class = -1 [set prev_class current_class]
+
+      if current_class != prev_class [
+        set Class_list lput current_class Class_list
+        set Students_by_class lput current_class_students Students_by_class
+        set prev_class current_class
+        set current_class_students []
+      ]
+
+      set current_class_students lput row current_class_students
+    ]
   ]
-  if (Class = "a")  [set Current_file "patches_1_114.txt"] ; open  file with the patches data
-  if (Class = "b")  [set Current_file "patches_7_147.txt"] ; open  file with the patches data
-  if (Class = "c")  [set Current_file "patches_17_130.txt"] ; open  file with the patches data
-  if (Class = "d")  [set Current_file "patches_25_13.txt"] ; open  file with the patches data
-  if (Class = "e")  [set Current_file "patches_14_114.txt"] ; open  file with the patches data
-  if (Class = "f")  [set Current_file "patches_34_114.txt"] ; open  file with the patches data
-  if (Class = "g")  [set Current_file "patches_53_14.txt"] ; open  file with the patches data
-  if (Class = "h")  [set Current_file "patches_44_103.txt"] ; open  file with the patches data
-  if (Class = "i")  [set Current_file "patches_62_114.txt"] ; open  file with the patches data
-  if (Class = "j")  [set Current_file "patches_68_114.txt"] ; open  file with the patches data
-  if (Class = "k")  [set Current_file "patches_70_16.txt"] ; open  file with the patches data
-  if (Class = "l")  [set Current_file "patches_73_29.txt"] ; open  file with the patches data
 
-  read-data
-
-  ask patches [set end_maths start_maths]
+  set Students_by_class lput current_class_students Students_by_class
 end
 
-to read-data ;Read current input file
+to read-data ;Load current class
 
-  file-close-all ; close all open files ()
+  set Current_class_id item Current Class_list
+  let current_class_students item Current Students_by_class
+  let s_count 0
+  let x 0
+  let y 0
+  foreach current_class_students [
+    s -> if s_count < count patches [ ; for now we limit to 30 but later we will allow for different class sizes
+      set x floor (s_count / 6)
+      set y (s_count mod 6)
 
-  let sep pathdir:get-separator
+      if not member? " " s [ ; if any values are missing, ignore this student
+        ; CSV order is: start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive
+        ask patch x y [
+          set start_maths item 0 s
+          set id item 1 s
+          set ability item 4 s
+          set inattentiveness item 5 s
+          set hyper_impulsive item 6 s
+        ]
 
-  let full_file (word pathdir:get-CWD-path sep "classes_input" sep Current_file)
-
-  ; Check if file exists, otherwise give error message
-  if not file-exists? full_file [
-    user-message "No file 'patches.txt' exists! Try pressing WRITE-PATCHES-TO-CSV."
-    stop
+        set s_count s_count + 1
+      ]
+    ]
   ]
-
-  file-open full_file
-
-  ; We'll read all the data in a single loop
-  while [ not file-at-end?]  [
-    ask patch file-read file-read  [ set id file-read set  inattentiveness file-read set hyper_impulsive file-read set start_maths file-read set ability file-read]
-  ]
-  file-close ; make sure to close the file
 
 end
 
@@ -123,16 +158,15 @@ To go ; needs adjustment of the random parameters
   tick
 
   ;stop the program after a year of taught minutes (3 terms 12 weeks in a term, 5.5 hours a week 60 mins in an hour approx)
-  if (ticks = 4000) [
+  if (ticks >= 4000) [
 
     export-results
 
-    ifelse (Class = "all") and (Current != Number_of_classes - 1) ; if "all" case and we have not just processed the last file
+    ifelse (Chosen_class = "All") and (Current < Number_of_classes - 1) ; if "all" case and we have not just processed the last file
       [
         reset-all
 
         set Current Current + 1 ; increment file counter
-        set Current_file item Current Class_list ; set current file to next file
 
         read-data
 
@@ -146,9 +180,8 @@ to export-results ; export current results
 
   ; export patches to csv
   file-open Output_file
-  let class_name remove ".txt" Current_file
   ask patches [
-    file-print csv:to-row (list id class_name end_maths Teach-control Teach-quality)
+    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality)
   ]
   file-close
 
@@ -186,9 +219,9 @@ end
 @#$#@#$#@
 GRAPHICS-WINDOW
 273
-14
+13
 540
-333
+332
 -1
 -1
 51.8
@@ -198,13 +231,13 @@ GRAPHICS-WINDOW
 1
 1
 0
+0
+0
 1
-1
-1
--2
-2
--2
-3
+0
+4
+0
+5
 1
 1
 1
@@ -212,10 +245,10 @@ ticks
 1.0
 
 BUTTON
-13
-29
-80
-62
+101
+28
+168
+61
 Set up
 setup
 NIL
@@ -229,10 +262,10 @@ NIL
 1
 
 BUTTON
-97
-31
-160
-64
+176
+28
+239
+61
 Go
 go
 T
@@ -246,10 +279,10 @@ NIL
 1
 
 MONITOR
-12
-337
-200
-382
+16
+277
+128
+322
 Average maths
 Mean [end_maths] of patches
 1
@@ -267,40 +300,80 @@ Yellow Passive\nGreen learning\nRed disruptive\n
 1
 
 SLIDER
-24
-289
-196
-322
+16
+180
+188
+213
 Random_select
 Random_select
 5
 6
-6.0
+5.0
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-82
-384
-147
-429
+16
+333
+128
+378
 SD maths
 Standard-deviation [end_maths] of patches
 2
 1
 11
 
-CHOOSER
-23
-86
-161
-131
-Class
-Class
-"all" "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l"
+MONITOR
+16
+222
+128
+267
+Current class ID
+Current_class_id
 0
+1
+11
+
+BUTTON
+16
+28
+93
+61
+Choose file
+select-input-file
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+16
+71
+240
+116
+Input File
+truncate-input-file
+17
+1
+11
+
+MONITOR
+16
+125
+111
+170
+Chosen class
+Chosen_class
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -316,7 +389,9 @@ A student’s state is also influenced by the state of the other students. Two o
 
 ## HOW TO USE IT
 
-Select levels for Teaching Quality and Conrol. Press Setup and then Go
+Create an input CSV file with headings `start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive` (or use one of the sample files in **input_classes**). Select **Choose file** and select your input file.
+
+Press **Set up** and choose a class (or **All**). Set a value for **Random_select**, then press **Go**.
 
 ## THINGS TO NOTICE
 
@@ -330,7 +405,7 @@ Look for the difference that changing Control and Teach_Quality make
 
 The individual studenst could be give characteristics such as their conscienciousness and propensity to disrupt.
 
-At a more complex level 12 classes are run one after another with student data taken from PIPS with with the teacher Teaching and Control variable randomly chosen from a normal distribution. 
+At a more complex level 12 classes are run one after another with student data taken from PIPS with with the teacher Teaching and Control variable randomly chosen from a normal distribution.
 
 ## NETLOGO FEATURES
 
