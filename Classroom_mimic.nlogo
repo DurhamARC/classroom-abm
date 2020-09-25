@@ -389,7 +389,9 @@ A student’s state is also influenced by the state of the other students. Two o
 
 ## HOW TO USE IT
 
-Select levels for Teaching Quality and Conrol. Press Setup and then Go
+Create an input CSV file with headings `start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive` (or use one of the sample files in **input_classes**). Select **Choose file** and select your input file.
+
+Press **Set up** and choose a class (or **All**). Set a value for **Random_select**, then press **Go**.
 
 ## THINGS TO NOTICE
 
