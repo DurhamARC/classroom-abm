@@ -4,7 +4,13 @@ Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ];
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Globals [Teach-control Teach-quality Current Current_class_id Chosen_class Number_of_classes Input_file Output_file Class_list Students_by_class]
+Globals [
+  Teach-control Teach-quality
+  Current Current_class_id Chosen_class Number_of_classes
+  Input_file Output_file Class_list Students_by_class
+  Total_ticks Ticks_per_day School_weeks Holiday_week_numbers
+  Current_week Current_day Current_day_of_week Is_holiday
+]
 
 
 to select-input-file
@@ -49,6 +55,7 @@ to setup
 
   create-output-file
 
+  calculate-holidays
 end
 
 to reset-all ; But make sure not to call clear-all, as this also clears the global Class_list
@@ -138,27 +145,68 @@ to read-data ;Load current class
 
 end
 
+To calculate-holidays
+  ; Calculate total ticks including holidays
+  set Ticks_per_day 330 ; 5.5 hours * 60 minutes
+  let ticks_per_week ticks_per_day * 7
+  set School_weeks 36 ; 3 terms * 12 weeks per term
+
+  let holiday_weeks Number_of_holidays * Weeks_per_holiday
+  let total_weeks school_weeks + holiday_weeks
+  set Total_ticks total_weeks * ticks_per_week
+
+  ; Calculate which weeks should be holidays
+  let number_of_terms Number_of_holidays + 1 ; we don't include summer holidays
+  let min_weeks_per_term floor (School_weeks / number_of_terms)
+  let remainder_weeks School_weeks mod number_of_terms
+
+  let Weeks_per_term [] ; number of weeks in each term
+  foreach range Number_of_terms [ n ->
+    let term_weeks min_weeks_per_term
+    if (n < remainder_weeks) [ set term_weeks term_weeks + 1 ]
+    set Weeks_per_term lput term_weeks Weeks_per_term
+  ]
+
+  set Holiday_week_numbers [] ; weeks which are holidays
+  set Current_week 0
+  foreach (sublist Weeks_per_term 0 Number_of_holidays) [ i ->
+    set current_week current_week + i
+    foreach range Weeks_per_holiday [ j ->
+      set holiday_week_numbers lput current_week holiday_week_numbers
+      set current_week current_week + 1
+    ]
+  ]
+
+  set Current_week 0
+  set Current_day 0
+end
+
 To go ; needs adjustment of the random parameters
-  ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
-  ;   If teaching is good  If attentiveness is good
-  ask patches [if  ((((Random Random_select) + 1) < Teach-quality) and ((Random Random_select) + 1) > inattentiveness and pcolor = yellow) [set pcolor green]]
+
+  set Is_holiday check-if-holiday
+
+  if not Is_holiday [
+    ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
+    ;   If teaching is good  If attentiveness is good
+    ask patches [if  ((((Random Random_select) + 1) < Teach-quality) and ((Random Random_select) + 1) > inattentiveness and pcolor = yellow) [set pcolor green]]
     ; change from attentive to  passive (yellow) at random but more likely if the teaching quality is low
-  ask patches [if ((((Random Random_select) + 1) > Teach-quality) and pcolor = green ) [set pcolor yellow]]
-  ; be distruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high (is the > sign right?
-  ask patches [if ((((Random Random_select) + 1) > Teach-control ) and Random Random_select > (hyper_impulsive + 1) and pcolor = yellow) [set pcolor red]]
-  ;  disruptive to passive if control is good at random
-  ask patches [if (( ((Random Random_select) + 1) < Teach-control) and pcolor = red) [set pcolor yellow]]
-   ;if patch is green change to yellow if 3 neighboiurs or more are red
-  ask patches [if ((count neighbors with [pcolor = red] ) > 2  and pcolor = green)
-    [set pcolor yellow]]
-   ;if patch is yellow change to red if 6 neighbours or more are red
-  ask patches [if ((count neighbors with [pcolor = red])  > 5  and pcolor = yellow)
-    [set pcolor red]]
+    ask patches [if ((((Random Random_select) + 1) > Teach-quality) and pcolor = green ) [set pcolor yellow]]
+    ; be distruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high (is the > sign right?
+    ask patches [if ((((Random Random_select) + 1) > Teach-control ) and Random Random_select > (hyper_impulsive + 1) and pcolor = yellow) [set pcolor red]]
+    ;  disruptive to passive if control is good at random
+    ask patches [if (( ((Random Random_select) + 1) < Teach-control) and pcolor = red) [set pcolor yellow]]
+    ;if patch is green change to yellow if 3 neighboiurs or more are red
+    ask patches [if ((count neighbors with [pcolor = red] ) > 2  and pcolor = green)
+      [set pcolor yellow]]
+    ;if patch is yellow change to red if 6 neighbours or more are red
+    ask patches [if ((count neighbors with [pcolor = red])  > 5  and pcolor = yellow)
+      [set pcolor red]]
+  ]
   ask patches [learn]  ; learn
   tick
 
   ;stop the program after a year of taught minutes (3 terms 12 weeks in a term, 5.5 hours a week 60 mins in an hour approx)
-  if (ticks >= 4000) [
+  if (ticks >= Total_ticks) [
 
     export-results
 
@@ -204,13 +252,33 @@ to create-output-file ; generate filename and create blank output file
 
 end
 
+to-report check-if-holiday
+
+  if (ticks mod Ticks_per_day = 0) [
+    set Current_day floor (ticks / Ticks_per_day)
+    set Current_day_of_week Current_day mod 7
+    set Current_week floor (Current_day / 7)
+  ]
+
+  ifelse (Current_day_of_week > 4) [ ; weekend
+    report True
+  ] [ ; check if in holidays
+    report member? Current_week Holiday_week_numbers
+  ]
+
+end
+
 to learn
   ; learn final amount gives about the right average scores at the end
   ; by being
-  ; ability is zscore of factor weightted average of vocab, maths & reading
-  ;  incrementing gain X 2 does not make a massive difference
-  ; tried changing SD below from .1 to 0.08
-  if (pcolor = green) [set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) ) ] ;
+
+  if not Is_holiday [
+    ; ability is zscore of factor weightted average of vocab, maths & reading
+    ;  incrementing gain X 2 does not make a massive difference
+    ; tried changing SD below from .1 to 0.08
+    if (pcolor = green) [set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) ) ] ;
+  ]
+
   ; by getting older maths changes
   set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) )
   ; NB the last two rows of code have been adjusted by extensive trial and error on one class to give suitable growth overall and correlations between variables
@@ -280,9 +348,9 @@ NIL
 
 MONITOR
 16
-277
+344
 128
-322
+389
 Average maths
 Mean [end_maths] of patches
 1
@@ -301,9 +369,9 @@ Yellow Passive\nGreen learning\nRed disruptive\n
 
 SLIDER
 16
-180
+247
 188
-213
+280
 Random_select
 Random_select
 5
@@ -316,9 +384,9 @@ HORIZONTAL
 
 MONITOR
 16
-333
+400
 128
-378
+445
 SD maths
 Standard-deviation [end_maths] of patches
 2
@@ -327,9 +395,9 @@ Standard-deviation [end_maths] of patches
 
 MONITOR
 16
-222
+289
 128
-267
+334
 Current class ID
 Current_class_id
 0
@@ -374,6 +442,28 @@ Chosen_class
 17
 1
 11
+
+INPUTBOX
+16
+179
+125
+239
+Number_of_holidays
+2.0
+1
+0
+Number
+
+INPUTBOX
+133
+179
+237
+239
+Weeks_per_holiday
+2.0
+1
+0
+Number
 
 @#$#@#$#@
 ## WHAT IS IT?
