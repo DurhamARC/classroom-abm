@@ -189,7 +189,6 @@ To go ; needs adjustment of the random parameters
 
   if not Is_holiday [
     if Was_holiday [ ; new week, so reset student status
-      show (word "Week: " Current_week " day: " Current_day_of_week "; resetting")
       ask patches [ set pcolor yellow ];
     ]
 
