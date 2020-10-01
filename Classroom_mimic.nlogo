@@ -1,9 +1,9 @@
 extensions [ csv pathdir time ]
 
-Patches-own [id inattentiveness hyper_impulsive start_maths end_maths ability ]; patches are students
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
+Students-own [id inattentiveness hyper_impulsive start_maths end_maths ability ]
 Globals [
   Teach-control Teach-quality
   Current Current_class_id Chosen_class Number_of_classes
@@ -38,11 +38,11 @@ to setup
 
   reset-all
 
-  set Chosen_class user-one-of "Select a class" fput "All" Class_list
+  set Chosen_class user-one-of "Select a class" fput "All" sort Class_list
   ifelse (Chosen_class = "All")[
     set Number_of_classes length Class_list
-    set Current_class_id item Current Class_list
     set Current 0
+    set Current_class_id item Current Class_list
   ] [
     set Number_of_classes 1
     set Current_class_id Chosen_class
@@ -51,7 +51,7 @@ to setup
 
   read-data
 
-  ask patches [set end_maths start_maths]
+  ask students [set end_maths start_maths]
 
   create-output-file
 
@@ -62,10 +62,7 @@ to reset-all ; But make sure not to call clear-all, as this also clears the glob
 
   file-close-all ; Close any files open from last run
   clear-turtles
-
-  ; create a classroom
-  ask patches [ set pcolor yellow] ; set up 30 patches for student places. yellow is passive
-  Ask patches with [pcolor = yellow ][sprout-students 1 [set color black]] ; this is just for show
+  ask patches [set pcolor black]
 
   ; Focus on maths and start with the maths levels on starting school
 
@@ -98,7 +95,8 @@ to read-patches-from-csv
 
   foreach csv:from-file Input_file [
     row ->
-    if is-number? item 0 row [
+
+    if reduce and (map is-number? row) [ ; only parse rows that contain only numbers
       set current_class item 2 row
       if prev_class = -1 [set prev_class current_class]
 
@@ -120,27 +118,37 @@ to read-data ;Load current class
 
   set Current_class_id item Current Class_list
   let current_class_students item Current Students_by_class
+
+  let n_students length current_class_students
+  let n_rows ceiling sqrt n_students
+  let n_cols ceiling (n_students / n_rows)
+
+  resize-world 0 (n_cols - 1) 0 (n_rows - 1)
+
   let s_count 0
   let x 0
   let y 0
   foreach current_class_students [
-    s -> if s_count < count patches [ ; for now we limit to 30 but later we will allow for different class sizes
-      set x floor (s_count / 6)
-      set y (s_count mod 6)
+    s ->
+      ; fill up class a column at a time, so that 'remainder' students are spread
+      ; between rows
+      set x floor (s_count / n_rows)
+      set y (s_count mod n_rows)
 
-      if not member? " " s [ ; if any values are missing, ignore this student
-        ; CSV order is: start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive
-        ask patch x y [
+      ; CSV order is: start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive
+      ask patch x y [
+        set pcolor yellow
+        sprout-students 1 [
+          set color black
           set start_maths item 0 s
           set id item 1 s
           set ability item 4 s
           set inattentiveness item 5 s
           set hyper_impulsive item 6 s
         ]
-
-        set s_count s_count + 1
       ]
-    ]
+
+      set s_count s_count + 1
   ]
 
 end
@@ -189,16 +197,22 @@ To go ; needs adjustment of the random parameters
 
   if not Is_holiday [
     if Was_holiday [ ; new week, so reset student status
-      ask patches [ set pcolor yellow ];
+      ask students [
+        ask patch-here [set pcolor yellow]
+      ];
     ]
 
     ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
     ;   If teaching is good  If attentiveness is good
-    ask patches [if  ((((Random Random_select) + 1) < Teach-quality) and ((Random Random_select) + 1) > inattentiveness and pcolor = yellow) [set pcolor green]]
+    ask students [if  ((((Random Random_select) + 1) < Teach-quality) and ((Random Random_select) + 1) > inattentiveness and pcolor = yellow) [
+      ask patch-here [set pcolor green]
+    ]]
     ; change from attentive to  passive (yellow) at random but more likely if the teaching quality is low
     ask patches [if ((((Random Random_select) + 1) > Teach-quality) and pcolor = green ) [set pcolor yellow]]
     ; be distruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high (is the > sign right?
-    ask patches [if ((((Random Random_select) + 1) > Teach-control ) and Random Random_select > (hyper_impulsive + 1) and pcolor = yellow) [set pcolor red]]
+    ask students [if ((((Random Random_select) + 1) > Teach-control ) and Random Random_select > (hyper_impulsive + 1) and pcolor = yellow) [
+      ask patch-here [set pcolor red]
+    ]]
     ;  disruptive to passive if control is good at random
     ask patches [if (( ((Random Random_select) + 1) < Teach-control) and pcolor = red) [set pcolor yellow]]
     ;if patch is green change to yellow if 3 neighboiurs or more are red
@@ -208,7 +222,7 @@ To go ; needs adjustment of the random parameters
     ask patches [if ((count neighbors with [pcolor = red])  > 5  and pcolor = yellow)
       [set pcolor red]]
   ]
-  ask patches [learn]  ; learn
+  ask students [learn]  ; learn
   tick
 
   ;stop the program after a year of taught minutes (3 terms 12 weeks in a term, 5.5 hours a week 60 mins in an hour approx)
@@ -224,7 +238,7 @@ To go ; needs adjustment of the random parameters
 
         read-data
 
-        ask patches [set end_maths start_maths]
+        ask students [set end_maths start_maths]
       ]
       [stop] ; otherwise we're done
   ]
@@ -234,7 +248,7 @@ to export-results ; export current results
 
   ; export patches to csv
   file-open Output_file
-  ask patches [
+  ask students [
     file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality)
   ]
   file-close
@@ -293,9 +307,9 @@ end
 @#$#@#$#@
 GRAPHICS-WINDOW
 273
-13
-540
-332
+67
+587
+433
 -1
 -1
 51.8
@@ -309,9 +323,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-4
-0
 5
+0
+6
 1
 1
 1
@@ -358,16 +372,16 @@ MONITOR
 128
 389
 Average maths
-Mean [end_maths] of patches
+Mean [end_maths] of students
 1
 1
 11
 
 TEXTBOX
-565
-132
-715
-174
+381
+13
+531
+55
 Yellow Passive\nGreen learning\nRed disruptive\n
 11
 0.0
@@ -382,7 +396,7 @@ Random_select
 Random_select
 5
 6
-5.0
+6.0
 1
 1
 NIL
@@ -394,7 +408,7 @@ MONITOR
 128
 445
 SD maths
-Standard-deviation [end_maths] of patches
+Standard-deviation [end_maths] of students
 2
 1
 11
