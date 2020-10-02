@@ -22,7 +22,9 @@ to select-input-file
   reset-all
 
   set Input_file user-file
-  read-patches-from-csv
+  if Input_file != false [
+    read-patches-from-csv
+  ]
 
 end
 
