@@ -154,7 +154,15 @@ to read-data ;Load current class
   let rows_per_group max_rows_per_group
   let cols_per_group max_cols_per_group
 
-  foreach current_class_students [
+  ; Sort students by ability or at random
+  let sorted_students current_class_students
+  ifelse Group_by = "Ability" [
+    set sorted_students sort-by [ [s1 s2] -> item 4 s1 < item 4 s2 ] current_class_students
+  ] [
+    set sorted_students shuffle current_class_students
+  ]
+
+  foreach sorted_students [
     s ->
       ;show (word "students_in_group: " students_in_group " max_students_per_group: " max_students_per_group " remainder: " remainder_students_per_group)
       if students_in_group >= max_students_per_group or
@@ -352,8 +360,8 @@ end
 GRAPHICS-WINDOW
 273
 67
-842
-331
+740
+433
 -1
 -1
 51.8
@@ -367,9 +375,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-10
+8
 0
-4
+6
 1
 1
 1
@@ -422,10 +430,10 @@ Mean [end_maths] of students
 11
 
 TEXTBOX
-381
-13
-531
-55
+273
+16
+423
+58
 Yellow Passive\nGreen learning\nRed disruptive\n
 11
 0.0
@@ -521,7 +529,7 @@ Number
 INPUTBOX
 133
 237
-237
+239
 297
 Weeks_per_holiday
 2.0
@@ -532,13 +540,23 @@ Number
 INPUTBOX
 16
 168
-121
+125
 228
 Number_of_groups
-6.0
+4.0
 1
 0
 Number
+
+CHOOSER
+133
+168
+239
+213
+Group_by
+Group_by
+"Ability" "Random"
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
