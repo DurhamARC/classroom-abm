@@ -134,13 +134,6 @@ to read-data ;Load current class
 
   let n_rows n_group_rows * max_rows_per_group + n_group_rows - 1
   let n_cols n_group_cols * max_cols_per_group + n_group_cols - 1
-  ;show (word "n_students " n_students)
-  ;show (word "max_rows_per_group " max_rows_per_group)
-  ;show (word "max_cols_per_group " max_cols_per_group)
-  ;show (word "n_group_rows " n_group_rows)
-  ;show (word "n_group_cols " n_group_cols)
-  ;show (word "n_rows " n_rows)
-  ;show (word "n_cols " n_cols)
 
   resize-world 0 (n_cols - 1) 0 (n_rows - 1)
 
@@ -164,9 +157,9 @@ to read-data ;Load current class
 
   foreach sorted_students [
     s ->
-      ;show (word "students_in_group: " students_in_group " max_students_per_group: " max_students_per_group " remainder: " remainder_students_per_group)
       if students_in_group >= max_students_per_group or
          (remainder_students_per_group > 0 and current_group >= remainder_students_per_group and students_in_group >= max_students_per_group - 1) [
+        ; current group is full so move on to the next one
         set current_group current_group + 1
         set students_in_group 0
         set group_x floor (current_group / n_group_rows)
@@ -176,15 +169,12 @@ to read-data ;Load current class
           set cols_per_group ceiling sqrt (max_students_per_group - 1)
           set rows_per_group ceiling ((max_students_per_group - 1) / cols_per_group)
         ]
-
-        ;show (word "rows_per_group: " rows_per_group  " cols_per_group: " cols_per_group)
       ]
 
       ; fill up group a column at a time, so that 'remainder' students are spread
       ; between rows
       set x (group_x * max_cols_per_group + group_x) + floor (students_in_group / rows_per_group)
       set y (group_y * max_rows_per_group + group_y) + (students_in_group mod rows_per_group)
-      ;show (word "x: " x " y: " y)
 
       ; CSV order is: start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive
       ask patch x y [
