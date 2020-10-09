@@ -22,7 +22,9 @@ to select-input-file
   reset-all
 
   set Input_file user-file
-  read-patches-from-csv
+  if Input_file != false [
+    read-patches-from-csv
+  ]
 
 end
 
@@ -119,21 +121,60 @@ to read-data ;Load current class
   set Current_class_id item Current Class_list
   let current_class_students item Current Students_by_class
 
+  ; Determine how to space students into groups
   let n_students length current_class_students
-  let n_rows ceiling sqrt n_students
-  let n_cols ceiling (n_students / n_rows)
+  let max_students_per_group ceiling (n_students / Number_of_groups)
+  let remainder_students_per_group n_students mod Number_of_groups
+  let max_cols_per_group ceiling sqrt max_students_per_group
+  let max_rows_per_group ceiling (max_students_per_group / max_cols_per_group)
+
+  ; Have more columns than rows when it comes to groups
+  let n_group_cols ceiling sqrt Number_of_groups
+  let n_group_rows ceiling (Number_of_groups / n_group_cols)
+
+  let n_rows n_group_rows * max_rows_per_group + n_group_rows - 1
+  let n_cols n_group_cols * max_cols_per_group + n_group_cols - 1
 
   resize-world 0 (n_cols - 1) 0 (n_rows - 1)
 
   let s_count 0
   let x 0
   let y 0
-  foreach current_class_students [
+  let current_group 0
+  let students_in_group 0
+  let group_x 0
+  let group_y 0
+  let rows_per_group max_rows_per_group
+  let cols_per_group max_cols_per_group
+
+  ; Sort students by ability or at random
+  let sorted_students current_class_students
+  ifelse Group_by = "Ability" [
+    set sorted_students sort-by [ [s1 s2] -> item 4 s1 < item 4 s2 ] current_class_students
+  ] [
+    set sorted_students shuffle current_class_students
+  ]
+
+  foreach sorted_students [
     s ->
-      ; fill up class a column at a time, so that 'remainder' students are spread
+      if students_in_group >= max_students_per_group or
+         (remainder_students_per_group > 0 and current_group >= remainder_students_per_group and students_in_group >= max_students_per_group - 1) [
+        ; current group is full so move on to the next one
+        set current_group current_group + 1
+        set students_in_group 0
+        set group_x floor (current_group / n_group_rows)
+        set group_y (current_group mod n_group_rows)
+
+        if remainder_students_per_group > 0 and current_group >= remainder_students_per_group [
+          set cols_per_group ceiling sqrt (max_students_per_group - 1)
+          set rows_per_group ceiling ((max_students_per_group - 1) / cols_per_group)
+        ]
+      ]
+
+      ; fill up group a column at a time, so that 'remainder' students are spread
       ; between rows
-      set x floor (s_count / n_rows)
-      set y (s_count mod n_rows)
+      set x (group_x * max_cols_per_group + group_x) + floor (students_in_group / rows_per_group)
+      set y (group_y * max_rows_per_group + group_y) + (students_in_group mod rows_per_group)
 
       ; CSV order is: start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive
       ask patch x y [
@@ -149,6 +190,7 @@ to read-data ;Load current class
       ]
 
       set s_count s_count + 1
+      set students_in_group students_in_group + 1
   ]
 
 end
@@ -308,7 +350,7 @@ end
 GRAPHICS-WINDOW
 273
 67
-587
+740
 433
 -1
 -1
@@ -323,7 +365,7 @@ GRAPHICS-WINDOW
 0
 1
 0
-5
+8
 0
 6
 1
@@ -334,9 +376,9 @@ ticks
 
 BUTTON
 101
-28
+16
 168
-61
+49
 Set up
 setup
 NIL
@@ -351,9 +393,9 @@ NIL
 
 BUTTON
 176
-28
+16
 239
-61
+49
 Go
 go
 T
@@ -368,9 +410,9 @@ NIL
 
 MONITOR
 16
-344
+400
 128
-389
+445
 Average maths
 Mean [end_maths] of students
 1
@@ -378,10 +420,10 @@ Mean [end_maths] of students
 11
 
 TEXTBOX
-381
-13
-531
-55
+273
+16
+423
+58
 Yellow Passive\nGreen learning\nRed disruptive\n
 11
 0.0
@@ -389,9 +431,9 @@ Yellow Passive\nGreen learning\nRed disruptive\n
 
 SLIDER
 16
-247
+305
 188
-280
+338
 Random_select
 Random_select
 5
@@ -403,9 +445,9 @@ NIL
 HORIZONTAL
 
 MONITOR
-16
+136
 400
-128
+248
 445
 SD maths
 Standard-deviation [end_maths] of students
@@ -415,9 +457,9 @@ Standard-deviation [end_maths] of students
 
 MONITOR
 16
-289
+347
 128
-334
+392
 Current class ID
 Current_class_id
 0
@@ -426,9 +468,9 @@ Current_class_id
 
 BUTTON
 16
-28
+16
 93
-61
+49
 Choose file
 select-input-file
 NIL
@@ -443,9 +485,9 @@ NIL
 
 MONITOR
 16
-71
+59
 240
-116
+104
 Input File
 truncate-input-file
 17
@@ -454,9 +496,9 @@ truncate-input-file
 
 MONITOR
 16
-125
+113
 111
-170
+158
 Chosen class
 Chosen_class
 17
@@ -465,9 +507,9 @@ Chosen_class
 
 INPUTBOX
 16
-179
+237
 125
-239
+297
 Number_of_holidays
 2.0
 1
@@ -476,14 +518,35 @@ Number
 
 INPUTBOX
 133
-179
 237
 239
+297
 Weeks_per_holiday
 2.0
 1
 0
 Number
+
+INPUTBOX
+16
+168
+125
+228
+Number_of_groups
+4.0
+1
+0
+Number
+
+CHOOSER
+133
+168
+239
+213
+Group_by
+Group_by
+"Ability" "Random"
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
