@@ -15,11 +15,25 @@ to-report truncate-input-file
   ]
 end
 
-to setup
-
+to initial-setup
   clear-all
 
   set-default-shape turtles "person" ; person shaped tutles
+end
+
+to finish-setup
+
+  read-data
+
+  ask patches [set end_maths start_maths]
+
+  create-output-file
+
+end
+
+to setup-ui ; for use in user interface
+
+  initial-setup
 
   set Input_file user-file
   read-patches-from-csv
@@ -37,11 +51,31 @@ to setup
     set Current position Chosen_class Class_list
   ]
 
-  read-data
+  finish-setup
 
-  ask patches [set end_maths start_maths]
+end
 
-  create-output-file
+to setup-experiment ; for use in BehaviorSpace
+  ; Save vars set by experiment before initial-setup calls reset-all
+  let tmp_vars (list Input_file Chosen_class Random_select)
+  initial-setup
+
+  set Input_file item 0 tmp_vars
+  set Chosen_class item 1 tmp_vars
+  set Random_select item 2 tmp_vars
+
+  read-patches-from-csv
+
+  reset-all
+  if not member? Chosen_class Class_list [
+    error (word "Invalid class " Chosen_class)
+  ]
+
+  set Number_of_classes 1
+  set Current_class_id Chosen_class
+  set Current position Chosen_class Class_list
+
+  finish-setup
 
 end
 
@@ -87,7 +121,10 @@ to read-patches-from-csv
     row ->
     if is-number? item 0 row [
       set current_class item 2 row
-      if prev_class = -1 [set prev_class current_class]
+      if prev_class = -1 [
+        set Class_list lput current_class Class_list
+        set prev_class current_class
+      ]
 
       if current_class != prev_class [
         set Class_list lput current_class Class_list
@@ -244,7 +281,7 @@ BUTTON
 168
 61
 Set up
-setup
+setup-ui
 NIL
 1
 T
@@ -302,7 +339,7 @@ Random_select
 Random_select
 5
 6
-5.0
+6.0
 1
 1
 NIL
@@ -713,14 +750,19 @@ NetLogo 6.1.1
 @#$#@#$#@
 <experiments>
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
-    <setup>setup</setup>
+    <setup>setup-experiment</setup>
     <go>go</go>
     <metric>Mean [start_maths] of patches with [pcolor != black ]</metric>
     <metric>Mean [end_maths] of patches with [pcolor != black ]</metric>
-    <enumeratedValueSet variable="Class">
-      <value value="&quot;temp1.txt&quot;"/>
-      <value value="&quot;temp2.txt&quot;"/>
-      <value value="&quot;temp4.txt&quot;"/>
+    <enumeratedValueSet variable="Input_file">
+      <value value="&quot;classes_input/test_input_short.csv&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Chosen_class">
+      <value value="1001281"/>
+      <value value="3791049"/>
+      <value value="3971049"/>
+      <value value="4311188"/>
+      <value value="4741049"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Random_select">
       <value value="6"/>
