@@ -7,19 +7,6 @@ Breed [ students student] ; another type is students
 Globals [Teach-control Teach-quality Current Current_class_id Chosen_class Number_of_classes Input_file Output_file Class_list Students_by_class]
 
 
-to select-input-file
-
-  clear-all
-
-  set-default-shape turtles "person" ; person shaped tutles
-
-  reset-all
-
-  set Input_file user-file
-  read-patches-from-csv
-
-end
-
 to-report truncate-input-file
   ifelse length Input_file > 35 [
     report (word (substring Input_file 0 13) "..." (substring Input_file (length Input_file - 20) (length Input_file)))
@@ -29,6 +16,13 @@ to-report truncate-input-file
 end
 
 to setup
+
+  clear-all
+
+  set-default-shape turtles "person" ; person shaped tutles
+
+  set Input_file user-file
+  read-patches-from-csv
 
   reset-all
 
@@ -335,23 +329,6 @@ Current_class_id
 0
 1
 11
-
-BUTTON
-16
-28
-93
-61
-Choose file
-select-input-file
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
 
 MONITOR
 16
