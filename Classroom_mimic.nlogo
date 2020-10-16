@@ -56,23 +56,25 @@ to read-patches-from-csv
 
   Set Current 0 ; This is the counter for the file list in the "all" case. As it is a global variable we always set it.
 
-  if (Class = "all")[ ; get list of files in input folder and assign first as current
+  ifelse (Class = "all")[ ; get list of files in input folder and assign first as current
     set Class_list  pathdir:list "classes_input"
     set Number_of_classes length Class_list
     set Current_file item Current Class_list
+  ] [
+    set Current_file Class
   ]
-  if (Class = "a")  [set Current_file "patches_1_114.txt"] ; open  file with the patches data
-  if (Class = "b")  [set Current_file "patches_7_147.txt"] ; open  file with the patches data
-  if (Class = "c")  [set Current_file "patches_17_130.txt"] ; open  file with the patches data
-  if (Class = "d")  [set Current_file "patches_25_13.txt"] ; open  file with the patches data
-  if (Class = "e")  [set Current_file "patches_14_114.txt"] ; open  file with the patches data
-  if (Class = "f")  [set Current_file "patches_34_114.txt"] ; open  file with the patches data
-  if (Class = "g")  [set Current_file "patches_53_14.txt"] ; open  file with the patches data
-  if (Class = "h")  [set Current_file "patches_44_103.txt"] ; open  file with the patches data
-  if (Class = "i")  [set Current_file "patches_62_114.txt"] ; open  file with the patches data
-  if (Class = "j")  [set Current_file "patches_68_114.txt"] ; open  file with the patches data
-  if (Class = "k")  [set Current_file "patches_70_16.txt"] ; open  file with the patches data
-  if (Class = "l")  [set Current_file "patches_73_29.txt"] ; open  file with the patches data
+  ;if (Class = "a")  [set Current_file "patches_1_114.txt"] ; open  file with the patches data
+  ;if (Class = "b")  [set Current_file "patches_7_147.txt"] ; open  file with the patches data
+  ;if (Class = "c")  [set Current_file "patches_17_130.txt"] ; open  file with the patches data
+  ;if (Class = "d")  [set Current_file "patches_25_13.txt"] ; open  file with the patches data
+  ;if (Class = "e")  [set Current_file "patches_14_114.txt"] ; open  file with the patches data
+  ;if (Class = "f")  [set Current_file "patches_34_114.txt"] ; open  file with the patches data
+  ;if (Class = "g")  [set Current_file "patches_53_14.txt"] ; open  file with the patches data
+  ;if (Class = "h")  [set Current_file "patches_44_103.txt"] ; open  file with the patches data
+  ;if (Class = "i")  [set Current_file "patches_62_114.txt"] ; open  file with the patches data
+  ;if (Class = "j")  [set Current_file "patches_68_114.txt"] ; open  file with the patches data
+  ;if (Class = "k")  [set Current_file "patches_70_16.txt"] ; open  file with the patches data
+  ;if (Class = "l")  [set Current_file "patches_73_29.txt"] ; open  file with the patches data
 
   read-data
 
@@ -89,7 +91,7 @@ to read-data ;Read current input file
 
   ; Check if file exists, otherwise give error message
   if not file-exists? full_file [
-    user-message "No file 'patches.txt' exists! Try pressing WRITE-PATCHES-TO-CSV."
+    user-message (word "No file '" full_file "' exists! Try pressing Setup.")
     stop
   ]
 
@@ -161,7 +163,7 @@ to create-output-file ; generate filename and create blank output file
   ]
 
   let date time:create ""
-  let filename (word "output" (time:show date "yyyy-MM-dd_HHmmss") ".csv")
+  let filename (word "output" (time:show date "yyyy-MM-dd_HHmmss-") behaviorspace-run-number ".csv")
   let sep pathdir:get-separator
   set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
@@ -299,8 +301,8 @@ CHOOSER
 131
 Class
 Class
-"all" "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l"
-0
+"all" "temp1.txt" "temp2.txt" "temp4.txt"
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -664,19 +666,11 @@ NetLogo 6.1.1
     <setup>setup</setup>
     <go>go</go>
     <metric>Mean [start_maths] of patches with [pcolor != black ]</metric>
+    <metric>Mean [end_maths] of patches with [pcolor != black ]</metric>
     <enumeratedValueSet variable="Class">
-      <value value="&quot;a&quot;"/>
-      <value value="&quot;b&quot;"/>
-      <value value="&quot;c&quot;"/>
-      <value value="&quot;d&quot;"/>
-      <value value="&quot;e&quot;"/>
-      <value value="&quot;f&quot;"/>
-      <value value="&quot;g&quot;"/>
-      <value value="&quot;h&quot;"/>
-      <value value="&quot;i&quot;"/>
-      <value value="&quot;j&quot;"/>
-      <value value="&quot;k&quot;"/>
-      <value value="&quot;l&quot;"/>
+      <value value="&quot;temp1.txt&quot;"/>
+      <value value="&quot;temp2.txt&quot;"/>
+      <value value="&quot;temp4.txt&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Random_select">
       <value value="6"/>
