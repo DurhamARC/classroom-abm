@@ -581,16 +581,51 @@ This a phenomenon-based model . Classrooms in school are places when students ar
 
 ## HOW IT WORKS
 
-The  model sets out 30 students in a 6 X 5 array. They can have one of three states: learning, passive and disruptive. The students start with a measured level of their  mathis from the PIPS porject. The teacher has two variables ; Control and Teaching. Each is measured on a five point scale from awful (1) to brilliant (5) and they can be selected using two sliders.
-A lesson lasts 40minutes and during that time the teacher teaches and the students occupy one of the three states. They can learn (green) and whilst learning their maths increments slightgly and by an amount which is moderated by the child's measured ability. At each time point there is a probability that they become passive (yellow) or disruptive (red). The probability is related to: a) the Teaching and Control variables b) data on the students inattentivess and hyperactivity/impulsiveness imported from the PIPS anonymised database.
+The  model sets out the students in each class in a user-specified number of groups. They can have one of three states: learning, passive and disruptive. The students start with a measured level of their  mathis from the PIPS porject. The teacher has two variables ; Control and Teaching. Each is measured on a five point scale from awful (1) to brilliant (5) and is generated at random from a normal distribution with mean 3.5.
+During the teaching day the teacher teaches and the students occupy one of the three states. They can learn (green) and whilst learning their maths increments slightgly and by an amount which is moderated by the child's measured ability. At each time point there is a probability that they become passive (yellow) or disruptive (red). The probability is related to: a) the Teaching and Control variables b) data on the students inattentivess and hyperactivity/impulsiveness imported from the PIPS anonymised database.
 A student’s state is also influenced by the state of the other students. Two or more disruptive neighbouring students ensure that a student cannot learn. Five or more disruptive neighbours means that that student wil be disruptive.
 
 
 ## HOW TO USE IT
 
-Create an input CSV file with headings `start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive` (or use one of the sample files in **input_classes**). Select **Choose file** and select your input file.
+Create an input CSV file with headings `start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive` (or use one of the sample files in **input_classes**).
 
-Press **Set up** and choose a class (or **All**). Set a value for **Random_select**, then press **Go**.
+Output CSVs will be generated with results for each student, and will be placed in the **output_files** directory.
+
+### Interface Mode
+
+Press **Set up**, and select your input file, then choose a class (or **All**). Set a value for **Random_select**, then press **Go**.
+
+### BehaviorSpace Mode
+
+In BehaviorSpace mode you can set and vary the following variables:
+
+```
+["Input_file" "classes_input/test_input_short.csv"]
+["Chosen_class" "All"]
+["Random_select" 5]
+["Number_of_holidays" 2]
+["Weeks_per_holiday" 2]
+["Number_of_groups" 4]
+["Group_by" "Ability" "Random"]
+
+```
+
+`Input_file` should be the path to the input file, either relative to this NetLogo file or as an absolute path.
+
+`Chosen_class` can either be set to be `"All"` or a specific class id or set of class ids.
+
+```
+["Chosen_class" "All"]
+```
+
+will run the experiment for all classes in the input file. Each run will generate a single output file containing results for all classes.
+
+```
+["Chosen_class" 3971049 4741049]
+```
+
+will run the experiement for each of the two classes (as well as varying any other parameters used in BehaviorSpace). Each class will have its own runs in BehaviorSpace, so the output files will contain the results for one class only.
 
 ## THINGS TO NOTICE
 
