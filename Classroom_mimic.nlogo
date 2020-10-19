@@ -65,12 +65,14 @@ end
 
 to setup-experiment ; for use in BehaviorSpace
   ; Save vars set by experiment before initial-setup calls reset-all
-  let tmp_vars (list Input_file Chosen_class Random_select)
+  let tmp_vars (list Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday)
   initial-setup
 
   set Input_file item 0 tmp_vars
   set Chosen_class item 1 tmp_vars
   set Random_select item 2 tmp_vars
+  set Number_of_holidays item 3 tmp_vars
+  set Weeks_per_holiday item 4 tmp_vars
 
   read-patches-from-csv
 
@@ -414,7 +416,7 @@ Random_select
 Random_select
 5
 6
-6.0
+5.0
 1
 1
 NIL
@@ -470,7 +472,7 @@ INPUTBOX
 125
 239
 Number_of_holidays
-2.0
+1.0
 1
 0
 Number
@@ -856,13 +858,18 @@ NetLogo 6.1.1
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="1001281"/>
-      <value value="3791049"/>
-      <value value="3971049"/>
-      <value value="4311188"/>
-      <value value="4741049"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Random_select">
+      <value value="5"/>
       <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_holidays">
+      <value value="1"/>
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Weeks_per_holiday">
+      <value value="2"/>
+      <value value="3"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
