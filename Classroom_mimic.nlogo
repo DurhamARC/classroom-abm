@@ -35,6 +35,8 @@ to finish-setup
 
   create-output-file
 
+  calculate-holidays
+
 end
 
 to setup-ui ; for use in user interface
@@ -83,7 +85,6 @@ to setup-experiment ; for use in BehaviorSpace
 
   finish-setup
 
-  calculate-holidays
 end
 
 to reset-all ; But make sure not to call clear-all, as this also clears the global Class_list
