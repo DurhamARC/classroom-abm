@@ -393,8 +393,8 @@ end
 GRAPHICS-WINDOW
 273
 67
-642
-437
+643
+438
 -1
 -1
 51.8
@@ -418,9 +418,9 @@ ticks
 1.0
 
 BUTTON
-101
 16
-168
+16
+125
 49
 Set up
 setup-ui
@@ -435,9 +435,9 @@ NIL
 1
 
 BUTTON
-176
+133
 16
-239
+242
 49
 Go
 go
@@ -454,7 +454,7 @@ NIL
 MONITOR
 16
 400
-128
+125
 445
 Average maths
 Mean [end_maths] of students
@@ -475,7 +475,7 @@ Yellow Passive\nGreen learning\nRed disruptive\n
 SLIDER
 16
 305
-188
+242
 338
 Random_select
 Random_select
@@ -488,9 +488,9 @@ NIL
 HORIZONTAL
 
 MONITOR
-136
+133
 400
-248
+242
 445
 SD maths
 Standard-deviation [end_maths] of students
@@ -501,7 +501,7 @@ Standard-deviation [end_maths] of students
 MONITOR
 16
 347
-128
+125
 392
 Current class ID
 Current_class_id
@@ -512,7 +512,7 @@ Current_class_id
 MONITOR
 16
 59
-240
+242
 104
 Input File
 truncate-input-file
@@ -523,7 +523,7 @@ truncate-input-file
 MONITOR
 16
 113
-111
+125
 158
 Chosen class
 Chosen_class
@@ -545,7 +545,7 @@ Number
 INPUTBOX
 133
 237
-239
+242
 297
 Weeks_per_holiday
 2.0
@@ -567,7 +567,7 @@ Number
 CHOOSER
 133
 168
-239
+242
 213
 Group_by
 Group_by
