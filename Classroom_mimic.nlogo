@@ -81,13 +81,20 @@ to setup-experiment ; for use in BehaviorSpace
   read-patches-from-csv
 
   reset-all
-  if not member? Chosen_class Class_list [
-    error (word "Invalid class " Chosen_class)
-  ]
 
-  set Number_of_classes 1
-  set Current_class_id Chosen_class
-  set Current position Chosen_class Class_list
+  ifelse (Chosen_class = "All")[
+    set Number_of_classes length Class_list
+    set Current 0
+    set Current_class_id item Current Class_list
+  ] [
+    if not member? Chosen_class Class_list [
+      user-message (word "Invalid class " Chosen_class)
+      stop
+    ]
+    set Number_of_classes 1
+    set Current_class_id Chosen_class
+    set Current position Chosen_class Class_list
+  ]
 
   finish-setup
 
@@ -386,8 +393,8 @@ end
 GRAPHICS-WINDOW
 273
 67
-849
-438
+642
+437
 -1
 -1
 51.8
@@ -401,7 +408,7 @@ GRAPHICS-WINDOW
 0
 1
 0
-10
+6
 0
 6
 1
@@ -474,7 +481,7 @@ Random_select
 Random_select
 5
 6
-6.0
+5.0
 1
 1
 NIL
@@ -552,7 +559,7 @@ INPUTBOX
 125
 228
 Number_of_groups
-6.0
+4.0
 1
 0
 Number
@@ -565,7 +572,7 @@ CHOOSER
 Group_by
 Group_by
 "Ability" "Random"
-1
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -930,18 +937,17 @@ NetLogo 6.1.1
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
     <setup>setup-experiment</setup>
     <go>go</go>
+    <exitCondition>Ticks_per_day = 0</exitCondition>
     <metric>Mean [start_maths] of students</metric>
     <metric>Mean [end_maths] of students</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input_short.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
-      <value value="1001281"/>
-      <value value="4741049"/>
+      <value value="&quot;All&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Random_select">
       <value value="5"/>
-      <value value="6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Number_of_holidays">
       <value value="2"/>
@@ -951,7 +957,6 @@ NetLogo 6.1.1
     </enumeratedValueSet>
     <enumeratedValueSet variable="Number_of_groups">
       <value value="4"/>
-      <value value="6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Group_by">
       <value value="&quot;Ability&quot;"/>
