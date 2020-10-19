@@ -13,21 +13,6 @@ Globals [
 ]
 
 
-to select-input-file
-
-  clear-all
-
-  set-default-shape turtles "person" ; person shaped tutles
-
-  reset-all
-
-  set Input_file user-file
-  if Input_file != false [
-    read-patches-from-csv
-  ]
-
-end
-
 to-report truncate-input-file
   ifelse length Input_file > 35 [
     report (word (substring Input_file 0 13) "..." (substring Input_file (length Input_file - 20) (length Input_file)))
@@ -36,7 +21,32 @@ to-report truncate-input-file
   ]
 end
 
-to setup
+to initial-setup
+  clear-all
+
+  set-default-shape turtles "person" ; person shaped tutles
+end
+
+to finish-setup
+
+  read-data
+
+  ask students [set end_maths start_maths]
+
+  create-output-file
+
+  calculate-holidays
+
+end
+
+to setup-ui ; for use in user interface
+
+  initial-setup
+
+  set Input_file user-file
+  if Input_file != false [
+    read-patches-from-csv
+  ]
 
   reset-all
 
@@ -51,13 +61,43 @@ to setup
     set Current position Chosen_class Class_list
   ]
 
-  read-data
+  finish-setup
 
-  ask students [set end_maths start_maths]
+end
 
-  create-output-file
+to setup-experiment ; for use in BehaviorSpace
+  ; Save vars set by experiment before initial-setup calls reset-all
+  let tmp_vars (list Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday Number_of_groups Group_by)
+  initial-setup
 
-  calculate-holidays
+  set Input_file item 0 tmp_vars
+  set Chosen_class item 1 tmp_vars
+  set Random_select item 2 tmp_vars
+  set Number_of_holidays item 3 tmp_vars
+  set Weeks_per_holiday item 4 tmp_vars
+  set Number_of_groups item 5 tmp_vars
+  set Group_by item 6 tmp_vars
+
+  read-patches-from-csv
+
+  reset-all
+
+  ifelse (Chosen_class = "All")[
+    set Number_of_classes length Class_list
+    set Current 0
+    set Current_class_id item Current Class_list
+  ] [
+    if not member? Chosen_class Class_list [
+      user-message (word "Invalid class " Chosen_class)
+      stop
+    ]
+    set Number_of_classes 1
+    set Current_class_id Chosen_class
+    set Current position Chosen_class Class_list
+  ]
+
+  finish-setup
+
 end
 
 to reset-all ; But make sure not to call clear-all, as this also clears the global Class_list
@@ -100,7 +140,10 @@ to read-patches-from-csv
 
     if reduce and (map is-number? row) [ ; only parse rows that contain only numbers
       set current_class item 2 row
-      if prev_class = -1 [set prev_class current_class]
+      if prev_class = -1 [
+        set Class_list lput current_class Class_list
+        set prev_class current_class
+      ]
 
       if current_class != prev_class [
         set Class_list lput current_class Class_list
@@ -304,7 +347,7 @@ to create-output-file ; generate filename and create blank output file
   ]
 
   let date time:create ""
-  let filename (word "output" (time:show date "yyyy-MM-dd_HHmmss") ".csv")
+  let filename (word "output" (time:show date "yyyy-MM-dd_HHmmss-") behaviorspace-run-number ".csv")
   let sep pathdir:get-separator
   set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
@@ -350,8 +393,8 @@ end
 GRAPHICS-WINDOW
 273
 67
-740
-433
+643
+438
 -1
 -1
 51.8
@@ -365,7 +408,7 @@ GRAPHICS-WINDOW
 0
 1
 0
-8
+6
 0
 6
 1
@@ -375,12 +418,12 @@ ticks
 1.0
 
 BUTTON
-101
 16
-168
+16
+125
 49
 Set up
-setup
+setup-ui
 NIL
 1
 T
@@ -392,9 +435,9 @@ NIL
 1
 
 BUTTON
-176
+133
 16
-239
+242
 49
 Go
 go
@@ -411,7 +454,7 @@ NIL
 MONITOR
 16
 400
-128
+125
 445
 Average maths
 Mean [end_maths] of students
@@ -432,22 +475,22 @@ Yellow Passive\nGreen learning\nRed disruptive\n
 SLIDER
 16
 305
-188
+242
 338
 Random_select
 Random_select
 5
 6
-6.0
+5.0
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-136
+133
 400
-248
+242
 445
 SD maths
 Standard-deviation [end_maths] of students
@@ -458,7 +501,7 @@ Standard-deviation [end_maths] of students
 MONITOR
 16
 347
-128
+125
 392
 Current class ID
 Current_class_id
@@ -466,27 +509,10 @@ Current_class_id
 1
 11
 
-BUTTON
-16
-16
-93
-49
-Choose file
-select-input-file
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 MONITOR
 16
 59
-240
+242
 104
 Input File
 truncate-input-file
@@ -497,7 +523,7 @@ truncate-input-file
 MONITOR
 16
 113
-111
+125
 158
 Chosen class
 Chosen_class
@@ -519,7 +545,7 @@ Number
 INPUTBOX
 133
 237
-239
+242
 297
 Weeks_per_holiday
 2.0
@@ -541,7 +567,7 @@ Number
 CHOOSER
 133
 168
-239
+242
 213
 Group_by
 Group_by
@@ -555,16 +581,51 @@ This a phenomenon-based model . Classrooms in school are places when students ar
 
 ## HOW IT WORKS
 
-The  model sets out 30 students in a 6 X 5 array. They can have one of three states: learning, passive and disruptive. The students start with a measured level of their  mathis from the PIPS porject. The teacher has two variables ; Control and Teaching. Each is measured on a five point scale from awful (1) to brilliant (5) and they can be selected using two sliders.
-A lesson lasts 40minutes and during that time the teacher teaches and the students occupy one of the three states. They can learn (green) and whilst learning their maths increments slightgly and by an amount which is moderated by the child's measured ability. At each time point there is a probability that they become passive (yellow) or disruptive (red). The probability is related to: a) the Teaching and Control variables b) data on the students inattentivess and hyperactivity/impulsiveness imported from the PIPS anonymised database.
+The  model sets out the students in each class in a user-specified number of groups. They can have one of three states: learning, passive and disruptive. The students start with a measured level of their  mathis from the PIPS porject. The teacher has two variables ; Control and Teaching. Each is measured on a five point scale from awful (1) to brilliant (5) and is generated at random from a normal distribution with mean 3.5.
+During the teaching day the teacher teaches and the students occupy one of the three states. They can learn (green) and whilst learning their maths increments slightgly and by an amount which is moderated by the child's measured ability. At each time point there is a probability that they become passive (yellow) or disruptive (red). The probability is related to: a) the Teaching and Control variables b) data on the students inattentivess and hyperactivity/impulsiveness imported from the PIPS anonymised database.
 A student’s state is also influenced by the state of the other students. Two or more disruptive neighbouring students ensure that a student cannot learn. Five or more disruptive neighbours means that that student wil be disruptive.
 
 
 ## HOW TO USE IT
 
-Create an input CSV file with headings `start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive` (or use one of the sample files in **input_classes**). Select **Choose file** and select your input file.
+Create an input CSV file with headings `start_maths,student_id,class_id,N_in_class,ability,inattentiveness,hyper_impulsive` (or use one of the sample files in **input_classes**).
 
-Press **Set up** and choose a class (or **All**). Set a value for **Random_select**, then press **Go**.
+Output CSVs will be generated with results for each student, and will be placed in the **output_files** directory.
+
+### Interface Mode
+
+Press **Set up**, and select your input file, then choose a class (or **All**). Set a value for **Random_select**, then press **Go**.
+
+### BehaviorSpace Mode
+
+In BehaviorSpace mode you can set and vary the following variables:
+
+```
+["Input_file" "classes_input/test_input_short.csv"]
+["Chosen_class" "All"]
+["Random_select" 5]
+["Number_of_holidays" 2]
+["Weeks_per_holiday" 2]
+["Number_of_groups" 4]
+["Group_by" "Ability" "Random"]
+
+```
+
+`Input_file` should be the path to the input file, either relative to this NetLogo file or as an absolute path.
+
+`Chosen_class` can either be set to be `"All"` or a specific class id or set of class ids.
+
+```
+["Chosen_class" "All"]
+```
+
+will run the experiment for all classes in the input file. Each run will generate a single output file containing results for all classes.
+
+```
+["Chosen_class" 3971049 4741049]
+```
+
+will run the experiement for each of the two classes (as well as varying any other parameters used in BehaviorSpace). Each class will have its own runs in BehaviorSpace, so the output files will contain the results for one class only.
 
 ## THINGS TO NOTICE
 
@@ -909,25 +970,32 @@ NetLogo 6.1.1
 @#$#@#$#@
 <experiments>
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
-    <setup>setup</setup>
+    <setup>setup-experiment</setup>
     <go>go</go>
-    <metric>Mean [start_maths] of patches with [pcolor != black ]</metric>
-    <enumeratedValueSet variable="Class">
-      <value value="&quot;a&quot;"/>
-      <value value="&quot;b&quot;"/>
-      <value value="&quot;c&quot;"/>
-      <value value="&quot;d&quot;"/>
-      <value value="&quot;e&quot;"/>
-      <value value="&quot;f&quot;"/>
-      <value value="&quot;g&quot;"/>
-      <value value="&quot;h&quot;"/>
-      <value value="&quot;i&quot;"/>
-      <value value="&quot;j&quot;"/>
-      <value value="&quot;k&quot;"/>
-      <value value="&quot;l&quot;"/>
+    <exitCondition>Ticks_per_day = 0</exitCondition>
+    <metric>Mean [start_maths] of students</metric>
+    <metric>Mean [end_maths] of students</metric>
+    <enumeratedValueSet variable="Input_file">
+      <value value="&quot;classes_input/test_input_short.csv&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Chosen_class">
+      <value value="&quot;All&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Random_select">
-      <value value="6"/>
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_holidays">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Weeks_per_holiday">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_groups">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Group_by">
+      <value value="&quot;Ability&quot;"/>
+      <value value="&quot;Random&quot;"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
