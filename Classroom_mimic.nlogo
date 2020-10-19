@@ -430,7 +430,7 @@ Random_select
 Random_select
 5
 6
-5.0
+6.0
 1
 1
 NIL
@@ -486,7 +486,7 @@ INPUTBOX
 125
 239
 Number_of_holidays
-1.0
+2.0
 1
 0
 Number
@@ -497,7 +497,7 @@ INPUTBOX
 237
 239
 Weeks_per_holiday
-2.0
+3.0
 1
 0
 Number
@@ -865,13 +865,14 @@ NetLogo 6.1.1
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
     <setup>setup-experiment</setup>
     <go>go</go>
-    <metric>Mean [start_maths] of patches with [pcolor != black ]</metric>
-    <metric>Mean [end_maths] of patches with [pcolor != black ]</metric>
+    <metric>Mean [start_maths] of students</metric>
+    <metric>Mean [end_maths] of students</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input_short.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="1001281"/>
+      <value value="4741049"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Random_select">
       <value value="5"/>
