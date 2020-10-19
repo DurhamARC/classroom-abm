@@ -384,8 +384,8 @@ end
 GRAPHICS-WINDOW
 273
 67
-740
-433
+747
+438
 -1
 -1
 51.8
@@ -499,23 +499,6 @@ Current_class_id
 0
 1
 11
-
-BUTTON
-16
-16
-93
-49
-Choose file
-select-input-file
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
 
 MONITOR
 16
