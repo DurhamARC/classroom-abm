@@ -46,22 +46,21 @@ to setup-ui ; for use in user interface
   set Input_file user-file
   if Input_file != false [
     read-patches-from-csv
+    reset-all
+
+    set Chosen_class user-one-of "Select a class" fput "All" sort Class_list
+    ifelse (Chosen_class = "All")[
+      set Number_of_classes length Class_list
+      set Current 0
+      set Current_class_id item Current Class_list
+    ] [
+      set Number_of_classes 1
+      set Current_class_id Chosen_class
+      set Current position Chosen_class Class_list
+    ]
+
+    finish-setup
   ]
-
-  reset-all
-
-  set Chosen_class user-one-of "Select a class" fput "All" sort Class_list
-  ifelse (Chosen_class = "All")[
-    set Number_of_classes length Class_list
-    set Current 0
-    set Current_class_id item Current Class_list
-  ] [
-    set Number_of_classes 1
-    set Current_class_id Chosen_class
-    set Current position Chosen_class Class_list
-  ]
-
-  finish-setup
 
 end
 
@@ -276,6 +275,10 @@ To calculate-holidays
 end
 
 To go ; needs adjustment of the random parameters
+  carefully [ let t ticks ] [
+    user-message "Please run Setup first"
+    stop
+  ]
 
   let Was_holiday Is_holiday
   set Is_holiday check-if-holiday
