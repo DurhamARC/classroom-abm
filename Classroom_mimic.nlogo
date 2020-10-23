@@ -8,8 +8,8 @@ Globals [
   Teach-control Teach-quality
   Current Current_class_id Chosen_class Number_of_classes
   Input_file Output_file Class_list Students_by_class
-  Total_ticks Ticks_per_day School_weeks Holiday_week_numbers
-  Current_week Current_day Current_day_of_week Is_holiday
+  Total_ticks Ticks_per_day Ticks_per_school_day School_weeks Holiday_week_numbers
+  Current_week Current_day Current_day_of_week Is_school_time
 ]
 
 
@@ -239,7 +239,8 @@ end
 
 To calculate-holidays
   ; Calculate total ticks including holidays
-  set Ticks_per_day 330 ; 5.5 hours * 60 minutes
+  set Ticks_per_day 660 ; 11 hours * 60 minutes
+  set Ticks_per_school_day 330 ; 5.5 hours * 60 minutes
   let ticks_per_week ticks_per_day * 7
   set School_weeks 36 ; 3 terms * 12 weeks per term
 
@@ -271,7 +272,7 @@ To calculate-holidays
 
   set Current_week 0
   set Current_day 0
-  set Is_holiday False
+  set Is_school_time True
 end
 
 To go ; needs adjustment of the random parameters
@@ -280,11 +281,11 @@ To go ; needs adjustment of the random parameters
     stop
   ]
 
-  let Was_holiday Is_holiday
-  set Is_holiday check-if-holiday
+  let Was_school_time Is_school_time
+  set Is_school_time check-if-school-time
 
-  if not Is_holiday [
-    if Was_holiday [ ; new week, so reset student status
+  if Is_school_time [
+    if not Was_school_time [ ; new week, so reset student status
       ask students [
         ask patch-here [set pcolor yellow]
       ];
@@ -360,18 +361,26 @@ to create-output-file ; generate filename and create blank output file
 
 end
 
-to-report check-if-holiday
+to-report check-if-school-time
+  let today_ticks ticks mod Ticks_per_day
 
-  if (ticks mod Ticks_per_day = 0) [
+  if (today_ticks mod Ticks_per_day = 0) [
     set Current_day floor (ticks / Ticks_per_day)
     set Current_day_of_week Current_day mod 7
     set Current_week floor (Current_day / 7)
   ]
 
   ifelse (Current_day_of_week > 4) [ ; weekend
-    report True
-  ] [ ; check if in holidays
-    report member? Current_week Holiday_week_numbers
+    report False
+  ] [
+    ; check if in holidays
+    ifelse (member? Current_week Holiday_week_numbers) [
+      report False
+    ] [
+      ; it's a school day so check time of day
+      ; for simplicity the first part of the day is school time, the rest not
+      report today_ticks < Ticks_per_school_day
+    ]
   ]
 
 end
@@ -380,7 +389,7 @@ to learn
   ; learn final amount gives about the right average scores at the end
   ; by being
 
-  if not Is_holiday [
+  if Is_school_time [
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
