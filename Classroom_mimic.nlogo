@@ -8,7 +8,7 @@ Globals [
   Teach-control Teach-quality
   Current Current_class_id Chosen_class Number_of_classes
   Input_file Output_file Class_list Students_by_class
-  Total_ticks Ticks_per_day Ticks_per_school_day School_weeks Holiday_week_numbers
+  Total_ticks Ticks_per_day Ticks_per_school_day Holiday_week_numbers
   Current_week Current_day Current_day_of_week Is_school_time
 ]
 
@@ -242,15 +242,20 @@ To calculate-holidays
   set Ticks_per_day 660 ; 11 hours * 60 minutes
   set Ticks_per_school_day 330 ; 5.5 hours * 60 minutes
   let ticks_per_week ticks_per_day * 7
-  set School_weeks 36 ; 3 terms * 12 weeks per term
+  let total_days 317 ; # days from 1st September to 15th July
 
   let holiday_weeks Number_of_holidays * Weeks_per_holiday
-  let total_weeks school_weeks + holiday_weeks
-  set Total_ticks total_weeks * ticks_per_week
+  let school_weeks (ceiling (total_days / 7)) - holiday_weeks
+  if school_weeks < 0 [
+    user-message "There are more holidays than school weeks. Please ensure total weeks of holiday are 45 or fewer."
+    stop
+  ]
+
+  set Total_ticks Ticks_per_day * total_days
 
   ; Calculate which weeks should be holidays
   let number_of_terms Number_of_holidays + 1 ; we don't include summer holidays
-  let min_weeks_per_term floor (School_weeks / number_of_terms)
+  let min_weeks_per_term floor (school_weeks / number_of_terms)
   let remainder_weeks School_weeks mod number_of_terms
 
   let Weeks_per_term [] ; number of weeks in each term
@@ -984,7 +989,8 @@ NetLogo 6.1.1
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
     <setup>setup-experiment</setup>
     <go>go</go>
-    <exitCondition>Ticks_per_day = 0</exitCondition>
+    <exitCondition>Ticks_per_day = 0 or
+Holiday_week_numbers = 0</exitCondition>
     <metric>Mean [start_maths] of students</metric>
     <metric>Mean [end_maths] of students</metric>
     <enumeratedValueSet variable="Input_file">
