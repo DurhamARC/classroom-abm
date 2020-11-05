@@ -394,17 +394,17 @@ to learn
   ; learn final amount gives about the right average scores at the end
   ; by being
 
-  if Is_school_time [
+  ifelse Is_school_time [
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
     if (pcolor = green) [set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) ) ] ;
+  ] [
+    ; by getting older maths changes
+    set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) )
+    ; NB the last two rows of code have been adjusted by extensive trial and error on one class to give suitable growth overall and correlations between variables
+    ; by getting older ability changes
   ]
-
-  ; by getting older maths changes
-  set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) )
-  ; NB the last two rows of code have been adjusted by extensive trial and error on one class to give suitable growth overall and correlations between variables
-  ; by getting older ability changes
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
