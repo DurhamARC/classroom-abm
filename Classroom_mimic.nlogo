@@ -8,8 +8,9 @@ Globals [
   Teach-control Teach-quality
   Current Current_class_id Chosen_class Number_of_classes
   Input_file Output_file Class_list Students_by_class
-  Total_ticks Ticks_per_day School_weeks Holiday_week_numbers
-  Current_week Current_day Current_day_of_week Is_holiday
+  Total_ticks Ticks_per_day Ticks_per_school_day Holiday_week_numbers
+  Current_week Current_day Current_day_of_week Is_school_time
+  School_learn_factor Home_learn_factor
 ]
 
 
@@ -25,6 +26,9 @@ to initial-setup
   clear-all
 
   set-default-shape turtles "person" ; person shaped tutles
+
+  set School_learn_factor 1.2
+  set Home_learn_factor 1.2
 end
 
 to finish-setup
@@ -46,28 +50,27 @@ to setup-ui ; for use in user interface
   set Input_file user-file
   if Input_file != false [
     read-patches-from-csv
+    reset-all
+
+    set Chosen_class user-one-of "Select a class" fput "All" sort Class_list
+    ifelse (Chosen_class = "All")[
+      set Number_of_classes length Class_list
+      set Current 0
+      set Current_class_id item Current Class_list
+    ] [
+      set Number_of_classes 1
+      set Current_class_id Chosen_class
+      set Current position Chosen_class Class_list
+    ]
+
+    finish-setup
   ]
-
-  reset-all
-
-  set Chosen_class user-one-of "Select a class" fput "All" sort Class_list
-  ifelse (Chosen_class = "All")[
-    set Number_of_classes length Class_list
-    set Current 0
-    set Current_class_id item Current Class_list
-  ] [
-    set Number_of_classes 1
-    set Current_class_id Chosen_class
-    set Current position Chosen_class Class_list
-  ]
-
-  finish-setup
 
 end
 
 to setup-experiment ; for use in BehaviorSpace
   ; Save vars set by experiment before initial-setup calls reset-all
-  let tmp_vars (list Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday Number_of_groups Group_by)
+  let tmp_vars (list Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday Number_of_groups Group_by School_learn_factor Home_learn_factor)
   initial-setup
 
   set Input_file item 0 tmp_vars
@@ -77,6 +80,8 @@ to setup-experiment ; for use in BehaviorSpace
   set Weeks_per_holiday item 4 tmp_vars
   set Number_of_groups item 5 tmp_vars
   set Group_by item 6 tmp_vars
+  set School_learn_factor item 7 tmp_vars
+  set Home_learn_factor item 8 tmp_vars
 
   read-patches-from-csv
 
@@ -240,17 +245,23 @@ end
 
 To calculate-holidays
   ; Calculate total ticks including holidays
-  set Ticks_per_day 330 ; 5.5 hours * 60 minutes
+  set Ticks_per_day 660 ; 11 hours * 60 minutes
+  set Ticks_per_school_day 330 ; 5.5 hours * 60 minutes
   let ticks_per_week ticks_per_day * 7
-  set School_weeks 36 ; 3 terms * 12 weeks per term
+  let total_days 317 ; # days from 1st September to 15th July
 
   let holiday_weeks Number_of_holidays * Weeks_per_holiday
-  let total_weeks school_weeks + holiday_weeks
-  set Total_ticks total_weeks * ticks_per_week
+  let school_weeks (ceiling (total_days / 7)) - holiday_weeks
+  if school_weeks < 0 [
+    user-message "There are more holidays than school weeks. Please ensure total weeks of holiday are 45 or fewer."
+    stop
+  ]
+
+  set Total_ticks Ticks_per_day * total_days
 
   ; Calculate which weeks should be holidays
   let number_of_terms Number_of_holidays + 1 ; we don't include summer holidays
-  let min_weeks_per_term floor (School_weeks / number_of_terms)
+  let min_weeks_per_term floor (school_weeks / number_of_terms)
   let remainder_weeks School_weeks mod number_of_terms
 
   let Weeks_per_term [] ; number of weeks in each term
@@ -272,16 +283,20 @@ To calculate-holidays
 
   set Current_week 0
   set Current_day 0
-  set Is_holiday False
+  set Is_school_time True
 end
 
 To go ; needs adjustment of the random parameters
+  carefully [ let t ticks ] [
+    user-message "Please run Setup first"
+    stop
+  ]
 
-  let Was_holiday Is_holiday
-  set Is_holiday check-if-holiday
+  let Was_school_time Is_school_time
+  set Is_school_time check-if-school-time
 
-  if not Is_holiday [
-    if Was_holiday [ ; new week, so reset student status
+  if Is_school_time [
+    if not Was_school_time [ ; new week, so reset student status
       ask students [
         ask patch-here [set pcolor yellow]
       ];
@@ -357,18 +372,26 @@ to create-output-file ; generate filename and create blank output file
 
 end
 
-to-report check-if-holiday
+to-report check-if-school-time
+  let today_ticks ticks mod Ticks_per_day
 
-  if (ticks mod Ticks_per_day = 0) [
+  if (today_ticks mod Ticks_per_day = 0) [
     set Current_day floor (ticks / Ticks_per_day)
     set Current_day_of_week Current_day mod 7
     set Current_week floor (Current_day / 7)
   ]
 
   ifelse (Current_day_of_week > 4) [ ; weekend
-    report True
-  ] [ ; check if in holidays
-    report member? Current_week Holiday_week_numbers
+    report False
+  ] [
+    ; check if in holidays
+    ifelse (member? Current_week Holiday_week_numbers) [
+      report False
+    ] [
+      ; it's a school day so check time of day
+      ; for simplicity the first part of the day is school time, the rest not
+      report today_ticks < Ticks_per_school_day
+    ]
   ]
 
 end
@@ -377,17 +400,17 @@ to learn
   ; learn final amount gives about the right average scores at the end
   ; by being
 
-  if not Is_holiday [
+  ifelse Is_school_time [
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
-    if (pcolor = green) [set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) ) ] ;
+    if (pcolor = green) [set end_maths end_maths + School_learn_factor * ((random-normal ((5 + ability) / 2000) .08) ) ] ;
+  ] [
+    ; by getting older maths changes
+    set end_maths end_maths + Home_learn_factor * ((random-normal ((5 + ability) / 2000) .08) )
+    ; NB the last two rows of code have been adjusted by extensive trial and error on one class to give suitable growth overall and correlations between variables
+    ; by getting older ability changes
   ]
-
-  ; by getting older maths changes
-  set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) )
-  ; NB the last two rows of code have been adjusted by extensive trial and error on one class to give suitable growth overall and correlations between variables
-  ; by getting older ability changes
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -972,7 +995,8 @@ NetLogo 6.1.1
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
     <setup>setup-experiment</setup>
     <go>go</go>
-    <exitCondition>Ticks_per_day = 0</exitCondition>
+    <exitCondition>Ticks_per_day = 0 or
+Holiday_week_numbers = 0</exitCondition>
     <metric>Mean [start_maths] of students</metric>
     <metric>Mean [end_maths] of students</metric>
     <enumeratedValueSet variable="Input_file">
@@ -996,6 +1020,12 @@ NetLogo 6.1.1
     <enumeratedValueSet variable="Group_by">
       <value value="&quot;Ability&quot;"/>
       <value value="&quot;Random&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="School_learn_factor">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Home_learn_factor">
+      <value value="1.2"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
