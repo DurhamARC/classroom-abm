@@ -10,6 +10,7 @@ Globals [
   Input_file Output_file Class_list Students_by_class
   Total_ticks Ticks_per_day Ticks_per_school_day Holiday_week_numbers
   Current_week Current_day Current_day_of_week Is_school_time
+  School_learn_factor Home_learn_factor
 ]
 
 
@@ -25,6 +26,9 @@ to initial-setup
   clear-all
 
   set-default-shape turtles "person" ; person shaped tutles
+
+  set School_learn_factor 1.2
+  set Home_learn_factor 1.2
 end
 
 to finish-setup
@@ -66,7 +70,7 @@ end
 
 to setup-experiment ; for use in BehaviorSpace
   ; Save vars set by experiment before initial-setup calls reset-all
-  let tmp_vars (list Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday Number_of_groups Group_by)
+  let tmp_vars (list Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday Number_of_groups Group_by School_learn_factor Home_learn_factor)
   initial-setup
 
   set Input_file item 0 tmp_vars
@@ -76,6 +80,8 @@ to setup-experiment ; for use in BehaviorSpace
   set Weeks_per_holiday item 4 tmp_vars
   set Number_of_groups item 5 tmp_vars
   set Group_by item 6 tmp_vars
+  set School_learn_factor item 7 tmp_vars
+  set Home_learn_factor item 8 tmp_vars
 
   read-patches-from-csv
 
@@ -398,10 +404,10 @@ to learn
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
-    if (pcolor = green) [set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) ) ] ;
+    if (pcolor = green) [set end_maths end_maths + School_learn_factor * ((random-normal ((5 + ability) / 2000) .08) ) ] ;
   ] [
     ; by getting older maths changes
-    set end_maths end_maths + 1.2 * ((random-normal ((5 + ability) / 2000) .08) )
+    set end_maths end_maths + Home_learn_factor * ((random-normal ((5 + ability) / 2000) .08) )
     ; NB the last two rows of code have been adjusted by extensive trial and error on one class to give suitable growth overall and correlations between variables
     ; by getting older ability changes
   ]
@@ -1014,6 +1020,12 @@ Holiday_week_numbers = 0</exitCondition>
     <enumeratedValueSet variable="Group_by">
       <value value="&quot;Ability&quot;"/>
       <value value="&quot;Random&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="School_learn_factor">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Home_learn_factor">
+      <value value="1.2"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
