@@ -3,7 +3,7 @@ extensions [ csv pathdir time ]
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
 Breed [ students student] ; another type is students
-Students-own [id inattentiveness hyper_impulsive start_maths end_maths ability ]
+Students-own [id inattentiveness hyper_impulsive start_maths end_maths ability deprivation]
 Globals [
   Teach-control Teach-quality
   Current Current_class_id Chosen_class Number_of_classes
@@ -27,8 +27,8 @@ to initial-setup
 
   set-default-shape turtles "person" ; person shaped tutles
 
-  set School_learn_factor 1.2
-  set Home_learn_factor 1.2
+  set School_learn_factor 0.27
+  set Home_learn_factor 0.5
 end
 
 to finish-setup
@@ -234,6 +234,7 @@ to read-data ;Load current class
           set ability item 4 s
           set inattentiveness item 5 s
           set hyper_impulsive item 6 s
+          set deprivation  item 7 s
         ]
       ]
 
@@ -349,7 +350,7 @@ to export-results ; export current results
   ; export patches to csv
   file-open Output_file
   ask students [
-    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality)
+    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness)
   ]
   file-close
 
@@ -367,7 +368,7 @@ to create-output-file ; generate filename and create blank output file
   set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
   file-open Output_file
-  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality")
+  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality" "start_maths" "ability" "inattentiveness" )
   file-close
 
 end
@@ -404,10 +405,13 @@ to learn
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
-    if (pcolor = green) [set end_maths end_maths + School_learn_factor * ((random-normal ((5 + ability) / 2000) .08) ) ] ;
+    if (pcolor = green) [set end_maths end_maths + School_learn_factor * (((random-normal ((5 + ability) / 2000) .08) ) + ((random-normal (5 / 2000) .08) )  )] ;
+    ; adjusted the above to include an increment which does not depend on ability just random
   ] [
     ; by getting older maths changes
-    set end_maths end_maths + Home_learn_factor * ((random-normal ((5 + ability) / 2000) .08) )
+    set end_maths end_maths + Home_learn_factor * (( (6 - deprivation) / 3) ^ .01) * (((random-normal ((5 + ability) / 2000) .08) ) + ((random-normal (5 / 2000) .08) ))
+    ; ditto to adjustment
+    ; add deprivation to a power to reduce its spread
     ; NB the last two rows of code have been adjusted by extensive trial and error on one class to give suitable growth overall and correlations between variables
     ; by getting older ability changes
   ]
@@ -416,8 +420,8 @@ end
 GRAPHICS-WINDOW
 273
 67
-643
-438
+642
+334
 -1
 -1
 51.8
@@ -433,7 +437,7 @@ GRAPHICS-WINDOW
 0
 6
 0
-6
+4
 1
 1
 1
@@ -1022,10 +1026,10 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="&quot;Random&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_factor">
-      <value value="1.2"/>
+      <value value="0.27"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Home_learn_factor">
-      <value value="1.2"/>
+      <value value="0.5"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
