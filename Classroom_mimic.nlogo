@@ -1026,10 +1026,10 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="&quot;Random&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_factor">
-      <value value="1.2"/>
+      <value value="0.27"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Home_learn_factor">
-      <value value="1.2"/>
+      <value value="0.5"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
