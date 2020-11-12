@@ -11,6 +11,7 @@ Globals [
   Total_ticks Ticks_per_day Ticks_per_school_day Holiday_week_numbers
   Current_week Current_day Current_day_of_week Is_school_time
   School_learn_factor Home_learn_factor
+  Total_start_maths Total_end_maths Total_students
 ]
 
 
@@ -354,6 +355,19 @@ to export-results ; export current results
   ]
   file-close
 
+  ; add to totals
+  set Total_start_maths (Total_start_maths + Sum [start_maths] of students)
+  set Total_end_maths (Total_end_maths + Sum [end_maths] of students)
+  set Total_students (Total_students + count students)
+
+end
+
+to-report mean-start-maths
+  report Total_start_maths / Total_students
+end
+
+to-report mean-end-maths
+  report Total_end_maths / Total_students
 end
 
 to create-output-file ; generate filename and create blank output file
@@ -420,8 +434,8 @@ end
 GRAPHICS-WINDOW
 273
 67
-642
-334
+746
+438
 -1
 -1
 51.8
@@ -435,9 +449,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-6
+8
 0
-4
+6
 1
 1
 1
@@ -1001,8 +1015,8 @@ NetLogo 6.1.1
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>Mean [start_maths] of students</metric>
-    <metric>Mean [end_maths] of students</metric>
+    <metric>mean-start-maths</metric>
+    <metric>mean-end-maths</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input_short.csv&quot;"/>
     </enumeratedValueSet>
