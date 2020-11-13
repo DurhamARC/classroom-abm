@@ -11,6 +11,7 @@ Globals [
   Total_ticks Ticks_per_day Ticks_per_school_day Holiday_week_numbers
   Current_week Current_day Current_day_of_week Is_school_time
   School_learn_factor Home_learn_factor
+  School_learn_mean_divisor School_learn_sd
   Total_start_maths Total_end_maths Total_students
 ]
 
@@ -28,8 +29,10 @@ to initial-setup
 
   set-default-shape turtles "person" ; person shaped tutles
 
-  set School_learn_factor 0.27
-  set Home_learn_factor 0.5
+  set School_learn_factor 0.12
+  set Home_learn_factor 0.0043
+  set School_learn_mean_divisor 2500
+  set School_learn_sd 0.04
 end
 
 to finish-setup
@@ -71,7 +74,10 @@ end
 
 to setup-experiment ; for use in BehaviorSpace
   ; Save vars set by experiment before initial-setup calls reset-all
-  let tmp_vars (list Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday Number_of_groups Group_by School_learn_factor Home_learn_factor)
+  let tmp_vars (list
+    Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday
+    Number_of_groups Group_by School_learn_factor Home_learn_factor
+    School_learn_mean_divisor School_learn_sd)
   initial-setup
 
   set Input_file item 0 tmp_vars
@@ -83,6 +89,8 @@ to setup-experiment ; for use in BehaviorSpace
   set Group_by item 6 tmp_vars
   set School_learn_factor item 7 tmp_vars
   set Home_learn_factor item 8 tmp_vars
+  set School_learn_mean_divisor item 9 tmp_vars
+  set School_learn_sd item 10 tmp_vars
 
   read-patches-from-csv
 
@@ -351,7 +359,7 @@ to export-results ; export current results
   ; export patches to csv
   file-open Output_file
   ask students [
-    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness)
+    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
   ]
   file-close
 
@@ -382,7 +390,7 @@ to create-output-file ; generate filename and create blank output file
   set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
   file-open Output_file
-  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality" "start_maths" "ability" "inattentiveness" )
+  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality" "start_maths" "ability" "inattentiveness" "deprivation" )
   file-close
 
 end
@@ -419,7 +427,7 @@ to learn
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
-    if (pcolor = green) [set end_maths end_maths + School_learn_factor * (((random-normal ((5 + ability) / 2000) .08) ) + ((random-normal (5 / 2000) .08) )  )] ;
+    if (pcolor = green) [set end_maths end_maths + School_learn_factor * ((2.0 * (random-normal ((5 + ability) / School_learn_mean_divisor) School_learn_sd) ) + (0.0 * (random-normal (5 / 2000) .08) )  )] ;
     ; adjusted the above to include an increment which does not depend on ability just random
   ] [
     ; by getting older maths changes
@@ -1037,13 +1045,20 @@ Holiday_week_numbers = 0</exitCondition>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Group_by">
       <value value="&quot;Ability&quot;"/>
-      <value value="&quot;Random&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_factor">
       <value value="0.27"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Home_learn_factor">
       <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="School_learn_mean_divisor">
+      <value value="2250"/>
+      <value value="2500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="School_learn_sd">
+      <value value="0.02"/>
+      <value value="0.04"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
