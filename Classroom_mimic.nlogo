@@ -27,8 +27,8 @@ to initial-setup
 
   set-default-shape turtles "person" ; person shaped tutles
 
-  set School_learn_factor 0.27
-  set Home_learn_factor 0.5
+  set School_learn_factor 0.12
+  set Home_learn_factor 0.0043
 end
 
 to finish-setup
