@@ -350,7 +350,7 @@ to export-results ; export current results
   ; export patches to csv
   file-open Output_file
   ask students [
-    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness)
+    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
   ]
   file-close
 
@@ -368,7 +368,7 @@ to create-output-file ; generate filename and create blank output file
   set Output_file (word pathdir:get-CWD-path sep "classes_output" sep filename)
 
   file-open Output_file
-  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality" "start_maths" "ability" "inattentiveness" )
+  file-print csv:to-row (list "id" "class" "end_maths" "Teach-control" "Teach-quality" "start_maths" "ability" "inattentiveness" "deprivation" )
   file-close
 
 end
