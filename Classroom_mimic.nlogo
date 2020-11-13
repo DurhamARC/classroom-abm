@@ -339,14 +339,27 @@ To go ; needs adjustment of the random parameters
             [
               ;if patch is yellow change to red if 6 neighbours or more are red
               ask patch-here [
-                if (count neighbors with [pcolor = red]) > 5 [set pcolor red]
+                (ifelse
+                  (count neighbors with [pcolor = red]) > 5 [
+                    set pcolor red
+                  ]
+                  (count neighbors with [pcolor = green]) > 5 [
+                    set pcolor green
+                  ]
+                )
               ]
             ]
           )
         ]
         pcolor = red [
-          ;  disruptive to passive if control is good at random
-          if ((Random Random_select) + 1) < Teach-control [set pcolor yellow]
+          ; disruptive to passive if:
+          ;  * control is good at random
+          ;  * 3 or more neighbours are green
+          ask patch-here [
+            if (count neighbors with [pcolor = green] ) > 2 or (((Random Random_select) + 1) < Teach-control) [
+              set pcolor yellow
+            ]
+          ]
         ]
       )
     ]
