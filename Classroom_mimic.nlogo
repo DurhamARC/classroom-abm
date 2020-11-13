@@ -312,25 +312,44 @@ To go ; needs adjustment of the random parameters
       ];
     ]
 
-    ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
-    ;   If teaching is good  If attentiveness is good
-    ask students [if  ((((Random Random_select) + 1) < Teach-quality) and ((Random Random_select) + 1) > inattentiveness and pcolor = yellow) [
-      ask patch-here [set pcolor green]
-    ]]
-    ; change from attentive to  passive (yellow) at random but more likely if the teaching quality is low
-    ask patches [if ((((Random Random_select) + 1) > Teach-quality) and pcolor = green ) [set pcolor yellow]]
-    ; be distruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high (is the > sign right?
-    ask students [if ((((Random Random_select) + 1) > Teach-control ) and Random Random_select > (hyper_impulsive + 1) and pcolor = yellow) [
-      ask patch-here [set pcolor red]
-    ]]
-    ;  disruptive to passive if control is good at random
-    ask patches [if (( ((Random Random_select) + 1) < Teach-control) and pcolor = red) [set pcolor yellow]]
-    ;if patch is green change to yellow if 3 neighboiurs or more are red
-    ask patches [if ((count neighbors with [pcolor = red] ) > 2  and pcolor = green)
-      [set pcolor yellow]]
-    ;if patch is yellow change to red if 6 neighbours or more are red
-    ask patches [if ((count neighbors with [pcolor = red])  > 5  and pcolor = yellow)
-      [set pcolor red]]
+    ask students [
+      (ifelse
+        pcolor = green [
+          ;if patch is green change to yellow if:
+          ;  * 3 neighbours or more are red
+          ;  * at random but more likely if the teaching quality is low
+          ask patch-here [
+            if ((count neighbors with [pcolor = red] ) > 2 or ((Random Random_select) + 1) > Teach-quality) [
+              set pcolor yellow
+            ]
+          ]
+        ]
+        pcolor = yellow [
+          (ifelse
+            ; be distruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high (is the > sign right?
+            ((Random Random_select) + 1) > Teach-control and (Random Random_select) > (hyper_impulsive + 1) [
+              set pcolor red
+            ]
+            ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
+            ;   If teaching is good  If attentiveness is good
+            ((Random Random_select) + 1) < Teach-quality and ((Random Random_select) + 1) > inattentiveness [
+              set pcolor green
+            ]
+            ; else
+            [
+              ;if patch is yellow change to red if 6 neighbours or more are red
+              ask patch-here [
+                if (count neighbors with [pcolor = red]) > 5 [set pcolor red]
+              ]
+            ]
+          )
+        ]
+        pcolor = red [
+          ;  disruptive to passive if control is good at random
+          if ((Random Random_select) + 1) < Teach-control [set pcolor yellow]
+        ]
+      )
+    ]
   ]
   ask students [learn]  ; learn
   tick
