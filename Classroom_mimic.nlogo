@@ -405,7 +405,7 @@ to learn
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
-    if (pcolor = green) [set end_maths end_maths + School_learn_factor * (((random-normal ((5 + ability) / 2000) .08) ) + ((random-normal (5 / 2000) .08) )  )] ;
+    if (pcolor = green) [set end_maths end_maths + School_learn_factor * ((2.0 * (random-normal ((5 + ability) / 2500) .04) ) + (0.0 * (random-normal (5 / 2000) .08) )  )] ;
     ; adjusted the above to include an increment which does not depend on ability just random
   ] [
     ; by getting older maths changes
