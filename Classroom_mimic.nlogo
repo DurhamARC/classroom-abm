@@ -11,7 +11,7 @@ Globals [
   Total_ticks Ticks_per_day Ticks_per_school_day Holiday_week_numbers
   Current_week Current_day Current_day_of_week Is_school_time
   School_learn_factor Home_learn_factor
-  School_learn_mean_divisor School_learn_sd
+  School_learn_mean_divisor School_learn_sd School_learn_random_proportion
   Total_start_maths Total_end_maths Total_students
 ]
 
@@ -31,8 +31,9 @@ to initial-setup
 
   set School_learn_factor 0.12
   set Home_learn_factor 0.0043
-  set School_learn_mean_divisor 2500
+  set School_learn_mean_divisor 1250
   set School_learn_sd 0.04
+  set School_learn_random_proportion 0.2
 end
 
 to finish-setup
@@ -77,7 +78,7 @@ to setup-experiment ; for use in BehaviorSpace
   let tmp_vars (list
     Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday
     Number_of_groups Group_by School_learn_factor Home_learn_factor
-    School_learn_mean_divisor School_learn_sd)
+    School_learn_mean_divisor School_learn_sd School_learn_random_proportion)
   initial-setup
 
   set Input_file item 0 tmp_vars
@@ -91,6 +92,7 @@ to setup-experiment ; for use in BehaviorSpace
   set Home_learn_factor item 8 tmp_vars
   set School_learn_mean_divisor item 9 tmp_vars
   set School_learn_sd item 10 tmp_vars
+  set School_learn_random_proportion item 11 tmp_vars
 
   read-patches-from-csv
 
@@ -427,7 +429,11 @@ to learn
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
-    if (pcolor = green) [set end_maths end_maths + School_learn_factor * ((2.0 * (random-normal ((5 + ability) / School_learn_mean_divisor) School_learn_sd) ) + (0.0 * (random-normal (5 / School_learn_mean_divisor) School_learn_sd) )  )] ;
+    if (pcolor = green) [
+      let ability_increment (1 - School_learn_random_proportion) * (random-normal ((5 + ability) / School_learn_mean_divisor) School_learn_sd)
+      let random_increment        School_learn_random_proportion * (random-normal (5 / School_learn_mean_divisor) School_learn_sd)
+      set end_maths end_maths + School_learn_factor * (ability_increment + random_increment)
+    ]
     ; adjusted the above to include an increment which does not depend on ability just random
   ] [
     ; by getting older maths changes
@@ -442,8 +448,8 @@ end
 GRAPHICS-WINDOW
 273
 67
-745
-437
+747
+438
 -1
 -1
 51.8
@@ -1053,12 +1059,15 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="0.5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_mean_divisor">
-      <value value="2250"/>
+      <value value="1250"/>
+      <value value="1500"/>
       <value value="2500"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_sd">
-      <value value="0.02"/>
       <value value="0.04"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="School_learn_random_proportion">
+      <value value="0"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
