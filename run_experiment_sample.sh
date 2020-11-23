@@ -1,22 +1,18 @@
 #!/bin/bash
 
 # Request resources:
+#SBATCH -n 4          # 4 CPU cores
 #SBATCH --mem=1G      # 1 GB RAM
-#SBATCH --cpus-per-task=1
-#SBATCH --nodes=1
-#SBATCH --mail-user=alison.r.clarke@durham.ac.uk
-#SBATCH --mail-type=ALL
-#SBATCH --time=6:0:0  # time (hours:minutes:seconds)
+#SBATCH --time=0:15:0  # time (hours:minutes:seconds)
 
 # Run on the queue for serial ("sequential") work
 # (job will share node with other jobs)
-#SBATCH -p par6.q
+#SBATCH -p test.q
 
 module load java/1.8.0
 
 # Commands to be run:
 ../NetLogo\ 6.1.1/netlogo-headless.sh --model Classroom_mimic.nlogo \
-  --setup-file experiment4runs.xml \
+  --setup-file experiment.xml \
   --experiment experiment \
-  --table experiment.csv \
-  --threads 4
+  --table experiment.csv
