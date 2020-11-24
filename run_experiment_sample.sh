@@ -15,4 +15,4 @@ module load java/1.8.0
 ../NetLogo\ 6.1.1/netlogo-headless.sh --model Classroom_mimic.nlogo \
   --setup-file experiment.xml \
   --experiment experiment \
-  --table experiment.csv
+  --table classes_output/experiment`date +%Y-%m-%d_%H%M%S`.csv
