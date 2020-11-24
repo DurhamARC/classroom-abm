@@ -1,12 +1,11 @@
 #!/bin/bash
 
 # Request resources:
-#SBATCH --mem=1G      # 1 GB RAM
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=4
 #SBATCH --nodes=1
 #SBATCH --mail-user=alison.r.clarke@durham.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --time=6:0:0  # time (hours:minutes:seconds)
+#SBATCH --time=10:0:0  # time (hours:minutes:seconds)
 
 # Run on the queue for serial ("sequential") work
 # (job will share node with other jobs)
