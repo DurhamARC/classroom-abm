@@ -1079,10 +1079,10 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="&quot;Ability&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_factor">
-      <value value="0.27"/>
+      <value value="0.12"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Home_learn_factor">
-      <value value="0.5"/>
+      <value value="0.0043"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_mean_divisor">
       <value value="2250"/>
