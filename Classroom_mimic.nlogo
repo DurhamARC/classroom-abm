@@ -326,8 +326,8 @@ To go ; needs adjustment of the random parameters
         ]
         pcolor = yellow [
           (ifelse
-            ; be distruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high (is the > sign right?
-            ((Random Random_select) + 1) > Teach-control and (Random Random_select) > (hyper_impulsive + 1) [
+            ; be disruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high
+            ((Random Random_select) + 1) > Teach-control and ((Random Random_select) + 1) < hyper_impulsive [
               set pcolor red
             ]
             ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
