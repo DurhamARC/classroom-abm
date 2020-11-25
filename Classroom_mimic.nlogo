@@ -1,4 +1,4 @@
-extensions [ csv pathdir time ]
+extensions [ csv pathdir time stats]
 
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
@@ -12,7 +12,7 @@ Globals [
   Current_week Current_day Current_day_of_week Is_school_time
   School_learn_factor Home_learn_factor
   School_learn_mean_divisor School_learn_sd School_learn_random_proportion
-  Total_start_maths Total_end_maths Total_students
+  Student_table End_maths_correlations
 ]
 
 
@@ -45,6 +45,10 @@ to finish-setup
   create-output-file
 
   calculate-holidays
+
+  set Student_table stats:newtable
+  stats:set-names Student_table ["end_maths" "start_maths" "inattentiveness" "ability" "deprivation"]
+
 
 end
 
@@ -362,22 +366,38 @@ to export-results ; export current results
   file-open Output_file
   ask students [
     file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
+    ; add to table
+    stats:add Student_table (list end_maths start_maths inattentiveness ability deprivation)
   ]
   file-close
 
-  ; add to totals
-  set Total_start_maths (Total_start_maths + Sum [start_maths] of students)
-  set Total_end_maths (Total_end_maths + Sum [end_maths] of students)
-  set Total_students (Total_students + count students)
+  ; recalculate correlations for full data set
+  set End_maths_correlations (first stats:correlation Student_table)
 
-end
-
-to-report mean-start-maths
-  report Total_start_maths / Total_students
 end
 
 to-report mean-end-maths
-  report Total_end_maths / Total_students
+  report mean stats:get-observations Student_table "end_maths"
+end
+
+to-report sd-end-maths
+  report standard-deviation stats:get-observations Student_table "end_maths"
+end
+
+to-report correlation-start-maths
+  report item 1 End_maths_correlations
+end
+
+to-report correlation-inattentiveness
+  report item 2 End_maths_correlations
+end
+
+to-report correlation-ability
+  report item 3 End_maths_correlations
+end
+
+to-report correlation-deprivation
+  report item 4 End_maths_correlations
 end
 
 to create-output-file ; generate filename and create blank output file
@@ -1029,13 +1049,17 @@ NetLogo 6.1.1
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>mean-start-maths</metric>
     <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input_short.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
-      <value value="&quot;All&quot;"/>
+      <value value="1122"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Random_select">
       <value value="5"/>
@@ -1045,6 +1069,7 @@ Holiday_week_numbers = 0</exitCondition>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Weeks_per_holiday">
       <value value="2"/>
+      <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Number_of_groups">
       <value value="4"/>
@@ -1059,8 +1084,6 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="0.5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_mean_divisor">
-      <value value="1250"/>
-      <value value="1500"/>
       <value value="2500"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_sd">
@@ -1068,6 +1091,7 @@ Holiday_week_numbers = 0</exitCondition>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_random_proportion">
       <value value="0"/>
+      <value value="1"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
