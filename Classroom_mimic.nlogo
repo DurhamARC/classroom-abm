@@ -1,4 +1,4 @@
-extensions [ csv pathdir time ]
+extensions [ csv pathdir time stats]
 
 ; data important from the PIPS project
 breed [teachers teacher]  ; One type ofperson teachers
@@ -6,13 +6,14 @@ Breed [ students student] ; another type is students
 Students-own [id inattentiveness hyper_impulsive start_maths end_maths ability deprivation]
 Globals [
   Teach-control Teach-quality
+  Teach_control_mean Teach_quality_mean
   Current Current_class_id Chosen_class Number_of_classes
   Input_file Output_file Class_list Students_by_class
   Total_ticks Ticks_per_day Ticks_per_school_day Holiday_week_numbers
   Current_week Current_day Current_day_of_week Is_school_time
   School_learn_factor Home_learn_factor
-  School_learn_mean_divisor School_learn_sd
-  Total_start_maths Total_end_maths Total_students
+  School_learn_mean_divisor School_learn_sd School_learn_random_proportion
+  Student_table End_maths_correlations
 ]
 
 
@@ -31,8 +32,11 @@ to initial-setup
 
   set School_learn_factor 0.12
   set Home_learn_factor 0.0043
-  set School_learn_mean_divisor 2500
+  set School_learn_mean_divisor 1250
   set School_learn_sd 0.04
+  set School_learn_random_proportion 0.2
+  set Teach_control_mean 3.5
+  set Teach_quality_mean 3.5
 end
 
 to finish-setup
@@ -44,6 +48,10 @@ to finish-setup
   create-output-file
 
   calculate-holidays
+
+  set Student_table stats:newtable
+  stats:set-names Student_table ["end_maths" "start_maths" "inattentiveness" "ability" "deprivation"]
+
 
 end
 
@@ -77,7 +85,9 @@ to setup-experiment ; for use in BehaviorSpace
   let tmp_vars (list
     Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday
     Number_of_groups Group_by School_learn_factor Home_learn_factor
-    School_learn_mean_divisor School_learn_sd)
+    School_learn_mean_divisor School_learn_sd School_learn_random_proportion
+    Teach_control_mean Teach_quality_mean
+  )
   initial-setup
 
   set Input_file item 0 tmp_vars
@@ -91,6 +101,9 @@ to setup-experiment ; for use in BehaviorSpace
   set Home_learn_factor item 8 tmp_vars
   set School_learn_mean_divisor item 9 tmp_vars
   set School_learn_sd item 10 tmp_vars
+  set School_learn_random_proportion item 11 tmp_vars
+  set Teach_control_mean item 12 tmp_vars
+  set Teach_quality_mean item 13 tmp_vars
 
   read-patches-from-csv
 
@@ -123,12 +136,12 @@ to reset-all ; But make sure not to call clear-all, as this also clears the glob
   ; Focus on maths and start with the maths levels on starting school
 
   ; changemean to 4 and sd to 1.4 Then 4, 1.0, The  4.0 0.8: changing the SD does not seem to make a difference except to incresase the correlation with start maths
-  set Teach-quality  (random-normal 3.5  1.5)
+  set Teach-quality  (random-normal Teach_quality_mean  1.5)
   ; make sure quality does not go below 1
   ;if (Teach-quality < 1) [set Teach-quality 1]
   ; put a limit on quality
   ;if (Teach-quality > 5) [set Teach-quality 5]
-  set Teach-control  (random-normal 3.5  1.1)
+  set Teach-control  (random-normal Teach_control_mean  1.1)
   ; make sure control does not go below 1
   ;if (Teach-control < 1) [set Teach-control 1]
   ; put a limit on control
@@ -312,25 +325,57 @@ To go ; needs adjustment of the random parameters
       ];
     ]
 
-    ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
-    ;   If teaching is good  If attentiveness is good
-    ask students [if  ((((Random Random_select) + 1) < Teach-quality) and ((Random Random_select) + 1) > inattentiveness and pcolor = yellow) [
-      ask patch-here [set pcolor green]
-    ]]
-    ; change from attentive to  passive (yellow) at random but more likely if the teaching quality is low
-    ask patches [if ((((Random Random_select) + 1) > Teach-quality) and pcolor = green ) [set pcolor yellow]]
-    ; be distruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high (is the > sign right?
-    ask students [if ((((Random Random_select) + 1) > Teach-control ) and Random Random_select > (hyper_impulsive + 1) and pcolor = yellow) [
-      ask patch-here [set pcolor red]
-    ]]
-    ;  disruptive to passive if control is good at random
-    ask patches [if (( ((Random Random_select) + 1) < Teach-control) and pcolor = red) [set pcolor yellow]]
-    ;if patch is green change to yellow if 3 neighboiurs or more are red
-    ask patches [if ((count neighbors with [pcolor = red] ) > 2  and pcolor = green)
-      [set pcolor yellow]]
-    ;if patch is yellow change to red if 6 neighbours or more are red
-    ask patches [if ((count neighbors with [pcolor = red])  > 5  and pcolor = yellow)
-      [set pcolor red]]
+    ask students [
+      (ifelse
+        pcolor = green [
+          ;if patch is green change to yellow if:
+          ;  * 3 neighbours or more are red
+          ;  * at random but more likely if the teaching quality is low
+          ask patch-here [
+            if ((count neighbors with [pcolor = red] ) > 2 or ((Random Random_select) + 1) > Teach-quality) [
+              set pcolor yellow
+            ]
+          ]
+        ]
+        pcolor = yellow [
+          (ifelse
+            ; be disruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high
+            ((Random Random_select) + 1) > Teach-control and ((Random Random_select) + 1) < hyper_impulsive [
+              set pcolor red
+            ]
+            ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
+            ;   If teaching is good  If attentiveness is good
+            ((Random Random_select) + 1) < Teach-quality and ((Random Random_select) + 1) > inattentiveness [
+              set pcolor green
+            ]
+            ; else
+            [
+              ;if patch is yellow change to red if 6 neighbours or more are red
+              ask patch-here [
+                (ifelse
+                  (count neighbors with [pcolor = red]) > 5 [
+                    set pcolor red
+                  ]
+                  (count neighbors with [pcolor = green]) > 5 [
+                    set pcolor green
+                  ]
+                )
+              ]
+            ]
+          )
+        ]
+        pcolor = red [
+          ; disruptive to passive if:
+          ;  * control is good at random
+          ;  * 3 or more neighbours are green
+          ask patch-here [
+            if (count neighbors with [pcolor = green] ) > 2 or (((Random Random_select) + 1) < Teach-control) [
+              set pcolor yellow
+            ]
+          ]
+        ]
+      )
+    ]
   ]
   ask students [learn]  ; learn
   tick
@@ -360,22 +405,38 @@ to export-results ; export current results
   file-open Output_file
   ask students [
     file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
+    ; add to table
+    stats:add Student_table (list end_maths start_maths inattentiveness ability deprivation)
   ]
   file-close
 
-  ; add to totals
-  set Total_start_maths (Total_start_maths + Sum [start_maths] of students)
-  set Total_end_maths (Total_end_maths + Sum [end_maths] of students)
-  set Total_students (Total_students + count students)
+  ; recalculate correlations for full data set
+  set End_maths_correlations (first stats:correlation Student_table)
 
-end
-
-to-report mean-start-maths
-  report Total_start_maths / Total_students
 end
 
 to-report mean-end-maths
-  report Total_end_maths / Total_students
+  report mean stats:get-observations Student_table "end_maths"
+end
+
+to-report sd-end-maths
+  report standard-deviation stats:get-observations Student_table "end_maths"
+end
+
+to-report correlation-start-maths
+  report item 1 End_maths_correlations
+end
+
+to-report correlation-inattentiveness
+  report item 2 End_maths_correlations
+end
+
+to-report correlation-ability
+  report item 3 End_maths_correlations
+end
+
+to-report correlation-deprivation
+  report item 4 End_maths_correlations
 end
 
 to create-output-file ; generate filename and create blank output file
@@ -427,7 +488,11 @@ to learn
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
-    if (pcolor = green) [set end_maths end_maths + School_learn_factor * ((2.0 * (random-normal ((5 + ability) / School_learn_mean_divisor) School_learn_sd) ) + (0.0 * (random-normal (5 / 2000) .08) )  )] ;
+    if (pcolor = green) [
+      let ability_increment (1 - School_learn_random_proportion) * (random-normal ((5 + ability) / School_learn_mean_divisor) School_learn_sd)
+      let random_increment        School_learn_random_proportion * (random-normal (5 / School_learn_mean_divisor) School_learn_sd)
+      set end_maths end_maths + School_learn_factor * (ability_increment + random_increment)
+    ]
     ; adjusted the above to include an increment which does not depend on ability just random
   ] [
     ; by getting older maths changes
@@ -442,7 +507,7 @@ end
 GRAPHICS-WINDOW
 273
 67
-746
+747
 438
 -1
 -1
@@ -1023,10 +1088,14 @@ NetLogo 6.1.1
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>mean-start-maths</metric>
     <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/test_input_short.csv&quot;"/>
+      <value value="&quot;classes_input/ABM ten classes size adjusted.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>
@@ -1047,18 +1116,23 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="&quot;Ability&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_factor">
-      <value value="0.27"/>
+      <value value="0.12"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Home_learn_factor">
-      <value value="0.5"/>
+      <value value="0.0043"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_mean_divisor">
-      <value value="2250"/>
-      <value value="2500"/>
+      <value value="1250"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_sd">
-      <value value="0.02"/>
       <value value="0.04"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="School_learn_random_proportion">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="Teach_control_mean" first="3" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_quality_mean">
+      <value value="3.5"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
