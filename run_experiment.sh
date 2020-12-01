@@ -2,7 +2,6 @@
 
 # Request resources:
 #SBATCH --nodes=1
-#SBATCH --mail-user=alison.r.clarke@durham.ac.uk
 #SBATCH --mail-type=ALL
 #SBATCH --time=10:0:0  # time (hours:minutes:seconds)
 
