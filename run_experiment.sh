@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Request resources:
-#SBATCH --cpus-per-task=4
 #SBATCH --nodes=1
 #SBATCH --mail-user=alison.r.clarke@durham.ac.uk
 #SBATCH --mail-type=ALL
@@ -15,7 +14,7 @@ module load java/1.8.0
 
 # Commands to be run:
 ../NetLogo\ 6.1.1/netlogo-headless.sh --model Classroom_mimic.nlogo \
-  --setup-file experiment4runs.xml \
+  --setup-file experiment-files/experiment4runs.xml \
   --experiment experiment \
   --table classes_output/experiment`date +%Y-%m-%d_%H%M%S`.csv \
-  --threads 4
+  --threads 16
