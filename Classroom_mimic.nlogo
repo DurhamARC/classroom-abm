@@ -6,6 +6,7 @@ Breed [ students student] ; another type is students
 Students-own [id inattentiveness hyper_impulsive start_maths end_maths ability deprivation]
 Globals [
   Teach-control Teach-quality
+  Teach_control_mean Teach_quality_mean
   Current Current_class_id Chosen_class Number_of_classes
   Input_file Output_file Class_list Students_by_class
   Total_ticks Ticks_per_day Ticks_per_school_day Holiday_week_numbers
@@ -34,6 +35,8 @@ to initial-setup
   set School_learn_mean_divisor 1250
   set School_learn_sd 0.04
   set School_learn_random_proportion 0.2
+  set Teach_control_mean 3.5
+  set Teach_quality_mean 3.5
 end
 
 to finish-setup
@@ -82,7 +85,9 @@ to setup-experiment ; for use in BehaviorSpace
   let tmp_vars (list
     Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday
     Number_of_groups Group_by School_learn_factor Home_learn_factor
-    School_learn_mean_divisor School_learn_sd School_learn_random_proportion)
+    School_learn_mean_divisor School_learn_sd School_learn_random_proportion
+    Teach_control_mean Teach_quality_mean
+  )
   initial-setup
 
   set Input_file item 0 tmp_vars
@@ -97,6 +102,8 @@ to setup-experiment ; for use in BehaviorSpace
   set School_learn_mean_divisor item 9 tmp_vars
   set School_learn_sd item 10 tmp_vars
   set School_learn_random_proportion item 11 tmp_vars
+  set Teach_control_mean item 12 tmp_vars
+  set Teach_quality_mean item 13 tmp_vars
 
   read-patches-from-csv
 
@@ -129,12 +136,12 @@ to reset-all ; But make sure not to call clear-all, as this also clears the glob
   ; Focus on maths and start with the maths levels on starting school
 
   ; changemean to 4 and sd to 1.4 Then 4, 1.0, The  4.0 0.8: changing the SD does not seem to make a difference except to incresase the correlation with start maths
-  set Teach-quality  (random-normal 3.5  1.5)
+  set Teach-quality  (random-normal Teach_quality_mean  1.5)
   ; make sure quality does not go below 1
   ;if (Teach-quality < 1) [set Teach-quality 1]
   ; put a limit on quality
   ;if (Teach-quality > 5) [set Teach-quality 5]
-  set Teach-control  (random-normal 3.5  1.1)
+  set Teach-control  (random-normal Teach_control_mean  1.1)
   ; make sure control does not go below 1
   ;if (Teach-control < 1) [set Teach-control 1]
   ; put a limit on control
@@ -1124,6 +1131,10 @@ Holiday_week_numbers = 0</exitCondition>
     <enumeratedValueSet variable="School_learn_random_proportion">
       <value value="0"/>
       <value value="1"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="Teach_control_mean" first="3" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_quality_mean">
+      <value value="3.5"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
