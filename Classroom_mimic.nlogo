@@ -1122,7 +1122,7 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="0.0043"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_mean_divisor">
-      <value value="2500"/>
+      <value value="1250"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_sd">
       <value value="0.04"/>
