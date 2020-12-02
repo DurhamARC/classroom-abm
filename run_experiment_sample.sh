@@ -8,7 +8,7 @@
 
 # Run on the queue for serial ("sequential") work
 # (job will share node with other jobs)
-#SBATCH -p par6.q
+#SBATCH -p par7.q
 
 module load java/1.8.0
 
@@ -17,4 +17,4 @@ module load java/1.8.0
   --setup-file experiment-files/experiment-sample.xml \
   --experiment experiment \
   --table classes_output/experiment`date +%Y-%m-%d_%H%M%S`.csv \
-  --threads 16
+  --threads 24
