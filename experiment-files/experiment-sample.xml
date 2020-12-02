@@ -1,5 +1,5 @@
 <experiments>
-<experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
+<experiment name="experiment" repetitions="3" runMetricsEveryStep="false">
   <setup>setup-experiment</setup>
   <go>go</go>
   <exitCondition>Ticks_per_day = 0 or
@@ -37,10 +37,10 @@ Holiday_week_numbers = 0</exitCondition>
   <enumeratedValueSet variable="Home_learn_factor">
     <value value="0.0043"/>
   </enumeratedValueSet>
-  <steppedValueSet variable="School_learn_mean_divisor" first="1200" step="50" last="1300"/>
-  <steppedValueSet variable="School_learn_sd" first="0.03" step="0.01" last="0.05"/>
-  <steppedValueSet variable="School_learn_random_proportion" first="0" step="0.2" last="1"/>
-  <steppedValueSet variable="Teach_control_mean" first="2.5" step="0.5" last="4.5"/>
-  <steppedValueSet variable="Teach_quality_mean" first="2.5" step="0.5" last="4.5"/>
+  <steppedValueSet variable="School_learn_mean_divisor" first="1250" step="50" last="1300"/>
+  <steppedValueSet variable="School_learn_sd" first="0.03" step="0.01" last="0.04"/>
+  <steppedValueSet variable="School_learn_random_proportion" first="0.4" step="0.2" last="0.8"/>
+  <steppedValueSet variable="Teach_control_mean" first="2" step="0.5" last="4"/>
+  <steppedValueSet variable="Teach_quality_mean" first="3" step="0.5" last="4"/>
 </experiment>
 </experiments>
