@@ -40,5 +40,6 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="0.02"/>
       <value value="0.04"/>
     </enumeratedValueSet>
+    <steppedValueSet variable="Ticks_per_school_day" first="170" step="40" last="330">
   </experiment>
 </experiments>
