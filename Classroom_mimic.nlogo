@@ -47,13 +47,14 @@ to finish-setup
 
   ask students [set end_maths start_maths]
 
-  create-output-file
-
   calculate-holidays
 
-  set Student_table stats:newtable
-  stats:set-names Student_table ["end_maths" "start_maths" "inattentiveness" "ability" "deprivation"]
-
+  ifelse behaviorspace-run-number = 0 [
+    create-output-file
+  ][
+    set Student_table stats:newtable
+    stats:set-names Student_table ["end_maths" "start_maths" "inattentiveness" "ability" "deprivation"]
+  ]
 
 end
 
@@ -404,17 +405,21 @@ end
 
 to export-results ; export current results
 
-  ; export patches to csv
-  file-open Output_file
-  ask students [
-    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
-    ; add to table
-    stats:add Student_table (list end_maths start_maths inattentiveness ability deprivation)
+  ifelse behaviorspace-run-number = 0 [
+    ; export patches to csv
+    file-open Output_file
+    ask students [
+      file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
+    ]
+    file-close
+  ][
+    ask students [
+      ; add to table
+      stats:add Student_table (list end_maths start_maths inattentiveness ability deprivation)
+    ]
+    ; recalculate correlations for full data set
+    set End_maths_correlations (first stats:correlation Student_table)
   ]
-  file-close
-
-  ; recalculate correlations for full data set
-  set End_maths_correlations (first stats:correlation Student_table)
 
 end
 
