@@ -4,8 +4,12 @@
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>mean-start-maths</metric>
     <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
@@ -50,8 +54,12 @@ Holiday_week_numbers = 0</exitCondition>
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>mean-start-maths</metric>
     <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
@@ -96,8 +104,12 @@ Holiday_week_numbers = 0</exitCondition>
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>mean-start-maths</metric>
     <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
@@ -142,8 +154,12 @@ Holiday_week_numbers = 0</exitCondition>
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>mean-start-maths</metric>
     <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
@@ -188,8 +204,12 @@ Holiday_week_numbers = 0</exitCondition>
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>mean-start-maths</metric>
     <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
@@ -234,8 +254,12 @@ Holiday_week_numbers = 0</exitCondition>
     <go>go</go>
     <exitCondition>Ticks_per_day = 0 or
 Holiday_week_numbers = 0</exitCondition>
-    <metric>mean-start-maths</metric>
     <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
       <value value="&quot;classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
