@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Request resources:
-#SBATCH --nodes=1
+#SBATCH -n 1
 #SBATCH --mail-type=ALL
-#SBATCH --time=24:0:0 # time (hours:minutes:seconds)
+#SBATCH --time=0:5:0 # time (hours:minutes:seconds)
 
 # Run on the queue for serial ("sequential") work
 # (job will share node with other jobs)
-#SBATCH -p par7.q
-#SBATCH --array=1-6
+#SBATCH -p test.q
+#SBATCH --array=1-2
 
 module load java/1.8.0
 
@@ -17,4 +17,4 @@ module load java/1.8.0
   --setup-file experiment-files/experiment.xml \
   --experiment experiment${SLURM_ARRAY_TASK_ID} \
   --table classes_output/experiment${SLURM_ARRAY_TASK_ID}-`date +%Y-%m-%d_%H%M%S`.csv \
-  --threads 24
+  --threads 1
