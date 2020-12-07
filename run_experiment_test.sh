@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Request resources:
-#SBATCH -n 1
 #SBATCH --mail-type=ALL
 #SBATCH --time=0:5:0 # time (hours:minutes:seconds)
 
