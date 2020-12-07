@@ -16,5 +16,5 @@ module load java/1.8.0
 ../NetLogo\ 6.1.1/netlogo-headless.sh --model Classroom_mimic.nlogo \
   --setup-file experiment-files/experiment.xml \
   --experiment experiment${SLURM_ARRAY_TASK_ID} \
-  --table classes_output/experiment${SLURM_ARRAY_TASK_ID}-`date +%Y-%m-%d_%H%M%S`.csv \
+  --table classes_output/experiment-`date +%Y-%m-%d_%H%M%S`-${SLURM_JOB_ID}-${SLURM_ARRAY_TASK_ID}-.csv \
   --threads 1
