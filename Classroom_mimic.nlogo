@@ -32,16 +32,16 @@ to initial-setup
 
   set School_learn_factor 0.12
   set Home_learn_factor 0.0043
-  set School_learn_mean_divisor 1250
+  set School_learn_mean_divisor 800
   set School_learn_sd 0.04
   set School_learn_random_proportion 0.2
   set Teach_control_mean 3.5
   set Teach_quality_mean 3.5
-  set Ticks_per_school_day 330 ; 5.5 hours * 60 minutes
+  set Ticks_per_school_day 100 ; 5.5 hours * 60 minutes
 
 end
 
-to finish-setup
+to finish-setup ; put in three semi-colons below
 
   read-data
 
@@ -49,12 +49,12 @@ to finish-setup
 
   calculate-holidays
 
-  ifelse behaviorspace-run-number = 0 [
+  ;ifelse behaviorspace-run-number = 0 [
     create-output-file
-  ][
+  ;][
     set Student_table stats:newtable
     stats:set-names Student_table ["end_maths" "start_maths" "inattentiveness" "ability" "deprivation"]
-  ]
+  ;]
 
 end
 
@@ -141,12 +141,16 @@ to reset-all ; But make sure not to call clear-all, as this also clears the glob
   ; Focus on maths and start with the maths levels on starting school
 
   ; changemean to 4 and sd to 1.4 Then 4, 1.0, The  4.0 0.8: changing the SD does not seem to make a difference except to incresase the correlation with start maths
-  set Teach-quality  (random-normal Teach_quality_mean  1.5)
+  ; drop both SDs below to a tenth
+  ; goon too far so multply each by 5 to take it to half of theoriginal
+  ; no good double and back to the original!
+  ; now double again!
+  set Teach-quality  (random-normal Teach_quality_mean  1.26)
   ; make sure quality does not go below 1
   ;if (Teach-quality < 1) [set Teach-quality 1]
   ; put a limit on quality
   ;if (Teach-quality > 5) [set Teach-quality 5]
-  set Teach-control  (random-normal Teach_control_mean  1.1)
+  set Teach-control  (random-normal Teach_control_mean  1.08)
   ; make sure control does not go below 1
   ;if (Teach-control < 1) [set Teach-control 1]
   ; put a limit on control
@@ -335,26 +339,29 @@ To go ; needs adjustment of the random parameters
           ;if patch is green change to yellow if:
           ;  * 3 neighbours or more are red
           ;  * at random but more likely if the teaching quality is low
+          ; QUERY: should this be an AND not OR? Made change 28_12_20 change back 29/12/20
           ask patch-here [
             if ((count neighbors with [pcolor = red] ) > 2 or ((Random Random_select) + 1) > Teach-quality) [
               set pcolor yellow
             ]
           ]
         ]
+        ; QUERY similarly should OR be AND? made chnage 28_12_20 changed back 29/12/20
         pcolor = yellow [
           (ifelse
             ; be disruptive (red) at random if already passive (yellow) more likely if control is low and hyper-impulsive is high
-            ((Random Random_select) + 1) > Teach-control and ((Random Random_select) + 1) < hyper_impulsive [
+            ((Random Random_select) + 1) > Teach-control or ((Random Random_select) + 1) < hyper_impulsive [
               set pcolor red
             ]
             ; start teaching and passive students switch to learning mode (green) if teaching is good and they are not too inattentive
             ;   If teaching is good  If attentiveness is good
-            ((Random Random_select) + 1) < Teach-quality and ((Random Random_select) + 1) > inattentiveness [
+            ((Random Random_select) + 1) < Teach-quality or ((Random Random_select) + 1) > inattentiveness [
               set pcolor green
             ]
             ; else
             [
               ;if patch is yellow change to red if 6 neighbours or more are red
+              ; QUERY: should this include some randomness?
               ask patch-here [
                 (ifelse
                   (count neighbors with [pcolor = red]) > 5 [
@@ -372,6 +379,7 @@ To go ; needs adjustment of the random parameters
           ; disruptive to passive if:
           ;  * control is good at random
           ;  * 3 or more neighbours are green
+          ; QUERY should or be AND? Made chnage 28_12_20 changed back 29/12/20
           ask patch-here [
             if (count neighbors with [pcolor = green] ) > 2 or (((Random Random_select) + 1) < Teach-control) [
               set pcolor yellow
@@ -403,23 +411,23 @@ To go ; needs adjustment of the random parameters
   ]
 end
 
-to export-results ; export current results
+to export-results ; export current results added ;
 
-  ifelse behaviorspace-run-number = 0 [
+ ; ifelse behaviorspace-run-number = 0 [
     ; export patches to csv
     file-open Output_file
     ask students [
       file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
     ]
     file-close
-  ][
+ ; ] [
     ask students [
       ; add to table
       stats:add Student_table (list end_maths start_maths inattentiveness ability deprivation)
     ]
     ; recalculate correlations for full data set
     set End_maths_correlations (first stats:correlation Student_table)
-  ]
+  ;]
 
 end
 
@@ -447,11 +455,11 @@ to-report correlation-deprivation
   report item 4 End_maths_correlations
 end
 
-to create-output-file ; generate filename and create blank output file
+to create-output-file ; change to give outfile ; generate filename and create blank output file
 
   if (not pathdir:isDirectory? "classes_output")[
     pathdir:create "classes_output"
-  ]
+   ]
 
   let date time:create ""
   let filename (word "output" (time:show date "yyyy-MM-dd_HHmmss-") behaviorspace-run-number ".csv")
@@ -496,9 +504,10 @@ to learn
     ; ability is zscore of factor weightted average of vocab, maths & reading
     ;  incrementing gain X 2 does not make a massive difference
     ; tried changing SD below from .1 to 0.08
+    ; adding a * 0.5 for the random_increment
     if (pcolor = green) [
       let ability_increment (1 - School_learn_random_proportion) * (random-normal ((5 + ability) / School_learn_mean_divisor) School_learn_sd)
-      let random_increment        School_learn_random_proportion * (random-normal (5 / School_learn_mean_divisor) School_learn_sd)
+      let random_increment        School_learn_random_proportion * (random-normal ((0.5 * 5) / School_learn_mean_divisor) School_learn_sd)
       set end_maths end_maths + School_learn_factor * (ability_increment + random_increment)
     ]
     ; adjusted the above to include an increment which does not depend on ability just random
@@ -509,14 +518,18 @@ to learn
     ; add deprivation to a power to reduce its spread
     ; NB the last two rows of code have been adjusted by extensive trial and error on one class to give suitable growth overall and correlations between variables
     ; by getting older ability changes
+    ; degrade the start_maths measure by a random amount on each tock
+   set end_maths end_maths + 0.08 * ((random-float 1) - 0.5); this did not work alone so now in combination with conformity
+    ; try reducing the extremes - pull everyone back to the middle
+    set end_maths mean [end_maths] of students  + 0.999993 * (end_maths - mean [end_maths] of students)
   ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 273
 67
-747
-438
+638
+382
 -1
 -1
 51.8
@@ -530,9 +543,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-8
-0
 6
+0
+5
 1
 1
 1
@@ -603,7 +616,7 @@ Random_select
 Random_select
 5
 6
-5.0
+2.0
 1
 1
 NIL
@@ -681,7 +694,7 @@ INPUTBOX
 125
 228
 Number_of_groups
-4.0
+1.0
 1
 0
 Number
@@ -1103,13 +1116,13 @@ Holiday_week_numbers = 0</exitCondition>
     <metric>correlation-ability</metric>
     <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/ABM ten classes size adjusted.csv&quot;"/>
+      <value value="&quot;classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Random_select">
-      <value value="5"/>
+      <value value="2"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Number_of_holidays">
       <value value="2"/>
@@ -1118,33 +1131,34 @@ Holiday_week_numbers = 0</exitCondition>
       <value value="2"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Number_of_groups">
-      <value value="4"/>
+      <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Group_by">
       <value value="&quot;Ability&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_factor">
-      <value value="0.12"/>
+      <value value="0.03"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Home_learn_factor">
       <value value="0.0043"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_mean_divisor">
-      <value value="1250"/>
+      <value value="475"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_sd">
-      <value value="0.04"/>
+      <value value="0.4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="School_learn_random_proportion">
-      <value value="0.1"/>
+      <value value="0.65"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="Teach_control_mean" first="3" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_control_mean">
+      <value value="3"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="Teach_quality_mean">
-      <value value="3.5"/>
+      <value value="3.7"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Ticks_per_school_day">
-      <value value="150"/>
-      <value value="300"/>
+      <value value="350"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
