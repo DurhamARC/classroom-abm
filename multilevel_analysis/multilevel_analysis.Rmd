@@ -1,0 +1,31 @@
+---
+title: "Recreating multilevel analysis using R2MLwiN"
+author: "Alison Clarke"
+date: "26/03/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Installing R2MLwiN
+
+R2MLwiN is based on MLwiN. To use it:
+
+ 1. Sign up for an academic account at https://www.cmm.bristol.ac.uk/clients/reqform/
+ 2. Download `mlnscript` for MacOS/linux by filling in form at https://www.cmm.bristol.ac.uk/clients/softwaredownload/
+ 3. Open the installer (.dmg, .rpm, etc) and save the files to `/opt/mln`.
+ 
+## Installing R dependencies
+
+You can install the dependencies from `renv.lock` by running `renv::restore()`.
+
+## Running the null model
+
+Run:
+
+```
+source('multilevel_analysis.R')
+```
+
