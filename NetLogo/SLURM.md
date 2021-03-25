@@ -35,7 +35,7 @@ git clone https://github.com/DurhamARC/classroom-abm.git
 
 Edit one of the files in the `experiment-files` directory to make the changes you want in the experiment:
 
-  * `experiment-sample.xml` runs on the sample of 10 classes in `classes_input/ABM ten classes size adjusted.csv`; each run takes only a few minutes, so you can use this to try our many parameter variations at once to narrow down the ranges of parameters to change and values.
+  * `experiment-sample.xml` runs on the sample of 10 classes in `../classes_input/ABM ten classes size adjusted.csv`; each run takes only a few minutes, so you can use this to try our many parameter variations at once to narrow down the ranges of parameters to change and values.
   * `experiment.xml` runs the entire data set; each run takes several hours, so it is recommended to run fewer than 24 runs at once (1 per core on a Hamilton 7 node).
 
 For details of the XML format of experiment files, see the [NetLogo BehaviorSpace Guide](https://ccl.northwestern.edu/netlogo/docs/behaviorspace.html). If you are not sure how to alter the parameters, try making the change in the GUI then search the .nlogo file for `<experiments>` to see the effect of our changes, and copy the change to the relevant file.
