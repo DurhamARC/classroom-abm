@@ -37,6 +37,8 @@ to initial-setup
   set School_learn_random_proportion 0.2
   set Teach_control_mean 3.5
   set Teach_quality_mean 3.5
+  set Ticks_per_school_day 330 ; 5.5 hours * 60 minutes
+
 end
 
 to finish-setup
@@ -45,13 +47,14 @@ to finish-setup
 
   ask students [set end_maths start_maths]
 
-  create-output-file
-
   calculate-holidays
 
-  set Student_table stats:newtable
-  stats:set-names Student_table ["end_maths" "start_maths" "inattentiveness" "ability" "deprivation"]
-
+  ifelse behaviorspace-run-number = 0 [
+    create-output-file
+  ][
+    set Student_table stats:newtable
+    stats:set-names Student_table ["end_maths" "start_maths" "inattentiveness" "ability" "deprivation"]
+  ]
 
 end
 
@@ -86,7 +89,8 @@ to setup-experiment ; for use in BehaviorSpace
     Input_file Chosen_class Random_select Number_of_holidays Weeks_per_holiday
     Number_of_groups Group_by School_learn_factor Home_learn_factor
     School_learn_mean_divisor School_learn_sd School_learn_random_proportion
-    Teach_control_mean Teach_quality_mean
+    Teach_control_mean Teach_quality_mean Ticks_per_school_day
+
   )
   initial-setup
 
@@ -104,6 +108,7 @@ to setup-experiment ; for use in BehaviorSpace
   set School_learn_random_proportion item 11 tmp_vars
   set Teach_control_mean item 12 tmp_vars
   set Teach_quality_mean item 13 tmp_vars
+  set Ticks_per_school_day item 14 tmp_vars
 
   read-patches-from-csv
 
@@ -268,8 +273,7 @@ end
 
 To calculate-holidays
   ; Calculate total ticks including holidays
-  set Ticks_per_day 660 ; 11 hours * 60 minutes
-  set Ticks_per_school_day 330 ; 5.5 hours * 60 minutes
+  set Ticks_per_day 330 + Ticks_per_school_day ; 5.5 hours * 60 minutes at home plus time in school
   let ticks_per_week ticks_per_day * 7
   let total_days 317 ; # days from 1st September to 15th July
 
@@ -401,17 +405,21 @@ end
 
 to export-results ; export current results
 
-  ; export patches to csv
-  file-open Output_file
-  ask students [
-    file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
-    ; add to table
-    stats:add Student_table (list end_maths start_maths inattentiveness ability deprivation)
+  ifelse behaviorspace-run-number = 0 [
+    ; export patches to csv
+    file-open Output_file
+    ask students [
+      file-print csv:to-row (list id Current_class_id end_maths Teach-control Teach-quality start_maths ability inattentiveness deprivation)
+    ]
+    file-close
+  ][
+    ask students [
+      ; add to table
+      stats:add Student_table (list end_maths start_maths inattentiveness ability deprivation)
+    ]
+    ; recalculate correlations for full data set
+    set End_maths_correlations (first stats:correlation Student_table)
   ]
-  file-close
-
-  ; recalculate correlations for full data set
-  set End_maths_correlations (first stats:correlation Student_table)
 
 end
 
@@ -1133,6 +1141,10 @@ Holiday_week_numbers = 0</exitCondition>
     <steppedValueSet variable="Teach_control_mean" first="3" step="0.5" last="4"/>
     <enumeratedValueSet variable="Teach_quality_mean">
       <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Ticks_per_school_day">
+      <value value="150"/>
+      <value value="300"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>

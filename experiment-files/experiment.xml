@@ -1,0 +1,302 @@
+<experiments>
+  <experiment name="experiment1" repetitions="1" runMetricsEveryStep="false">
+    <setup>setup-experiment</setup>
+    <go>go</go>
+    <exitCondition>Ticks_per_day = 0 or
+Holiday_week_numbers = 0</exitCondition>
+    <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
+    <enumeratedValueSet variable="Input_file">
+      <value value="&quot;classes_input/test_input.csv&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Chosen_class">
+      <value value="&quot;All&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Random_select">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_holidays">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Weeks_per_holiday">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_groups">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Group_by">
+      <value value="&quot;Ability&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_factor" first="0.09" step="0.01" last="0.11"/>
+    <enumeratedValueSet variable="Home_learn_factor">
+      <value value="0.0043"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_mean_divisor" first="1000" step="500" last="2500"/>
+    <steppedValueSet variable="School_learn_sd" first="0.03" step="0.01" last="0.05"/>
+    <steppedValueSet variable="School_learn_random_proportion" first="0.1" step="0.1" last="0.4"/>
+    <steppedValueSet variable="Teach_control_mean" first="2" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_control_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Teach_quality_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Ticks_per_school_day">
+      <value value="170"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment2" repetitions="1" runMetricsEveryStep="false">
+    <setup>setup-experiment</setup>
+    <go>go</go>
+    <exitCondition>Ticks_per_day = 0 or
+Holiday_week_numbers = 0</exitCondition>
+    <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
+    <enumeratedValueSet variable="Input_file">
+      <value value="&quot;classes_input/test_input.csv&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Chosen_class">
+      <value value="&quot;All&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Random_select">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_holidays">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Weeks_per_holiday">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_groups">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Group_by">
+      <value value="&quot;Ability&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_factor" first="0.09" step="0.01" last="0.11"/>
+    <enumeratedValueSet variable="Home_learn_factor">
+      <value value="0.0043"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_mean_divisor" first="1000" step="500" last="2500"/>
+    <steppedValueSet variable="School_learn_sd" first="0.03" step="0.01" last="0.05"/>
+    <steppedValueSet variable="School_learn_random_proportion" first="0.1" step="0.1" last="0.4"/>
+    <steppedValueSet variable="Teach_control_mean" first="2" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_control_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Teach_quality_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Ticks_per_school_day">
+      <value value="210"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment3" repetitions="1" runMetricsEveryStep="false">
+    <setup>setup-experiment</setup>
+    <go>go</go>
+    <exitCondition>Ticks_per_day = 0 or
+Holiday_week_numbers = 0</exitCondition>
+    <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
+    <enumeratedValueSet variable="Input_file">
+      <value value="&quot;classes_input/test_input.csv&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Chosen_class">
+      <value value="&quot;All&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Random_select">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_holidays">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Weeks_per_holiday">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_groups">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Group_by">
+      <value value="&quot;Ability&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_factor" first="0.09" step="0.01" last="0.11"/>
+    <enumeratedValueSet variable="Home_learn_factor">
+      <value value="0.0043"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_mean_divisor" first="1000" step="500" last="2500"/>
+    <steppedValueSet variable="School_learn_sd" first="0.03" step="0.01" last="0.05"/>
+    <steppedValueSet variable="School_learn_random_proportion" first="0.1" step="0.1" last="0.4"/>
+    <steppedValueSet variable="Teach_control_mean" first="2" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_control_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Teach_quality_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Ticks_per_school_day">
+      <value value="240"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment4" repetitions="1" runMetricsEveryStep="false">
+    <setup>setup-experiment</setup>
+    <go>go</go>
+    <exitCondition>Ticks_per_day = 0 or
+Holiday_week_numbers = 0</exitCondition>
+    <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
+    <enumeratedValueSet variable="Input_file">
+      <value value="&quot;classes_input/test_input.csv&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Chosen_class">
+      <value value="&quot;All&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Random_select">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_holidays">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Weeks_per_holiday">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_groups">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Group_by">
+      <value value="&quot;Ability&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_factor" first="0.09" step="0.01" last="0.11"/>
+    <enumeratedValueSet variable="Home_learn_factor">
+      <value value="0.0043"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_mean_divisor" first="1000" step="500" last="2500"/>
+    <steppedValueSet variable="School_learn_sd" first="0.03" step="0.01" last="0.05"/>
+    <steppedValueSet variable="School_learn_random_proportion" first="0.1" step="0.1" last="0.4"/>
+    <steppedValueSet variable="Teach_control_mean" first="2" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_control_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Teach_quality_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Ticks_per_school_day">
+      <value value="270"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment5" repetitions="1" runMetricsEveryStep="false">
+    <setup>setup-experiment</setup>
+    <go>go</go>
+    <exitCondition>Ticks_per_day = 0 or
+Holiday_week_numbers = 0</exitCondition>
+    <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
+    <enumeratedValueSet variable="Input_file">
+      <value value="&quot;classes_input/test_input.csv&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Chosen_class">
+      <value value="&quot;All&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Random_select">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_holidays">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Weeks_per_holiday">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_groups">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Group_by">
+      <value value="&quot;Ability&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_factor" first="0.09" step="0.01" last="0.11"/>
+    <enumeratedValueSet variable="Home_learn_factor">
+      <value value="0.0043"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_mean_divisor" first="1000" step="500" last="2500"/>
+    <steppedValueSet variable="School_learn_sd" first="0.03" step="0.01" last="0.05"/>
+    <steppedValueSet variable="School_learn_random_proportion" first="0.1" step="0.1" last="0.4"/>
+    <steppedValueSet variable="Teach_control_mean" first="2" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_control_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Teach_quality_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Ticks_per_school_day">
+      <value value="300"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment6" repetitions="1" runMetricsEveryStep="false">
+    <setup>setup-experiment</setup>
+    <go>go</go>
+    <exitCondition>Ticks_per_day = 0 or
+Holiday_week_numbers = 0</exitCondition>
+    <metric>mean-end-maths</metric>
+    <metric>sd-end-maths</metric>
+    <metric>correlation-start-maths</metric>
+    <metric>correlation-inattentiveness</metric>
+    <metric>correlation-ability</metric>
+    <metric>correlation-deprivation</metric>
+    <enumeratedValueSet variable="Input_file">
+      <value value="&quot;classes_input/test_input.csv&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Chosen_class">
+      <value value="&quot;All&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Random_select">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_holidays">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Weeks_per_holiday">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Number_of_groups">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Group_by">
+      <value value="&quot;Ability&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_factor" first="0.09" step="0.01" last="0.11"/>
+    <enumeratedValueSet variable="Home_learn_factor">
+      <value value="0.0043"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="School_learn_mean_divisor" first="1000" step="500" last="2500"/>
+    <steppedValueSet variable="School_learn_sd" first="0.03" step="0.01" last="0.05"/>
+    <steppedValueSet variable="School_learn_random_proportion" first="0.1" step="0.1" last="0.4"/>
+    <steppedValueSet variable="Teach_control_mean" first="2" step="0.5" last="4"/>
+    <enumeratedValueSet variable="Teach_control_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Teach_quality_mean">
+      <value value="3.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Ticks_per_school_day">
+      <value value="330"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
