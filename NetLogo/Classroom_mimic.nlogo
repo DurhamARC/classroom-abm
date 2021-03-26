@@ -736,7 +736,7 @@ Press **Set up**, and select your input file, then choose a class (or **All**). 
 In BehaviorSpace mode you can set and vary the following variables:
 
 ```
-["Input_file" "classes_input/test_input_short.csv"]
+["Input_file" "../classes_input/test_input_short.csv"]
 ["Chosen_class" "All"]
 ["Random_select" 5]
 ["Number_of_holidays" 2]
@@ -1116,7 +1116,7 @@ Holiday_week_numbers = 0</exitCondition>
     <metric>correlation-ability</metric>
     <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/test_input.csv&quot;"/>
+      <value value="&quot;../classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>

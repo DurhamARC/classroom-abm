@@ -11,7 +11,7 @@ Holiday_week_numbers = 0</exitCondition>
   <metric>correlation-ability</metric>
   <metric>correlation-deprivation</metric>
   <enumeratedValueSet variable="Input_file">
-    <value value="&quot;classes_input/ABM ten classes size adjusted.csv&quot;"/>
+    <value value="&quot;../classes_input/ABM ten classes size adjusted.csv&quot;"/>
   </enumeratedValueSet>
   <enumeratedValueSet variable="Chosen_class">
     <value value="&quot;All&quot;"/>
@@ -42,6 +42,6 @@ Holiday_week_numbers = 0</exitCondition>
   <steppedValueSet variable="School_learn_random_proportion" first="0.4" step="0.2" last="0.8"/>
   <steppedValueSet variable="Teach_control_mean" first="2" step="0.5" last="4"/>
   <steppedValueSet variable="Teach_quality_mean" first="3" step="0.5" last="4"/>
-  <steppedValueSet variable="Ticks_per_school_day" first="170" step="40" last="330">
+  <steppedValueSet variable="Ticks_per_school_day" first="170" step="40" last="330"/>
 </experiment>
 </experiments>

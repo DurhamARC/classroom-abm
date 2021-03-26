@@ -11,7 +11,7 @@ Holiday_week_numbers = 0</exitCondition>
     <metric>correlation-ability</metric>
     <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/test_input.csv&quot;"/>
+      <value value="&quot;../classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>
@@ -61,7 +61,7 @@ Holiday_week_numbers = 0</exitCondition>
     <metric>correlation-ability</metric>
     <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/test_input.csv&quot;"/>
+      <value value="&quot;../classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>
@@ -111,7 +111,7 @@ Holiday_week_numbers = 0</exitCondition>
     <metric>correlation-ability</metric>
     <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/test_input.csv&quot;"/>
+      <value value="&quot;../classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>
@@ -161,7 +161,7 @@ Holiday_week_numbers = 0</exitCondition>
     <metric>correlation-ability</metric>
     <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/test_input.csv&quot;"/>
+      <value value="&quot;../classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>
@@ -211,7 +211,7 @@ Holiday_week_numbers = 0</exitCondition>
     <metric>correlation-ability</metric>
     <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/test_input.csv&quot;"/>
+      <value value="&quot;../classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>
@@ -261,7 +261,7 @@ Holiday_week_numbers = 0</exitCondition>
     <metric>correlation-ability</metric>
     <metric>correlation-deprivation</metric>
     <enumeratedValueSet variable="Input_file">
-      <value value="&quot;classes_input/test_input.csv&quot;"/>
+      <value value="&quot;../classes_input/test_input.csv&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Chosen_class">
       <value value="&quot;All&quot;"/>
