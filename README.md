@@ -6,4 +6,26 @@ The first iteration of this project was written in [NetLogo](https://ccl.northwe
 
 We are now developing another model using Mesa (see /Mesa) and gratefully acknowledge Khulood Alharbi's [model](https://github.com/kuloody/ABM) which was used as a starting point for this work.
 
-To use Black as a Git hook on all commits run `pre-commit install` from the root of the repository. To install dependencies load the conda lock file as follows: `conda create --name fromlock --file conda_locks/conda-<operating-sys>-64.lock`. To update the .lock files with new dependencies in environment.yml run `conda-lock` from the root of the repository.
+## Running the Mesa model
+
+Install the dependencies and activate the Conda environment:
+
+```
+conda create --name classroom_abm --file conda_locks/conda-<operating-sys>-64.lock
+conda activate classroom_abm
+```
+
+Execute python code:
+
+```
+python3 model.py
+python3 server.py
+python3 run.py
+```
+
+### Contributing to the mesa model:
+
+To use Black as a Git hook on all commits run `pre-commit install` from the root of the repository. 
+
+Add new depencies to environment.yml. Then execute `conda-lock` from the root of the repository. This will create lock files for osx, linux and windows which we store in the conda\_locks/ directory to minimise clutter. To add new dependencies from an updated lock file rerun: `conda create --name classroom_abm --file conda_locks/conda-<operating-sys>-64.lock`
+
