@@ -1,0 +1,13 @@
+name: classroom_abm
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - black
+  - conda-lock
+  - pre_commit
+  - mesa
+  - numpy
+  - pandas
+  - scipy
