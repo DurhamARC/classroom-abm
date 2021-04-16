@@ -6,4 +6,4 @@ The first iteration of this project was written in [NetLogo](https://ccl.northwe
 
 We are now developing another model using Mesa (see /Mesa) and gratefully acknowledge Khulood Alharbi's [model](https://github.com/kuloody/ABM) which was used as a starting point for this work.
 
-To use Black as a Git hook on all commits run `pre-commit install` from the root of the repository. To install dependencies using conda run `conda create --name <env> --file requirements.txt` or load the conda environment.yml file.
+To use Black as a Git hook on all commits run `pre-commit install` from the root of the repository. To install dependencies load the conda lock file as follows: `conda create --name fromlock --file conda-osx-64.lock`
