@@ -11,4 +11,3 @@ dependencies:
   - numpy
   - pandas
   - scipy
-prefix: /opt/homebrew/Caskroom/miniconda/base/envs/mesa_env
