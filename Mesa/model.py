@@ -16,23 +16,23 @@ def compute_ave(model):
     x = sum(agent_maths)
     N = len(agent_maths)
     B = x / N
-    print('the AVARAGE of end math', B, agent_maths)
+    print("the AVARAGE of end math", B, agent_maths)
     return B
 
 
 def compute_ave_disruptive(model):
     agent_disruptiveTend = [agent.disruptiveTend for agent in model.schedule.agents]
-    print('Calculate disrubtive tend original', agent_disruptiveTend)
+    print("Calculate disrubtive tend original", agent_disruptiveTend)
     # B = statistics.mean(agent_disruptiveTend)
     B = np.mean(agent_disruptiveTend)
-    print('Calculate disrubtive tend after mean', agent_disruptiveTend)
-    print('the AVARAGE of disruptive', B, agent_disruptiveTend)
+    print("Calculate disrubtive tend after mean", agent_disruptiveTend)
+    print("the AVARAGE of disruptive", B, agent_disruptiveTend)
     return B
 
 
 def compute_zscore(model, x):
     agent_behave = [agent.behave for agent in model.schedule.agents]
-    print('Calculate variance', agent_behave)
+    print("Calculate variance", agent_behave)
     SD = stdev(agent_behave)
     mean = statistics.mean(agent_behave)
     zscore = (x - mean) / SD
@@ -41,7 +41,7 @@ def compute_zscore(model, x):
 
 def compute_SD(model, x):
     agent_disruptiveTend = [agent.disruptiveTend for agent in model.schedule.agents]
-    print('Calculate variance', agent_disruptiveTend)
+    print("Calculate variance", agent_disruptiveTend)
     b = [float(s) for s in agent_disruptiveTend]
     SD = stdev(b)
     mean = statistics.mean(b)
@@ -53,7 +53,7 @@ def compute_SD(model, x):
 
 
 def normal(agent_ability, x):
-    
+
     minValue = min(agent_ability)
     maxValue = max(agent_ability)
     rescale = (x - minValue) / maxValue - minValue
@@ -120,7 +120,7 @@ class SimClassAgent(Agent):
         #   self.disrubted += 1
         # self.changeState()
         print(self.model.schedule.steps)
-        print('Agent position', self.pos)
+        print("Agent position", self.pos)
         if self.redStateCange() == 1:
             # self.model.distruptive += 1
             self.changeState()
@@ -146,7 +146,7 @@ class SimClassAgent(Agent):
 
             return
 
-        self.agent_state = self.random.randrange(2,6)
+        self.agent_state = self.random.randrange(2, 6)
 
     def redStateCange(self):
         count, red, yellow, green = self.neighbour()
@@ -160,14 +160,20 @@ class SimClassAgent(Agent):
             self.greenState = 0
             return 1
 
-        if red > self.agent_state + 1 and self.disruptiveTend > compute_ave_disruptive(self.model):
+        if red > self.agent_state + 1 and self.disruptiveTend > compute_ave_disruptive(
+            self.model
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
             self.greenState = 0
             return 1
         # if Inattentiveness is on and quality is low
-        if self.model.Inattentiveness == 1 and self.model.quality <= self.agent_state + 1 and self.behave > self.agent_state:
+        if (
+            self.model.Inattentiveness == 1
+            and self.model.quality <= self.agent_state + 1
+            and self.behave > self.agent_state
+        ):
             self.type = 3
             self.model.distruptive += 1
             self.disrubted += 1
@@ -176,7 +182,11 @@ class SimClassAgent(Agent):
             self.greenState = 0
             return 1
         # If both is high and student is disruptive
-        if self.model.Inattentiveness == 1 and self.model.control <= self.agent_state + 1 and self.behave > self.agent_state:
+        if (
+            self.model.Inattentiveness == 1
+            and self.model.control <= self.agent_state + 1
+            and self.behave > self.agent_state
+        ):
             self.type = 3
             self.model.distruptive += 1
             self.disrubted += 1
@@ -185,7 +195,11 @@ class SimClassAgent(Agent):
             self.greenState = 0
             return 1
 
-        if self.model.hyper_Impulsive == 1 and self.model.control <= self.agent_state and self.behave_2 > self.agent_state:
+        if (
+            self.model.hyper_Impulsive == 1
+            and self.model.control <= self.agent_state
+            and self.behave_2 > self.agent_state
+        ):
             self.type = 3
             self.model.distruptive += 1
             self.disrubted += 1
@@ -197,7 +211,11 @@ class SimClassAgent(Agent):
     def yellowStateCange(self):
 
         count, red, yellow, green = self.neighbour()
-        if self.model.Inattentiveness == 1 and self.model.quality >= self.agent_state and self.behave <= self.agent_state:
+        if (
+            self.model.Inattentiveness == 1
+            and self.model.quality >= self.agent_state
+            and self.behave <= self.agent_state
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
@@ -209,8 +227,11 @@ class SimClassAgent(Agent):
             self.yellowState += 1
             self.greenState = 0
             return 1
-        if compute_SD(self.model,
-                      self.disruptiveTend) and self.model.control >= self.agent_state and self.behave_2 <= self.agent_state:
+        if (
+            compute_SD(self.model, self.disruptiveTend)
+            and self.model.control >= self.agent_state
+            and self.behave_2 <= self.agent_state
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
@@ -265,9 +286,15 @@ class SimClassAgent(Agent):
             self.greenState += 1
             return 1
 
-
-        if self.model.Inattentiveness != 0 or self.model.quality <= self.agent_state or self.behave >= self.agent_state:
-            if self.model.Inattentiveness == 0 and self.model.quality > self.agent_state:
+        if (
+            self.model.Inattentiveness != 0
+            or self.model.quality <= self.agent_state
+            or self.behave >= self.agent_state
+        ):
+            if (
+                self.model.Inattentiveness == 0
+                and self.model.quality > self.agent_state
+            ):
                 self.type = 1
                 self.model.learning += 1
                 self.set_start_math()
@@ -276,7 +303,10 @@ class SimClassAgent(Agent):
                 self.greenState += 1
                 return 1
 
-            if self.model.hyper_Impulsive == 0 and self.model.control > self.agent_state >= self.behave_2:
+            if (
+                self.model.hyper_Impulsive == 0
+                and self.model.control > self.agent_state >= self.behave_2
+            ):
                 self.type = 1
                 self.model.learning += 1
                 self.set_start_math()
@@ -331,7 +361,9 @@ class SimClassAgent(Agent):
     def changeState(self):
 
         # Change to attentive (green) teaching quality or control is high and state is passive for long
-        if (self.model.quality or self.model.control) > self.agent_state and self.yellowState >= self.agent_state:
+        if (
+            self.model.quality or self.model.control
+        ) > self.agent_state and self.yellowState >= self.agent_state:
             self.type = 1
             self.redState = 0
             self.yellowState = 0
@@ -340,7 +372,11 @@ class SimClassAgent(Agent):
             self.set_start_math()
             return 1
 
-        if self.behave_2 < self.agent_state and self.model.control <= self.agent_state and self.yellowState > self.agent_state:
+        if (
+            self.behave_2 < self.agent_state
+            and self.model.control <= self.agent_state
+            and self.yellowState > self.agent_state
+        ):
             self.type = 1
             self.redState = 0
             self.yellowState = 0
@@ -350,21 +386,31 @@ class SimClassAgent(Agent):
 
             return 1
         # Similar to above but red for long
-        if self.behave_2 < self.agent_state < self.redState and self.model.control <= self.agent_state:
+        if (
+            self.behave_2 < self.agent_state < self.redState
+            and self.model.control <= self.agent_state
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
             self.greenState = 0
             return 1
 
-        if self.behave < self.agent_state < self.redState and self.model.quality <= self.agent_state:
+        if (
+            self.behave < self.agent_state < self.redState
+            and self.model.quality <= self.agent_state
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
             self.greenState = 0
             return 1
 
-        if self.behave < self.agent_state and self.model.quality <= self.agent_state and self.yellowState > self.agent_state:
+        if (
+            self.behave < self.agent_state
+            and self.model.quality <= self.agent_state
+            and self.yellowState > self.agent_state
+        ):
             self.type = 1
             self.redState = 0
             self.yellowState = 0
@@ -374,14 +420,22 @@ class SimClassAgent(Agent):
 
             return 1
 
-        if self.behave > self.agent_state and self.model.quality > self.agent_state and self.redState > self.agent_state:
+        if (
+            self.behave > self.agent_state
+            and self.model.quality > self.agent_state
+            and self.redState > self.agent_state
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
             self.greenState = 0
             return 1
 
-        if self.behave_2 > self.agent_state - 1 and self.model.control > self.agent_state - 1 and self.redState > 3:
+        if (
+            self.behave_2 > self.agent_state - 1
+            and self.model.control > self.agent_state - 1
+            and self.redState > 3
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
@@ -395,19 +449,31 @@ class SimClassAgent(Agent):
             self.greenState = 0
             return 1
 
-        if self.behave_2 <= self.agent_state and self.model.quality <= self.agent_state and self.redState > 2:
+        if (
+            self.behave_2 <= self.agent_state
+            and self.model.quality <= self.agent_state
+            and self.redState > 2
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
             self.greenState = 0
             return 1
-        if self.behave_2 <= self.agent_state - 1 and self.model.control <= self.agent_state - 1 and self.redState > self.agent_state:
+        if (
+            self.behave_2 <= self.agent_state - 1
+            and self.model.control <= self.agent_state - 1
+            and self.redState > self.agent_state
+        ):
             self.type = 2
             self.redState = 0
             self.yellowState += 1
             self.greenState = 0
             return 1
-        if self.behave < self.agent_state and self.model.quality < self.agent_state and self.redState > self.agent_state:
+        if (
+            self.behave < self.agent_state
+            and self.model.quality < self.agent_state
+            and self.redState > self.agent_state
+        ):
             self.type = 2
             self.disrubted += 1
             self.redState = 0
@@ -415,7 +481,10 @@ class SimClassAgent(Agent):
             self.greenState = 0
             return 1
 
-        if self.redState > self.agent_state and (self.model.quality or self.model.control) >= self.agent_state:
+        if (
+            self.redState > self.agent_state
+            and (self.model.quality or self.model.control) >= self.agent_state
+        ):
             self.type = 1
             if self.model.distruptive > 0:
                 self.model.distruptive -= 1
@@ -456,17 +525,26 @@ class SimClassAgent(Agent):
         if self.model.schedule.steps == 0:
             self.model.schedule.steps = 1
 
-        self.disruptiveTend = (((self.disrubted / self.model.schedule.steps) - (
-                self.countLearning / self.model.schedule.steps)) + self.initialDisrubtiveTend)
+        self.disruptiveTend = (
+            (self.disrubted / self.model.schedule.steps)
+            - (self.countLearning / self.model.schedule.steps)
+        ) + self.initialDisrubtiveTend
 
     def test(self):
-        print('HI I am test function ##############################')
+        print("HI I am test function ##############################")
 
 
 class SimClass(Model):
-
-
-    def __init__(self, height=6, width=6, quality=1, Inattentiveness=0, control=3, hyper_Impulsive=0, AttentionSpan=0):
+    def __init__(
+        self,
+        height=6,
+        width=6,
+        quality=1,
+        Inattentiveness=0,
+        control=3,
+        hyper_Impulsive=0,
+        AttentionSpan=0,
+    ):
 
         self.height = height
         self.width = width
@@ -483,17 +561,17 @@ class SimClass(Model):
         self.redState = 0
         self.yellowState = 0
         self.greenState = 0
-        
-        #Load data
 
-        data = pd.read_csv('Input/DataSample.csv')
-        maths = data['s_maths'].to_numpy()
+        # Load data
+
+        data = pd.read_csv("Input/DataSample.csv")
+        maths = data["s_maths"].to_numpy()
         ability_zscore = stats.zscore(maths)
-        behave = data['behav1'].to_numpy()
-        behav2 = data['behav2'].to_numpy()
+        behave = data["behav1"].to_numpy()
+        behav2 = data["behav2"].to_numpy()
 
         # Set up agents
-       
+
         counter = 0
         for cell in self.grid.coord_iter():
             x = cell[1]
@@ -503,34 +581,49 @@ class SimClass(Model):
             agent_type = self.random.randint(1, 3)
             ability = ability_zscore[counter]
 
- 
-
             # create agents form data
-            agent = SimClassAgent((x, y), self, agent_type, behave[counter], behav2[counter],
-                                  maths[counter], ability)
+            agent = SimClassAgent(
+                (x, y),
+                self,
+                agent_type,
+                behave[counter],
+                behav2[counter],
+                maths[counter],
+                ability,
+            )
             # Place Agents on grid
             self.grid.position_agent(agent, (x, y))
-            print('agent pos:', x, y)
+            print("agent pos:", x, y)
             self.schedule.add(agent)
             counter += 1
 
         # Collecting data while running the model
         self.datacollector = DataCollector(
-            model_reporters={"Distruptive Students": "distruptive",
-                             "Learning Students": "learning",
-                             "Average End Math": compute_ave,
-                             "disruptiveTend": compute_ave_disruptive
-                             },
+            model_reporters={
+                "Distruptive Students": "distruptive",
+                "Learning Students": "learning",
+                "Average End Math": compute_ave,
+                "disruptiveTend": compute_ave_disruptive,
+            },
             # Model-level count of learning agent
-            agent_reporters={"x": lambda a: a.pos[0], "y": lambda a: a.pos[1], "Inattentiveness_score": "behave",
-                             "Hyber_Inattinteveness": "behave_2", "S_math": "s_math", "S_read": "s_read",
-                             "E_math": "e_math", "E_read": "e_read", "ability": "ability",
-                             "LearningTime": "countLearning", "disruptiveTend": "disruptiveTend"})
+            agent_reporters={
+                "x": lambda a: a.pos[0],
+                "y": lambda a: a.pos[1],
+                "Inattentiveness_score": "behave",
+                "Hyber_Inattinteveness": "behave_2",
+                "S_math": "s_math",
+                "S_read": "s_read",
+                "E_math": "e_math",
+                "E_read": "e_read",
+                "ability": "ability",
+                "LearningTime": "countLearning",
+                "disruptiveTend": "disruptiveTend",
+            },
+        )
 
         self.running = True
 
     def step(self):
-
 
         self.learning = 0  # Reset counter of learing and disruptive agents
         self.distruptive = 0
@@ -542,4 +635,4 @@ class SimClass(Model):
         if self.schedule.steps == 8550.0 or self.running == False:
             self.running = False
             dataAgent = self.datacollector.get_agent_vars_dataframe()
-            dataAgent.to_csv('Simulation.csv')
+            dataAgent.to_csv("Simulation.csv")
