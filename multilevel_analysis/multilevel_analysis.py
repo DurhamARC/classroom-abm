@@ -1,4 +1,5 @@
 import os
+import sys
 
 import pandas as pd
 
@@ -12,10 +13,15 @@ utils = rpackages.importr("utils")
 # Install R2MLWiN - TODO: see if we can cache this
 utils.chooseCRANmirror(ind=1)
 utils.install_packages("R2MLwiN")
-utils.install_packages("classroommlm", type="source")
+utils.install_packages("classroommlm_0.1.0.tar.gz", type="source")
 
 base = rpackages.importr("base")
 classroom_mlm = rpackages.importr("classroommlm")
+
+if len(sys.argv) > 1:
+    mlnscript_path = sys.argv[1]
+else:
+    mlnscript_path = "/opt/mln/mlnscript"
 
 # Import data from CSV to dataframe and clean
 csv_filename = os.path.join(
@@ -31,7 +37,7 @@ with localconverter(ro.default_converter + pandas2ri.converter):
     r_pupil_df = ro.conversion.py2rpy(pupil_df)
 
 # Null model
-r_null_model = classroom_mlm.null_model(r_pupil_df, "/opt/mln/mlnscript")
+r_null_model = classroom_mlm.null_model(r_pupil_df, mlnscript_path)
 
 with localconverter(ro.default_converter + pandas2ri.converter):
     null_model_df = ro.conversion.rpy2py(r_null_model)
@@ -39,7 +45,7 @@ with localconverter(ro.default_converter + pandas2ri.converter):
 print(null_model_df)
 
 # Full model
-r_full_model = classroom_mlm.full_model(r_pupil_df, "/opt/mln/mlnscript")
+r_full_model = classroom_mlm.full_model(r_pupil_df, mlnscript_path)
 
 with localconverter(ro.default_converter + pandas2ri.converter):
     full_model_df = ro.conversion.rpy2py(r_full_model)

@@ -7,9 +7,10 @@ dependencies:
   - mesa
   - numpy
   - pandas
-  - scipy
+  - scipy=1.5.2
   # mlm dependencies
-  - rpy2
+  - pip:
+    - rpy2
   # dev dependencies
   - black
   - conda-lock
