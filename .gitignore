@@ -3,3 +3,4 @@
 NetLogo/classes_output/*
 !NetLogo/classes_output/.gitkeep
 .Rproj.user
+__pycache__
