@@ -13,9 +13,17 @@ on:
       - master
 
 jobs:
-  conda-lock-ci-ubuntu: 
+  conda-lock-ci: 
     name: Test conda lock on Ubuntu
-    runs-on: "ubuntu-latest"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        - os: "ubuntu-latest"
+          lock-file: "conda_locks/conda-linux-64.lock"
+        - os: "macos-latest"
+          lock-file: "conda_locks/conda-osx-64.lock"
+        - os: "windows-latest"
+          lock-file: "conda_locks/conda-win-64.lock"
     defaults:
       run:
         shell: bash -l {0}
@@ -25,51 +33,10 @@ jobs:
         with:
           auto-update-conda: false
           activate-environment: explicit-env
-          environment-file: conda_locks/conda-linux-64.lock
+          environment-file: ${{ matrix.lock-file }}
       - run: |
           conda info
           conda list
           conda config --show-sources
           conda config --show
           printenv | sort
-
-  conda-lock-ci-macos: 
-    name: Test conda lock on Mac OS
-    runs-on: "macos-latest"
-    defaults:
-      run:
-        shell: bash -l {0}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: false
-          activate-environment: explicit-env
-          environment-file: conda_locks/conda-osx-64.lock
-      - run: |
-          conda info
-          conda list
-          conda config --show-sources
-          conda config --show
-          printenv | sort
-
-  conda-lock-ci-windows: 
-    name: Test conda lock on Windows      
-    runs-on: "windows-latest"
-    defaults:
-      run:
-        shell: bash -l {0}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: false
-          activate-environment: explicit-env
-          environment-file: conda_locks/conda-win-64.lock
-      - run: |
-          conda info
-          conda list
-          conda config --show-sources
-          conda config --show
-          printenv | sort
-
