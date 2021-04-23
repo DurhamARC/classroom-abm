@@ -1,5 +1,5 @@
 # platform: osx-64
-# env_hash: fa9de624e2e938c1b7fb3af796dc8393246053843f18e43a77a5c6174924b727
+# env_hash: d4d96d052940dce50e018c90946a903d57fb81f9a3ec57a201e17cc624fe466f
 @EXPLICIT
 https://conda.anaconda.org/anaconda/osx-64/blas-1.0-mkl.tar.bz2#e2f3248e2a5009a02f7b8e54f83314ef
 https://conda.anaconda.org/anaconda/osx-64/ca-certificates-2020.10.14-0.tar.bz2#a894a257ca27119745c5737cb95fc39e
@@ -70,9 +70,9 @@ https://conda.anaconda.org/anaconda/osx-64/virtualenv-20.0.35-py37_0.tar.bz2#81c
 https://conda.anaconda.org/conda-forge/noarch/identify-2.2.3-pyhd8ed1ab_0.tar.bz2#bcbb7548505233dfea5ddca2ff403dc6
 https://conda.anaconda.org/conda-forge/noarch/jinja2-time-0.2.0-py_2.tar.bz2#6e8d28fac1864c623fd4402168ca4d46
 https://conda.anaconda.org/anaconda/noarch/pyopenssl-19.1.0-py_1.tar.bz2#eae315d2cf67ea8da0ae585af683b60d
-https://conda.anaconda.org/conda-forge/osx-64/pre-commit-2.12.0-py37hf985489_0.tar.bz2#2c3ffeb1ab40cfcdce27832f3e61901d
+https://conda.anaconda.org/conda-forge/osx-64/pre-commit-2.12.1-py37hf985489_0.tar.bz2#a79f4e3ee9079da58171b327036f0df1
 https://conda.anaconda.org/anaconda/noarch/urllib3-1.25.11-py_0.tar.bz2#be7e845e2ccdd23fb14e7421336346bf
-https://conda.anaconda.org/conda-forge/noarch/pre_commit-2.12.0-hd8ed1ab_0.tar.bz2#f16c14c74df99e741ee53530cae9907e
+https://conda.anaconda.org/conda-forge/noarch/pre_commit-2.12.1-hd8ed1ab_0.tar.bz2#d9d771199150fe0b52705f631332aad1
 https://conda.anaconda.org/anaconda/noarch/requests-2.24.0-py_0.tar.bz2#0da8872d36b3ef33859654b6d0fea148
 https://conda.anaconda.org/conda-forge/noarch/cookiecutter-1.7.2-pyh9f0ad1d_0.tar.bz2#9c8c5f26174b5a0d63e9655cf1fd7a2a
 https://conda.anaconda.org/conda-forge/noarch/ensureconda-1.4.1-pyhd8ed1ab_0.tar.bz2#52a7f7cc9076e2c8a25e15e19ad42821

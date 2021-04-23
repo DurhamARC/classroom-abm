@@ -1,5 +1,5 @@
 # platform: linux-64
-# env_hash: 9bc40eb253adf884d8995794c4380caa53b0f03c37a9721f121f16dd79215cc7
+# env_hash: 1030c13a521fba5bb68561ccf16d0cde45bf7fa3ffcc340bf821cc5ed9fe5829
 @EXPLICIT
 https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2#d7c89558ba9fa0495403155b64376d81
 https://conda.anaconda.org/anaconda/linux-64/ca-certificates-2020.10.14-0.tar.bz2#48642e3fd8fda4a7b17fddecc4b6dbca
@@ -78,9 +78,9 @@ https://conda.anaconda.org/conda-forge/noarch/jinja2-time-0.2.0-py_2.tar.bz2#6e8
 https://conda.anaconda.org/anaconda/linux-64/pandas-1.1.3-py38he6710b0_0.tar.bz2#e1008a89186024eac5aca09337b722a8
 https://conda.anaconda.org/anaconda/noarch/pyopenssl-19.1.0-py_1.tar.bz2#eae315d2cf67ea8da0ae585af683b60d
 https://conda.anaconda.org/anaconda/linux-64/scipy-1.5.2-py38habc2bb6_0.tar.bz2#0cf343bf781268d9c15e1bb94dec7446
-https://conda.anaconda.org/conda-forge/linux-64/pre-commit-2.12.0-py38h578d9bd_0.tar.bz2#4beaf83e868690c8729ac8844bb13fb0
+https://conda.anaconda.org/conda-forge/linux-64/pre-commit-2.12.1-py38h578d9bd_0.tar.bz2#c26dbf85b3b8699f6a551e1f63bf9580
 https://conda.anaconda.org/anaconda/noarch/urllib3-1.25.11-py_0.tar.bz2#be7e845e2ccdd23fb14e7421336346bf
-https://conda.anaconda.org/conda-forge/noarch/pre_commit-2.12.0-hd8ed1ab_0.tar.bz2#f16c14c74df99e741ee53530cae9907e
+https://conda.anaconda.org/conda-forge/noarch/pre_commit-2.12.1-hd8ed1ab_0.tar.bz2#d9d771199150fe0b52705f631332aad1
 https://conda.anaconda.org/anaconda/noarch/requests-2.24.0-py_0.tar.bz2#0da8872d36b3ef33859654b6d0fea148
 https://conda.anaconda.org/conda-forge/noarch/cookiecutter-1.7.2-pyh9f0ad1d_0.tar.bz2#9c8c5f26174b5a0d63e9655cf1fd7a2a
 https://conda.anaconda.org/conda-forge/noarch/ensureconda-1.4.1-pyhd8ed1ab_0.tar.bz2#52a7f7cc9076e2c8a25e15e19ad42821

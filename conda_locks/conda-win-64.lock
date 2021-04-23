@@ -1,5 +1,5 @@
 # platform: win-64
-# env_hash: c31b883d8717a8ba7c82a0e72107b393667189a50f5b3d6c739789236c743908
+# env_hash: 346223fafbe00121d347c4ed0050282613adf1645009b0b96d1a1c9b34406302
 @EXPLICIT
 https://conda.anaconda.org/anaconda/win-64/blas-1.0-mkl.tar.bz2#e8aa6b7daaf0925245c148aaeaa0722e
 https://conda.anaconda.org/anaconda/win-64/ca-certificates-2020.10.14-0.tar.bz2#409ad31b691de21ffa5a33b1f8f7a1e8
@@ -68,9 +68,9 @@ https://conda.anaconda.org/conda-forge/noarch/identify-2.2.3-pyhd8ed1ab_0.tar.bz
 https://conda.anaconda.org/conda-forge/noarch/jinja2-time-0.2.0-py_2.tar.bz2#6e8d28fac1864c623fd4402168ca4d46
 https://repo.anaconda.com/pkgs/r/win-64/mkl_random-1.0.4-py37h343c172_0.tar.bz2#6cc57abfd73c65279625cece075165bd
 https://conda.anaconda.org/anaconda/noarch/pyopenssl-19.1.0-py_1.tar.bz2#eae315d2cf67ea8da0ae585af683b60d
-https://conda.anaconda.org/conda-forge/win-64/pre-commit-2.12.0-py37h03978a9_0.tar.bz2#bac84f689a6561160c2df66d6a175eb5
+https://conda.anaconda.org/conda-forge/win-64/pre-commit-2.12.1-py37h03978a9_0.tar.bz2#a51029b22996434f2e2a154a363f4e7e
 https://conda.anaconda.org/anaconda/noarch/urllib3-1.25.11-py_0.tar.bz2#be7e845e2ccdd23fb14e7421336346bf
-https://conda.anaconda.org/conda-forge/noarch/pre_commit-2.12.0-hd8ed1ab_0.tar.bz2#f16c14c74df99e741ee53530cae9907e
+https://conda.anaconda.org/conda-forge/noarch/pre_commit-2.12.1-hd8ed1ab_0.tar.bz2#d9d771199150fe0b52705f631332aad1
 https://conda.anaconda.org/anaconda/noarch/requests-2.24.0-py_0.tar.bz2#0da8872d36b3ef33859654b6d0fea148
 https://conda.anaconda.org/conda-forge/noarch/cookiecutter-1.7.2-pyh9f0ad1d_0.tar.bz2#9c8c5f26174b5a0d63e9655cf1fd7a2a
 https://conda.anaconda.org/conda-forge/noarch/ensureconda-1.4.1-pyhd8ed1ab_0.tar.bz2#52a7f7cc9076e2c8a25e15e19ad42821

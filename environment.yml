@@ -4,10 +4,14 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - black
-  - conda-lock
-  - pre_commit
   - mesa
   - numpy
   - pandas
-  - scipy
+  - scipy=1.5.2
+  # mlm dependencies
+  - pip:
+    - rpy2
+  # dev dependencies
+  - black
+  - conda-lock
+  - pre_commit
