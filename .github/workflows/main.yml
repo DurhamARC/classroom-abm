@@ -18,12 +18,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        - os: "ubuntu-latest"
-          lock-file: "conda_locks/conda-linux-64.lock"
-        - os: "macos-latest"
-          lock-file: "conda_locks/conda-osx-64.lock"
-        - os: "windows-latest"
-          lock-file: "conda_locks/conda-win-64.lock"
+        include:
+          - os: "ubuntu-latest"
+            lock-file: "conda_locks/conda-linux-64.lock"
+          - os: "macos-latest"
+            lock-file: "conda_locks/conda-osx-64.lock"
+          - os: "windows-latest"
+            lock-file: "conda_locks/conda-win-64.lock"
     defaults:
       run:
         shell: bash -l {0}
