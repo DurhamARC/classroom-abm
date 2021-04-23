@@ -14,7 +14,7 @@ on:
 
 jobs:
   conda-lock-ci: 
-    name: Test conda lock on Ubuntu
+    name: Test conda lock
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
