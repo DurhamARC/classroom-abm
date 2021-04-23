@@ -14,7 +14,7 @@ on:
 
 jobs:
   conda-lock-ci-ubuntu: 
-    name: Test Ubuntu
+    name: Test conda lock on Ubuntu
     runs-on: "ubuntu-latest"
     defaults:
       run:
@@ -34,7 +34,7 @@ jobs:
           printenv | sort
 
   conda-lock-ci-macos: 
-    name: Test Mac OS      
+    name: Test conda lock on Mac OS
     runs-on: "macos-latest"
     defaults:
       run:
@@ -54,7 +54,7 @@ jobs:
           printenv | sort
 
   conda-lock-ci-windows: 
-    name: Test Windows      
+    name: Test conda lock on Windows      
     runs-on: "windows-latest"
     defaults:
       run:
