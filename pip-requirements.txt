@@ -1,0 +1,3 @@
+# This file should only be used for dependencies that can't be installed via conda
+# Install rpy2 via pip so it can use system R
+rpy2==3.4.4

@@ -13,7 +13,7 @@ on:
       - master
 
 jobs:
-  conda-lock-ci: 
+  conda-lock-ci:
     name: Test conda lock
     runs-on: ${{ matrix.os }}
     strategy:
@@ -41,3 +41,30 @@ jobs:
           conda config --show-sources
           conda config --show
           printenv | sort
+
+  multilevel-analysis:
+    name: Test multilevel analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup conda env
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: false
+          activate-environment: explicit-env
+          environment-file: conda_locks/conda-linux-64.lock
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.0.3'
+      - name: Install additional pip dependencies
+        run: pip install -r requirements.txt
+      - name: Install MLwiN
+        run: ./setup_mlwin.sh
+        env:
+          MLWIN_SHARE_URL: ${{ secrets.MLWIN_SHARE_URL }}
+          MLWIN_DOWNLOAD_URL: ${{ secrets.MLWIN_DOWNLOAD_URL }}
+      - name: Run multilevel analysis
+        run: |
+          cd multilevel_analysis
+          python multilevel_analysis.py

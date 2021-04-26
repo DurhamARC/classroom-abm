@@ -9,8 +9,9 @@ dependencies:
   - pandas
   - scipy=1.5.2
   # mlm dependencies
+  - pip
   - pip:
-    - rpy2
+    - -r file:pip-requirements.txt
   # dev dependencies
   - black
   - conda-lock

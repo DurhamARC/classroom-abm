@@ -54,8 +54,7 @@ The `multilevel_analysis.py` script imports the CSV `classes_input/test_input.cs
   1. Set up and activate a conda environment as above.
   2. Install rpy2 via pip (as we can't install all the necessary R packages from conda's `r-base` package):
      ```bash
-     conda install pip
-     pip install rpy2
+     pip install -r pip-requirements.txt
      ```
   3. Install R (e.g. `brew install R`)
   4. Install MLwiN and mlnscript, for which you will need a license:
