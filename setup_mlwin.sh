@@ -11,7 +11,7 @@ echo "Downloaded."
 ls -lh
 
 echo "Installing..."
-dpkg -i mlnscript.deb
+sudo dpkg -i mlnscript.deb
 echo "Done."
 
 cd -
