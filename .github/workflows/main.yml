@@ -56,7 +56,7 @@ jobs:
         with:
           r-version: '4.0.3'
       - name: Install additional pip dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r pip-requirements.txt
       - name: Install MLwiN
         run: ./setup_mlwin.sh
         env:
