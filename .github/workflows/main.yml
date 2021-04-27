@@ -61,7 +61,7 @@ jobs:
       - name: Install renv and other R dependencies
         run: |
           Rscript -e "install.packages('renv', repos = 'http://cran.r-project.org')"
-          sudo apt-get install libcurl4
+          sudo apt-get install libcurl4 libcurl4-openssl-dev
       - name: Install MLwiN
         run: ./setup_mlwin.sh
         env:
