@@ -61,6 +61,7 @@ jobs:
       - name: Install renv
         run: |
           Rscript -e "install.packages('renv', repos = 'http://cran.r-project.org')"
+          Rscript -e "renv::restore()"
       - name: Install MLwiN
         run: ./setup_mlwin.sh
         env:
