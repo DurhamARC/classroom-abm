@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 completed = subprocess.run(
-    ["Rscript", "-e", 'renv::status();source("run_classroommlm.R")'],
+    ["Rscript", "-e", 'renv::restore();source("run_classroommlm.R")'],
     capture_output=True,
     text=True,
     cwd="./R/run_mlm",
