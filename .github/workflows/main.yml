@@ -54,14 +54,10 @@ jobs:
           auto-update-conda: false
           activate-environment: classroom_abm
           environment-file: conda_locks/conda-linux-64.lock
-      - name: Check for existing R
-        run: which R
       - name: Setup R
         uses: r-lib/actions/setup-r@v1
         with:
           r-version: '4.0.3'
-      - name: Install additional pip dependencies
-        run: pip install -r pip-requirements.txt
       - name: Install MLwiN
         run: ./setup_mlwin.sh
         env:
@@ -69,11 +65,5 @@ jobs:
           MLWIN_DOWNLOAD_URL: ${{ secrets.MLWIN_DOWNLOAD_URL }}
       - name: Run multilevel analysis
         run: |
-          conda info
-          which python
-          which R
-          Rscript --version
-          python -c "import rpy2; from rpy2 import robjects; print(robjects.r('version')); print(robjects.r('R.home()')); print(robjects.r('system(\"type R\")'))"
-          python -m rpy2.situation
-          # cd multilevel_analysis
-          # python multilevel_analysis.py
+          cd multilevel_analysis
+          python multilevel_analysis.py
