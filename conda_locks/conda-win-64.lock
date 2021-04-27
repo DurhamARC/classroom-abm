@@ -1,5 +1,5 @@
 # platform: win-64
-# env_hash: 542446de2af595378fccb3cf767782b9edbd3cb8c9c9ed54e36cf37eaea49a34
+# env_hash: 346223fafbe00121d347c4ed0050282613adf1645009b0b96d1a1c9b34406302
 @EXPLICIT
 https://conda.anaconda.org/anaconda/win-64/blas-1.0-mkl.tar.bz2#e8aa6b7daaf0925245c148aaeaa0722e
 https://conda.anaconda.org/anaconda/win-64/ca-certificates-2020.10.14-0.tar.bz2#409ad31b691de21ffa5a33b1f8f7a1e8
@@ -39,7 +39,6 @@ https://conda.anaconda.org/anaconda/noarch/tqdm-4.50.2-py_0.tar.bz2#d7da4bc9cdf1
 https://conda.anaconda.org/anaconda/win-64/typed-ast-1.4.1-py37he774522_0.tar.bz2#58de86a816121951a89fe727a4326770
 https://conda.anaconda.org/anaconda/noarch/typing_extensions-3.7.4.3-py_0.tar.bz2#5c8380f176d05a9ef3cc52b02f9c5c2c
 https://conda.anaconda.org/anaconda/noarch/unidecode-1.1.1-py_0.tar.bz2#d6fd2a6cd88a4c2e67d94c0021e48bab
-https://conda.anaconda.org/anaconda/noarch/wheel-0.35.1-py_0.tar.bz2#9c75d27bfc81b445298eba0ebb088c15
 https://conda.anaconda.org/conda-forge/noarch/whichcraft-0.6.1-py_0.tar.bz2#08069b1a0dd029c8d5a8a935a7c71917
 https://conda.anaconda.org/anaconda/win-64/win_inet_pton-1.1.0-py37_0.tar.bz2#4ec69295c06d6bb5d7735b98ecb393e6
 https://conda.anaconda.org/anaconda/win-64/wincertstore-0.2-py37_0.tar.bz2#0418cf653523e6ef0174c259efaa78b4
@@ -64,7 +63,6 @@ https://conda.anaconda.org/anaconda/noarch/jinja2-2.11.2-py_0.tar.bz2#4a4fc89f98
 https://conda.anaconda.org/anaconda/noarch/networkx-2.5-py_0.tar.bz2#c19d5d748d65345fa47a2f094e360663
 https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.6.0-pyhd8ed1ab_0.tar.bz2#0941325bf48969e2b3b19d0951740950
 https://conda.anaconda.org/anaconda/win-64/numpy-base-1.19.1-py37ha3acd2a_0.tar.bz2#b66d448fd4e06e377b383735a12014a3
-https://conda.anaconda.org/anaconda/win-64/pip-20.2.4-py37_0.tar.bz2#2eee9258715c732bd1096735013564d0
 https://conda.anaconda.org/anaconda/win-64/virtualenv-20.0.35-py37_0.tar.bz2#074a48960997166891f3f21eac850a4f
 https://conda.anaconda.org/conda-forge/noarch/identify-2.2.4-pyhd8ed1ab_0.tar.bz2#86a6446475a53451a71e1515150cb532
 https://conda.anaconda.org/conda-forge/noarch/jinja2-time-0.2.0-py_2.tar.bz2#6e8d28fac1864c623fd4402168ca4d46

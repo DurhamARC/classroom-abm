@@ -1,5 +1,5 @@
 # platform: linux-64
-# env_hash: bda93271d00f60bf3d1914a95a41313d555ff725a019659b3125a22a3e5d9027
+# env_hash: 1030c13a521fba5bb68561ccf16d0cde45bf7fa3ffcc340bf821cc5ed9fe5829
 @EXPLICIT
 https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2#d7c89558ba9fa0495403155b64376d81
 https://conda.anaconda.org/anaconda/linux-64/ca-certificates-2020.10.14-0.tar.bz2#48642e3fd8fda4a7b17fddecc4b6dbca
@@ -54,7 +54,6 @@ https://conda.anaconda.org/anaconda/noarch/tqdm-4.50.2-py_0.tar.bz2#d7da4bc9cdf1
 https://conda.anaconda.org/anaconda/linux-64/typed-ast-1.4.1-py38h7b6447c_0.tar.bz2#f557902d184379b610d55039fb25969c
 https://conda.anaconda.org/anaconda/noarch/typing_extensions-3.7.4.3-py_0.tar.bz2#5c8380f176d05a9ef3cc52b02f9c5c2c
 https://conda.anaconda.org/anaconda/noarch/unidecode-1.1.1-py_0.tar.bz2#d6fd2a6cd88a4c2e67d94c0021e48bab
-https://conda.anaconda.org/anaconda/noarch/wheel-0.35.1-py_0.tar.bz2#9c75d27bfc81b445298eba0ebb088c15
 https://conda.anaconda.org/conda-forge/noarch/whichcraft-0.6.1-py_0.tar.bz2#08069b1a0dd029c8d5a8a935a7c71917
 https://conda.anaconda.org/conda-forge/noarch/binaryornot-0.4.4-py_1.tar.bz2#a556fa60840fcb9dd739d186bfd252f7
 https://conda.anaconda.org/anaconda/noarch/black-19.10b0-py_0.tar.bz2#efe4364cd657c3195f26835683a620a9
@@ -74,7 +73,6 @@ https://conda.anaconda.org/anaconda/noarch/jinja2-2.11.2-py_0.tar.bz2#4a4fc89f98
 https://conda.anaconda.org/anaconda/noarch/networkx-2.5-py_0.tar.bz2#c19d5d748d65345fa47a2f094e360663
 https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.6.0-pyhd8ed1ab_0.tar.bz2#0941325bf48969e2b3b19d0951740950
 https://conda.anaconda.org/anaconda/linux-64/numpy-1.19.1-py38h30dfecb_0.tar.bz2#bdc4592686d6a48ad19dd040ad7f12e5
-https://conda.anaconda.org/anaconda/linux-64/pip-20.2.4-py38_0.tar.bz2#588d0c83cd74064b6b288df7a32e5fae
 https://conda.anaconda.org/conda-forge/noarch/identify-2.2.4-pyhd8ed1ab_0.tar.bz2#86a6446475a53451a71e1515150cb532
 https://conda.anaconda.org/conda-forge/noarch/jinja2-time-0.2.0-py_2.tar.bz2#6e8d28fac1864c623fd4402168ca4d46
 https://conda.anaconda.org/anaconda/linux-64/pandas-1.1.3-py38he6710b0_0.tar.bz2#e1008a89186024eac5aca09337b722a8

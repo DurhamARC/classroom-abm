@@ -8,10 +8,6 @@ dependencies:
   - numpy
   - pandas
   - scipy=1.5.2
-  # mlm dependencies
-  - pip
-  - pip:
-    - -r file:pip-requirements.txt
   # dev dependencies
   - black
   - conda-lock
