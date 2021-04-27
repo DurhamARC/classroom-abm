@@ -27,7 +27,7 @@ python3 run.py
 
 To use Black as a Git hook on all commits run `pre-commit install` from the root of the repository.
 
-Add new depencies to environment.yml. Then execute `conda-lock` from the root of the repository. This will create lock files for osx, linux and windows which we store in the conda\_locks/ directory to minimise clutter:
+Add new dependencies to environment.yml. Then execute `conda-lock` from the root of the repository. This will create lock files for osx, linux and windows which we store in the conda\_locks/ directory to minimise clutter:
 
 ```
 conda-lock --filename-template conda_locks/conda-{platform}.lock
@@ -43,20 +43,17 @@ conda create --name classroom_abm --file conda_locks/conda-<operating-sys>-64.lo
 
 The multilevel_analysis folder contains scripts to run a multilevel model over the data. It uses [MLwiN](http://www.bristol.ac.uk/cmm/software/mlwin/) via its R script, R2MLWin.
 
-The `classroommlm` directory contains an R package with 2 methods, `null_model` and `full_model`, which run the multilevel
-model over the given data, and produce the coefficients and variances.
+The R directory contains:
 
-The `multilevel_analysis.py` script imports the CSV `classes_input/test_input.csv` to a pandas dataframe, then uses
-`rpy2` to run the models from `classroommlm`.
+ * A `classroommlm` directory containing an R package with 2 methods, `null_model` and `full_model`, which runs the multilevel model over the given data, and produces the coefficients and variances.
+ * A `run_mlm` R project (using `renv` for package management) which imports the CSV `classes_input/test_input.csv` and runs the models from `classroommlm`.
+
+The `multilevel_analysis.py` script runs the model from R (currently just to show it can be used from python).
 
 ### Installation
 
   1. Set up and activate a conda environment as above.
-  2. Install rpy2 via pip (as we can't install all the necessary R packages from conda's `r-base` package):
-     ```bash
-     pip install -r pip-requirements.txt
-     ```
-  3. Install R (e.g. `brew install R`)
+  2. Install R (e.g. `brew install R`)
   4. Install MLwiN and mlnscript, for which you will need a license:
     1. Sign up for an academic account at https://www.cmm.bristol.ac.uk/clients/reqform/
     2. Download `mlnscript` for MacOS/linux by filling in form at https://www.cmm.bristol.ac.uk/clients/softwaredownload/
