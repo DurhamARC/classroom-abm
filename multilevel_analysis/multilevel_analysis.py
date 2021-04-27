@@ -3,8 +3,10 @@ import sys
 
 
 def run_rscript(script):
+    params = ["Rscript", "-e", script]
+    print(f"Running: {' '.join(params)}")
     completed = subprocess.run(
-        ["Rscript", "-e", script],
+        params,
         capture_output=True,
         text=True,
         cwd="./R/run_mlm",
