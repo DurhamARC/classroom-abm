@@ -58,10 +58,10 @@ jobs:
         uses: r-lib/actions/setup-r@v1
         with:
           r-version: '4.0.3'
-      - name: Install renv
+      - name: Install renv and other R dependencies
         run: |
           Rscript -e "install.packages('renv', repos = 'http://cran.r-project.org')"
-          Rscript -e "renv::restore()"
+          sudo apt-get install libcurl
       - name: Install MLwiN
         run: ./setup_mlwin.sh
         env:
