@@ -71,3 +71,5 @@ jobs:
         run: |
           cd multilevel_analysis
           python multilevel_analysis.py
+        env:
+          MLNSCRIPT_PATH: /usr/bin/mlnscript
