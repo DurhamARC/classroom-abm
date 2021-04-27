@@ -57,14 +57,14 @@ The `multilevel_analysis.py` script runs the model from R (currently just to sho
   4. Install MLwiN and mlnscript, for which you will need a license:
     1. Sign up for an academic account at https://www.cmm.bristol.ac.uk/clients/reqform/
     2. Download `mlnscript` for MacOS/linux by filling in form at https://www.cmm.bristol.ac.uk/clients/softwaredownload/
-    3. Open the installer (.dmg, .rpm, etc) and save the files to a folder such as `/opt/mln`. (This is the path you will need to pass to the `null_model` and `full_model` functions in `classroommlm` or `multilevel_analysis.py`.)
+    3. Run the installer (.dmg, .rpm, etc). If prompted for a directory, save the files to a folder such as `/opt/mln`.
+    4. If the installer extracts the files to a path other than `/opt/mln`, set an environment variable `MLNSCRIPT_PATH` to where the file `mlnscript` has been saved.
 
 ### Running
 
-Run the script from the `multilevel_analysis` directory, passing the path to `mlnscript` if it is anything other than
-`/opt/mln/mlnscript`:
+Run the script from the `multilevel_analysis` directory:
 
 ```bash
 cd multilevel_analysis
-python multilevel_analysis.py <optional_path_to_mlnscript>
+python multilevel_analysis.py
 ```
