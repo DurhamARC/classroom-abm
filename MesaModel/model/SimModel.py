@@ -12,32 +12,26 @@ from .utils import compute_ave, compute_ave_disruptive
 
 
 class SimModel(Model):
-    def __init__(
-        self,
-        height=6,
-        width=6,
-        quality=1,
-        Inattentiveness=0,
-        control=3,
-        hyper_Impulsive=0,
-        AttentionSpan=0,
-    ):
+    def __init__(self, grid_params, teacher_params, pupil_params, model_initial_state):
 
-        self.height = height
-        self.width = width
-        self.quality = quality
-        self.Inattentiveness = Inattentiveness
-        self.control = control
-        self.hyper_Impulsive = hyper_Impulsive
+        # Checks:
+        print("height ", grid_params.height)  # should be 6
+        print("width ", grid_params.width)  # should be 5
+        print("quality ", teacher_params.quality)  # should be 1
+        print("control ", teacher_params.control)  # should be 3
+        print("inattentiveness ", pupil_params.inattentiveness)  # should be 0
+        print("hyper_impulsive ", pupil_params.hyper_impulsiveness)  # should be 0
+        print("attention ", pupil_params.attention_span)  # should be 0
+
+        self.grid_params = grid_params
+        self.teacher_params = teacher_params
+        self.pupil_params = pupil_params
+        self.model_state_params = model_initial_state
+
         self.schedule = RandomActivation(self)
-        self.grid = SingleGrid(width, height, torus=True)
-        self.AttentionSpan = AttentionSpan
-
-        self.learning = 0
-        self.distruptive = 0
-        self.redState = 0
-        self.yellowState = 0
-        self.greenState = 0
+        self.grid = SingleGrid(
+            self.grid_params.width, self.grid_params.width, torus=True
+        )
 
         # Load data
 
@@ -50,10 +44,7 @@ class SimModel(Model):
         # Set up agents
 
         counter = 0
-        for cell in self.grid.coord_iter():
-            x = cell[1]
-            y = cell[2]
-
+        for cell_content, x, y in self.grid.coord_iter():
             # Initial State for all student is random
             agent_type = self.random.randint(1, 3)
             ability = ability_zscore[counter]
@@ -70,7 +61,7 @@ class SimModel(Model):
             )
             # Place Agents on grid
             self.grid.position_agent(agent, (x, y))
-            print("agent pos:", x, y)
+            # print("agent pos:", x, y)
             self.schedule.add(agent)
             counter += 1
 
@@ -102,8 +93,9 @@ class SimModel(Model):
 
     def step(self):
 
-        self.learning = 0  # Reset counter of learing and disruptive agents
-        self.distruptive = 0
+        # Reset counter of learing and disruptive agents
+        self.model_state_params.learning_count = 0
+        self.model_state_params.disruptive_count = 0
         self.datacollector.collect(self)
         self.schedule.step()
 
