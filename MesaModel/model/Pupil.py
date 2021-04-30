@@ -458,6 +458,3 @@ class Pupil(Agent):
             (self.disrubted / self.model.schedule.steps)
             - (self.countLearning / self.model.schedule.steps)
         ) + self.initialDisrubtiveTend
-
-    def test(self):
-        print("HI I am test function ##############################")
