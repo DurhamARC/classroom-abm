@@ -19,7 +19,7 @@ Execute python code:
 
 ```
 cd MesaModel
-python server.py run.py
+python run.py
 ```
 
 ### Contributing to the mesa model:
