@@ -4,7 +4,7 @@ from mesa.visualization.ModularVisualization import VisualizationElement
 from mesa.visualization.UserParam import UserSettableParameter
 from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
 
-from MesaModel.model.SimModel import SimModel
+from model.SimModel import SimModel
 
 
 class HistogramModule(VisualizationElement):
