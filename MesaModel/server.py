@@ -1,9 +1,10 @@
-from mesa.visualization.ModularVisualization import ModularServer
-from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
-from mesa.visualization.UserParam import UserSettableParameter
-from mesa.visualization.ModularVisualization import VisualizationElement
 import numpy as np
-from model import SimClass
+from mesa.visualization.ModularVisualization import ModularServer
+from mesa.visualization.ModularVisualization import VisualizationElement
+from mesa.visualization.UserParam import UserSettableParameter
+from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
+
+from model.SimModel import SimModel
 
 
 class HistogramModule(VisualizationElement):
@@ -93,5 +94,5 @@ model_params = {
 
 histogram = HistogramModule(list(range(10)), 200, 500)
 server = ModularServer(
-    SimClass, [canvas_element, sim_element, sim_chart], "SimClass", model_params
+    SimModel, [canvas_element, sim_element, sim_chart], "Classroom ABM", model_params
 )
