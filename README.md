@@ -4,7 +4,7 @@ This repository uses Agent Based Modelling to model how much students learn acco
 
 The first iteration of this project was written in [NetLogo](https://ccl.northwestern.edu/netlogo/index.shtml) and was based on work by Peter Tymms. This is now stored in /NetLogo directory.
 
-We are now developing another model using Mesa (see /Mesa) and gratefully acknowledge Khulood Alharbi's [model](https://github.com/kuloody/ABM) which was used as a starting point for this work.
+We are now developing another model using Mesa (see /MesaModel) and gratefully acknowledge Khulood Alharbi's [model](https://github.com/kuloody/ABM) which was used as a starting point for this work.
 
 ## Running the Mesa model
 
@@ -18,9 +18,9 @@ conda activate classroom_abm
 Execute python code:
 
 ```
-python3 model.py
-python3 server.py
-python3 run.py
+cd MesaModel
+python model/Pupil.py model/SimModel.py
+python server.py run.py
 ```
 
 ### Contributing to the mesa model:
