@@ -6,14 +6,12 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
 
 jobs:
-  conda-lock-ci: 
+  conda-lock-ci:
     name: Test conda lock
     runs-on: ${{ matrix.os }}
     strategy:
@@ -41,3 +39,37 @@ jobs:
           conda config --show-sources
           conda config --show
           printenv | sort
+
+  multilevel-analysis:
+    name: Test multilevel analysis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup conda env
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: false
+          activate-environment: classroom_abm
+          environment-file: conda_locks/conda-linux-64.lock
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.0.3'
+      - name: Install renv and other R dependencies
+        run: |
+          Rscript -e "install.packages('renv', repos = 'http://cran.r-project.org')"
+          sudo apt-get install libcurl4 libcurl4-openssl-dev
+      - name: Install MLwiN
+        run: ./setup_mlwin.sh
+        env:
+          MLWIN_SHARE_URL: ${{ secrets.MLWIN_SHARE_URL }}
+          MLWIN_DOWNLOAD_URL: ${{ secrets.MLWIN_DOWNLOAD_URL }}
+      - name: Run multilevel analysis
+        run: |
+          cd multilevel_analysis
+          python multilevel_analysis.py
+        env:
+          MLNSCRIPT_PATH: /usr/bin/mlnscript

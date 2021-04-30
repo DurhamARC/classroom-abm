@@ -47,7 +47,7 @@ https://conda.anaconda.org/conda-forge/noarch/binaryornot-0.4.4-py_1.tar.bz2#a55
 https://conda.anaconda.org/anaconda/noarch/black-19.10b0-py_0.tar.bz2#efe4364cd657c3195f26835683a620a9
 https://conda.anaconda.org/anaconda/win-64/cffi-1.14.3-py37h7a1dbc1_0.tar.bz2#43605bea56ea41b71a4be409853a8f90
 https://conda.anaconda.org/conda-forge/noarch/cfgv-3.2.0-py_0.tar.bz2#4972efcb3e2cbd3954b24a17266be25c
-https://conda.anaconda.org/conda-forge/noarch/click-default-group-1.2.1-py_0.tar.bz2#64a66d3d4db54208496c4e2fa822eeee
+https://conda.anaconda.org/conda-forge/noarch/click-default-group-1.2.2-pyhd8ed1ab_1.tar.bz2#72a46ffc25701c173932fd55cf0965d3
 https://conda.anaconda.org/anaconda/noarch/importlib-metadata-2.0.0-py_1.tar.bz2#6e77b21126e16cd89989c52d37162f59
 https://conda.anaconda.org/anaconda/win-64/mkl-service-2.3.0-py37hb782905_0.tar.bz2#f854b386c6919557ad9a31ba6e834ae2
 https://conda.anaconda.org/anaconda/win-64/pysocks-1.7.1-py37_1.tar.bz2#833eab00bbf5d9695b541b1ea6df20d7
@@ -64,7 +64,7 @@ https://conda.anaconda.org/anaconda/noarch/networkx-2.5-py_0.tar.bz2#c19d5d748d6
 https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.6.0-pyhd8ed1ab_0.tar.bz2#0941325bf48969e2b3b19d0951740950
 https://conda.anaconda.org/anaconda/win-64/numpy-base-1.19.1-py37ha3acd2a_0.tar.bz2#b66d448fd4e06e377b383735a12014a3
 https://conda.anaconda.org/anaconda/win-64/virtualenv-20.0.35-py37_0.tar.bz2#074a48960997166891f3f21eac850a4f
-https://conda.anaconda.org/conda-forge/noarch/identify-2.2.3-pyhd8ed1ab_0.tar.bz2#bcbb7548505233dfea5ddca2ff403dc6
+https://conda.anaconda.org/conda-forge/noarch/identify-2.2.4-pyhd8ed1ab_0.tar.bz2#86a6446475a53451a71e1515150cb532
 https://conda.anaconda.org/conda-forge/noarch/jinja2-time-0.2.0-py_2.tar.bz2#6e8d28fac1864c623fd4402168ca4d46
 https://repo.anaconda.com/pkgs/r/win-64/mkl_random-1.0.4-py37h343c172_0.tar.bz2#6cc57abfd73c65279625cece075165bd
 https://conda.anaconda.org/anaconda/noarch/pyopenssl-19.1.0-py_1.tar.bz2#eae315d2cf67ea8da0ae585af683b60d
