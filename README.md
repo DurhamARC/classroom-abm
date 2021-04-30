@@ -19,7 +19,6 @@ Execute python code:
 
 ```
 cd MesaModel
-python model/Pupil.py model/SimModel.py
 python server.py run.py
 ```
 

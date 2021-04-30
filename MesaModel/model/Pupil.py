@@ -2,7 +2,7 @@ import math
 
 from mesa import Agent
 
-from utils import compute_ave_disruptive, compute_SD, compute_zscore
+from .utils import compute_ave_disruptive, compute_SD, compute_zscore
 
 
 class Pupil(Agent):

@@ -7,8 +7,8 @@ from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 from scipy import stats as stats
 
-from Pupil import Pupil
-from utils import compute_ave, compute_ave_disruptive
+from .Pupil import Pupil
+from .utils import compute_ave, compute_ave_disruptive
 
 
 class SimModel(Model):
