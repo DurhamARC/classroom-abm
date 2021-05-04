@@ -67,6 +67,12 @@ jobs:
         env:
           MLWIN_SHARE_URL: ${{ secrets.MLWIN_SHARE_URL }}
           MLWIN_DOWNLOAD_URL: ${{ secrets.MLWIN_DOWNLOAD_URL }}
+      - name: Check classroommlm R package
+        run: |
+          options(crayon.enabled = TRUE)
+          rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "warning")
+        shell: Rscript {0}
+        working-directory: multilevel_analysis/R/classroommlm
       - name: Run multilevel analysis
         run: |
           cd multilevel_analysis
