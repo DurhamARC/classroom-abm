@@ -10,3 +10,6 @@ LazyData: true
 Imports:
 	R2MLwiN (>= 0.8-7)
 RoxygenNote: 7.1.1
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

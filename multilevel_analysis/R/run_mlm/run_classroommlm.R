@@ -12,4 +12,4 @@ null_summary <- classroommlm::null_model(pupil_data, mlnscript_path)
 print(null_summary)
 
 full_summary <- classroommlm::full_model(pupil_data, mlnscript_path)
-print(null_summary)
+print(full_summary)
