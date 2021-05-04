@@ -58,9 +58,9 @@ jobs:
         uses: r-lib/actions/setup-r@v1
         with:
           r-version: '4.0.3'
-      - name: Install renv and other R dependencies
+      - name: Install renv and dependencies for testing
         run: |
-          Rscript -e "install.packages(c('renv', 'rcmdcheck'), repos = 'http://cran.r-project.org')"
+          Rscript -e "install.packages(c('renv', 'remotes', 'rcmdcheck'), repos = 'http://cran.r-project.org')"
           sudo apt-get install libcurl4 libcurl4-openssl-dev
       - name: Install MLwiN
         run: ./setup_mlwin.sh
@@ -70,6 +70,7 @@ jobs:
       - name: Check classroommlm R package
         run: |
           options(crayon.enabled = TRUE)
+          remotes::install_deps(dependencies = TRUE)
           rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "warning")
         shell: Rscript {0}
         working-directory: multilevel_analysis/R/classroommlm
