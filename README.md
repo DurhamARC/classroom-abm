@@ -1,5 +1,18 @@
 # Agent-based modelling of a classroom
 
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Agent-based modelling of a classroom](#agent-based-modelling-of-a-classroom)
+	- [Overview](#overview)
+	- [Running the Mesa model](#running-the-mesa-model)
+		- [Contributing to the mesa model:](#contributing-to-the-mesa-model)
+	- [Multilevel analysis](#multilevel-analysis)
+		- [Installation](#installation)
+		- [Running](#running)
+
+<!-- /TOC -->
+
+## Overview
 This repository uses Agent Based Modelling to model how much students learn according to how good the teacher is at classroom control and teaching.
 
 The first iteration of this project was written in [NetLogo](https://ccl.northwestern.edu/netlogo/index.shtml) and was based on work by Peter Tymms. This is now stored in /NetLogo directory.
@@ -53,14 +66,22 @@ The `multilevel_analysis.py` script runs the model from R (currently just to sho
 
   1. Set up and activate a conda environment as above.
   2. Install R (e.g. `brew install R`)
-  4. Install MLwiN and mlnscript, for which you will need a license:
+  3. Install MLwiN and mlnscript, for which you will need a license:
     1. Sign up for an academic account at https://www.cmm.bristol.ac.uk/clients/reqform/
     2. Download `mlnscript` for MacOS/linux by filling in form at https://www.cmm.bristol.ac.uk/clients/softwaredownload/
     3. Run the installer (.dmg, .rpm, etc). If prompted for a directory, save the files to a folder such as `/opt/mln`.
     4. If the installer extracts the files to a path other than `/opt/mln`, set an environment variable `MLNSCRIPT_PATH` to where the file `mlnscript` has been saved.
+  4. Build the build the `classroommlm` R package and copy the output to the `renv` local packages dir:
+
+    ```bash
+    cd multilevel_analysis/R
+    R CMD build classroommlm
+    cp classroommlm*.tar.gz run_mlm/renv/local
+    ```
+
+  (You'll need to do this whenever changes are made in the `classroommlm` directory.)
 
 ### Running
-
 Run the script from the `multilevel_analysis` directory:
 
 ```bash
