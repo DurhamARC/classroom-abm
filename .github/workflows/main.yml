@@ -105,10 +105,9 @@ jobs:
         working-directory: multilevel_analysis/R/classroommlm
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
-      - name: Build classroommlm R package and put in run_mlm local packages dir
+      - name: Copy built package to in run_mlm local packages dir
         run: |
-          R CMD build classroommlm
-          mv classroommlm*.tar.gz run_mlm/renv/local
+          mv classroommlm/check/classroommlm*.tar.gz run_mlm/renv/local
           ls -l run_mlm/renv/local
         working-directory: multilevel_analysis/R
         env:
