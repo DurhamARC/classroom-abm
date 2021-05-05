@@ -46,6 +46,11 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
+    env:
+      MLNSCRIPT_PATH: /usr/bin/mlnscript
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      RSPM: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"
+
     steps:
       - uses: actions/checkout@v2
       - name: Setup conda env
@@ -58,10 +63,28 @@ jobs:
         uses: r-lib/actions/setup-r@v1
         with:
           r-version: '4.0.3'
-      - name: Install renv and dependencies for testing
+      - name: Query R dependencies
         run: |
-          Rscript -e "install.packages(c('renv', 'remotes', 'rcmdcheck'), repos = 'http://cran.r-project.org')"
-          sudo apt-get install libcurl4 libcurl4-openssl-dev
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+      - name: Restore R package cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+      - name: Install system dependencies for R packages
+        run: |
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
+      - name: Install R dependencies
+        run: |
+          remotes::install_cran(c("renv", "rcmdcheck")
+        shell: Rscript {0}
       - name: Install MLwiN
         run: ./setup_mlwin.sh
         env:
@@ -75,10 +98,14 @@ jobs:
         shell: Rscript {0}
         working-directory: multilevel_analysis/R/classroommlm
         env:
-          MLNSCRIPT_PATH: /usr/bin/mlnscript
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
       - name: Run multilevel analysis
         run: |
           cd multilevel_analysis
           python multilevel_analysis.py
-        env:
-          MLNSCRIPT_PATH: /usr/bin/mlnscript
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ runner.os }}-r-results
+          path: check
