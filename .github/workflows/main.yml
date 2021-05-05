@@ -66,8 +66,10 @@ jobs:
       - name: Query R dependencies
         run: |
           install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), "$GITHUB_WORKSPACE/.github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), "$GITHUB_WORKSPACE/.github/R-version")
+          depends_path <- file.path(Sys.getenv('GITHUB_WORKSPACE'), ".github", "depends.Rds")
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), depends_path, version = 2)
+          r_version_path <- file.path(Sys.getenv('GITHUB_WORKSPACE'), ".github", "R-version")
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), r_version_path)
         shell: Rscript {0}
         working-directory: multilevel_analysis/R/classroommlm
       - name: Restore R package cache
