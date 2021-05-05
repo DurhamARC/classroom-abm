@@ -24,7 +24,6 @@ classroom_mse <- function(real_data, simulated_data, mlwinpath) {
   # Get SDs from data
   real_sds <- c(sd(real_data$start_maths), sd(real_data$Inattentiveness),
                 sd(real_data$Ability), sd(real_data$Deprivation))
-  print(real_sds)
 
   # First calculate scaled values for real and simulated data
   real_scaled <- scaled_values(
