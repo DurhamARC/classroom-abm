@@ -86,7 +86,7 @@ jobs:
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
       - name: Install R dependencies
         run: |
-          remotes::install_cran(c("renv", "rcmdcheck")
+          remotes::install_cran(c("renv", "rcmdcheck"))
         shell: Rscript {0}
       - name: Install MLwiN
         run: ./setup_mlwin.sh
