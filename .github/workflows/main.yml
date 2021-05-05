@@ -74,6 +74,8 @@ jobs:
           rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "warning")
         shell: Rscript {0}
         working-directory: multilevel_analysis/R/classroommlm
+        env:
+          MLNSCRIPT_PATH: /usr/bin/mlnscript
       - name: Run multilevel analysis
         run: |
           cd multilevel_analysis

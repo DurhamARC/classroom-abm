@@ -3,16 +3,18 @@ test_that("mse works", {
   pupil_data <- suppressWarnings(transform(pupil_data, end_maths=as.numeric(end_maths)))
   pupil_data <- pupil_data[complete.cases(pupil_data),]
 
+  mlnscript_path <- Sys.getenv("MLNSCRIPT_PATH", unset = "/opt/mln/mlnscript")
+
   # Mean squared error between real data and  itself should be 0
-  expect_equal(classroom_mse(pupil_data, pupil_data, '/opt/mln/mlnscript'), 0)
+  expect_equal(classroom_mse(pupil_data, pupil_data, mlnscript_path), 0)
 
   # If we add 1 to each Maths score the mean squared error will increase
   pupil_data_amended <- transform(pupil_data, end_maths=end_maths+1)
-  expect_equal(classroom_mse(pupil_data, pupil_data_amended, '/opt/mln/mlnscript'), 0.2)
+  expect_equal(classroom_mse(pupil_data, pupil_data_amended, mlnscript_path), 0.2)
 
   # If we add 10 to each Maths score the mean squared error will increase further
   pupil_data_amended <- transform(pupil_data, end_maths=end_maths+10)
-  expect_equal(classroom_mse(pupil_data, pupil_data_amended, '/opt/mln/mlnscript'), 20)
+  expect_equal(classroom_mse(pupil_data, pupil_data_amended, mlnscript_path), 20)
 })
 
 test_that("scaling works as expected", {
