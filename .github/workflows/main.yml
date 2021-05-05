@@ -100,7 +100,7 @@ jobs:
         run: |
           options(crayon.enabled = TRUE)
           remotes::install_deps(dependencies = TRUE)
-          rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "warning")
+          rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "warning", check_dir = "check")
         shell: Rscript {0}
         working-directory: multilevel_analysis/R/classroommlm
         env:
@@ -114,5 +114,4 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: ${{ runner.os }}-r-results
-          path: check
-        working-directory: multilevel_analysis/R/classroommlm
+          path: multilevel_analysis/R/classroommlm/check
