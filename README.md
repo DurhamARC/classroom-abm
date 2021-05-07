@@ -73,11 +73,11 @@ The `multilevel_analysis.py` script runs the model from R (currently just to sho
     4. If the installer extracts the files to a path other than `/opt/mln`, set an environment variable `MLNSCRIPT_PATH` to where the file `mlnscript` has been saved.
   4. Build the build the `classroommlm` R package and copy the output to the `renv` local packages dir:
 
-    ```bash
-    cd multilevel_analysis/R
-    R CMD build classroommlm
-    cp classroommlm*.tar.gz run_mlm/renv/local
-    ```
+  ```bash
+  cd multilevel_analysis/R
+  R CMD build classroommlm
+  cp classroommlm*.tar.gz run_mlm/renv/local
+  ```
 
   (You'll need to do this whenever changes are made in the `classroommlm` directory.)
 
