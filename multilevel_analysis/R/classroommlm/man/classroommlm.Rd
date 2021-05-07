@@ -4,6 +4,9 @@
 \name{classroommlm}
 \alias{classroommlm}
 \title{classroommlm: A package for creating multilevel models from classroom data}
+\description{
+Creates a null and full model from a set of classroom data, and calculates and error score.
+}
 \section{Dependencies}{
 
 The classroommlm package depends on the R2MlWin package, which is based on MLwiN. To use it:

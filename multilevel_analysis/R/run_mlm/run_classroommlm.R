@@ -8,8 +8,7 @@ if (mlnscript_path == "") {
 }
 
 pupil_data <- read.table("../../../classes_input/test_input.csv", header=TRUE, sep=",")
-null_summary <- classroommlm::null_model(pupil_data, mlnscript_path)
-print(null_summary)
-
-full_summary <- classroommlm::full_model(pupil_data, mlnscript_path)
-print(null_summary)
+altered_data <- transform(pupil_data,
+                          end_maths=end_maths+rnorm(nrow(pupil_data), mean=0, sd=10))
+mse <- classroommlm::classroom_mse(pupil_data, altered_data, mlwinpath=mlnscript_path)
+cat(mse)
