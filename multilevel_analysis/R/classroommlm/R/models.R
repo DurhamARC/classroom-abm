@@ -21,7 +21,7 @@ null_model <- function(pupil_data, mlwinpath){
     coef(null_model),
     sqrt(diag(vcov(null_model)))
   )
-  names(null_model.summary_table) <- c("Actual", "Std Err")
+  names(null_model.summary_table) <- c("Actual", "StdErr")
   rownames(null_model.summary_table) = c('Constant (mean)', 'Class variance', 'Pupil variance')
   null_model.summary_table <- rbind(null_model.summary_table,
                                     "% of variance at class level" = c(
@@ -51,7 +51,7 @@ full_model <- function(pupil_data, mlwinpath){
     coef(full_model),
     sqrt(diag(vcov(full_model)))
   )
-  names(full_model.summary_table) <- c("Actual", "Std Err")
+  names(full_model.summary_table) <- c("Actual", "StdErr")
   rownames(full_model.summary_table) <- c(
     'Constant (mean)',
     'Start maths',

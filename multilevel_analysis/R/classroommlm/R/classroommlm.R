@@ -10,5 +10,6 @@
 #' }
 #' @docType package
 #' @name classroommlm
+#' @description Creates a null and full model from a set of classroom data, and calculates and error score.
 NULL
 #> NULL

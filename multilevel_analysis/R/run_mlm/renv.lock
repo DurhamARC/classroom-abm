@@ -23,6 +23,13 @@
       "Repository": "CRAN",
       "Hash": "08588806cba69f04797dab50627428ed"
     },
+    "Metrics": {
+      "Package": "Metrics",
+      "Version": "0.1.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1fdc9b3adfe2e2f8f77c22a59cf322ec"
+    },
     "R2MLwiN": {
       "Package": "R2MLwiN",
       "Version": "0.8-7",
@@ -81,9 +88,9 @@
     },
     "classroommlm": {
       "Package": "classroommlm",
-      "Version": "0.1.0",
+      "Version": "0.1.1",
       "Source": "Local",
-      "Hash": "36b884ea9c62a3f559727828bcd5a718"
+      "Hash": "0b9718a2db0cdf3509d5ea5cb74f769a"
     },
     "cli": {
       "Package": "cli",
