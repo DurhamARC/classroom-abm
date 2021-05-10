@@ -26,7 +26,7 @@ class SimModel(Model):
 
         self.schedule = RandomActivation(self)
         self.grid = SingleGrid(
-            self.grid_params.width, self.grid_params.width, torus=True
+            self.grid_params.height, self.grid_params.width, torus=True
         )
 
         # Load data
