@@ -19,17 +19,6 @@ from .utils import (
 class SimModel(Model):
     def __init__(self, grid_params, teacher_params, pupil_params, model_initial_state):
 
-        """
-        # Checks:
-        print("height ", grid_params.height)  # should be 6
-        print("width ", grid_params.width)  # should be 5
-        print("quality ", teacher_params.quality)  # should be 1
-        print("control ", teacher_params.control)  # should be 3
-        print("inattentiveness ", pupil_params.inattentiveness)  # should be 0
-        print("hyper_impulsive ", pupil_params.hyper_impulsiveness)  # should be 0
-        print("attention ", pupil_params.attention_span)  # should be 0
-        """
-
         self.grid_params = grid_params
         self.teacher_params = teacher_params
         self.pupil_params = pupil_params
@@ -98,9 +87,6 @@ class SimModel(Model):
 
         self.running = True
 
-        # MARK REMOVE THIS
-        self.csvcount = 0
-
     def step(self):
 
         # Reset counter of learning and disruptive agents
@@ -110,11 +96,6 @@ class SimModel(Model):
 
         # Advance the model by one step
         self.schedule.step()
-
-        # MARK REMOVE THIS
-        modelData = self.datacollector.get_model_vars_dataframe()
-        modelData.to_csv(f"modelvars_{self.csvcount}.csv")
-        self.csvcount += 1
 
         # collect data
         self.datacollector.collect(self)
