@@ -8,12 +8,18 @@ from mesa.time import RandomActivation
 from scipy import stats as stats
 
 from .Pupil import Pupil
-from .utils import compute_ave, compute_ave_disruptive
+from .utils import (
+    compute_ave,
+    compute_ave_disruptive,
+    get_num_disruptors,
+    get_num_learning,
+)
 
 
 class SimModel(Model):
     def __init__(self, grid_params, teacher_params, pupil_params, model_initial_state):
 
+        """
         # Checks:
         print("height ", grid_params.height)  # should be 6
         print("width ", grid_params.width)  # should be 5
@@ -22,6 +28,7 @@ class SimModel(Model):
         print("inattentiveness ", pupil_params.inattentiveness)  # should be 0
         print("hyper_impulsive ", pupil_params.hyper_impulsiveness)  # should be 0
         print("attention ", pupil_params.attention_span)  # should be 0
+        """
 
         self.grid_params = grid_params
         self.teacher_params = teacher_params
@@ -68,8 +75,8 @@ class SimModel(Model):
         # Collecting data while running the model
         self.datacollector = DataCollector(
             model_reporters={
-                "Distruptive Students": "distruptive",
-                "Learning Students": "learning",
+                "Learning Students": get_num_learning,
+                "Disruptive Students": get_num_disruptors,
                 "Average End Math": compute_ave,
                 "disruptiveTend": compute_ave_disruptive,
             },
@@ -91,13 +98,23 @@ class SimModel(Model):
 
         self.running = True
 
+        # MARK REMOVE THIS
+        self.csvcount = 0
+
     def step(self):
 
-        # Reset counter of learing and disruptive agents
+        # Reset counter of learning and disruptive agents
         self.model_state_params.learning_count = 0
         self.model_state_params.disruptive_count = 0
         self.datacollector.collect(self)
+
+        # Advance the model by one step
         self.schedule.step()
+
+        # MARK REMOVE THIS
+        modelData = self.datacollector.get_model_vars_dataframe()
+        modelData.to_csv(f"modelvars_{self.csvcount}.csv")
+        self.csvcount += 1
 
         # collect data
         self.datacollector.collect(self)

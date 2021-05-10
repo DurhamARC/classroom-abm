@@ -68,7 +68,7 @@ canvas_element = CanvasGrid(simclass_draw, 6, 5, 400, 400)
 sim_chart = ChartModule(
     [
         {"Label": "Learning Students", "Color": "green"},
-        {"Label": "Distruptive Students", "Color": "red"},
+        {"Label": "Disruptive Students", "Color": "red"},
         {"Label": "Average End Math", "Color": "black"},
     ]
 )
