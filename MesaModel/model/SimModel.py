@@ -22,7 +22,7 @@ class SimModel(Model):
         self.grid_params = grid_params
         self.teacher_params = teacher_params
         self.pupil_params = pupil_params
-        self.model_state_params = model_initial_state
+        self.model_state = model_initial_state
 
         self.schedule = RandomActivation(self)
         self.grid = SingleGrid(
@@ -90,8 +90,8 @@ class SimModel(Model):
     def step(self):
 
         # Reset counter of learning and disruptive agents
-        self.model_state_params.learning_count = 0
-        self.model_state_params.disruptive_count = 0
+        self.model_state.learning_count = 0
+        self.model_state.disruptive_count = 0
         self.datacollector.collect(self)
 
         # Advance the model by one step

@@ -49,7 +49,7 @@ class Pupil(Agent):
         if self.redStateCange() == 1:
             self.changeState()
             if self.type == 3:
-                self.model.model_state_params.disruptive_count += 1
+                self.model.model_state.disruptive_count += 1
             self.set_disruptive_tend()
             self.randomised_agent_attribute = self.random.randint(2, 6)
 
@@ -66,7 +66,7 @@ class Pupil(Agent):
             self.set_disruptive_tend()
             self.changeState()
             if self.type == 3:
-                self.model.model_state_params.disruptive_count += 1
+                self.model.model_state.disruptive_count += 1
             self.randomised_agent_attribute = self.random.randint(2, 6)
 
             return
@@ -78,7 +78,7 @@ class Pupil(Agent):
 
         if red > 5 and self.type == 2:
             self.type = 3
-            self.model.model_state_params.disruptive_count += 1
+            self.model.model_state.disruptive_count += 1
             self.disruptive += 1
             self.time_in_red_state += 1
             self.time_in_yellow_state = 0
@@ -101,7 +101,7 @@ class Pupil(Agent):
             and self.behave > self.randomised_agent_attribute
         ):
             self.type = 3
-            self.model.model_state_params.disruptive_count += 1
+            self.model.model_state.disruptive_count += 1
             self.disruptive += 1
             self.time_in_red_state += 1
             self.time_in_yellow_state = 0
@@ -114,7 +114,7 @@ class Pupil(Agent):
             and self.behave > self.randomised_agent_attribute
         ):
             self.type = 3
-            self.model.model_state_params.disruptive_count += 1
+            self.model.model_state.disruptive_count += 1
             self.disruptive += 1
             self.time_in_red_state += 1
             self.time_in_yellow_state = 0
@@ -127,7 +127,7 @@ class Pupil(Agent):
             and self.behave_2 > self.randomised_agent_attribute
         ):
             self.type = 3
-            self.model.model_state_params.disruptive_count += 1
+            self.model.model_state.disruptive_count += 1
             self.disruptive += 1
             self.time_in_red_state += 1
             self.time_in_yellow_state = 0
@@ -182,8 +182,8 @@ class Pupil(Agent):
             and self.type == 1
         ):
             self.type = 2
-            if self.model.model_state_params.learning_count > 0:
-                self.model.model_state_params.learning_count -= 1
+            if self.model.model_state.learning_count > 0:
+                self.model.model_state.learning_count -= 1
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -204,8 +204,8 @@ class Pupil(Agent):
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
-            if self.model.model_state_params.learning_count > 0:
-                self.model.model_state_params.learning_count -= 1
+            if self.model.model_state.learning_count > 0:
+                self.model.model_state.learning_count -= 1
             return 1
 
         # Change state based on majority of neighbours' color and agent's current color state
@@ -217,7 +217,7 @@ class Pupil(Agent):
 
         if green > 5 and self.type == 2:
             self.type = 1
-            self.model.model_state_params.learning_count += 1
+            self.model.model_state.learning_count += 1
             self.set_start_math()
             self.time_in_red_state = 0
             self.time_in_yellow_state = 0
@@ -234,7 +234,7 @@ class Pupil(Agent):
                 and self.model.teacher_params.quality > self.randomised_agent_attribute
             ):
                 self.type = 1
-                self.model.model_state_params.learning_count += 1
+                self.model.model_state.learning_count += 1
                 self.set_start_math()
                 self.time_in_red_state = 0
                 self.time_in_yellow_state = 0
@@ -248,7 +248,7 @@ class Pupil(Agent):
                 >= self.behave_2
             ):
                 self.type = 1
-                self.model.model_state_params.learning_count += 1
+                self.model.model_state.learning_count += 1
                 self.set_start_math()
                 self.time_in_red_state = 0
                 self.time_in_yellow_state = 0
@@ -259,7 +259,7 @@ class Pupil(Agent):
                 and self.type == 2
             ):
                 self.type = 1
-                self.model.model_state_params.learning_count += 1
+                self.model.model_state.learning_count += 1
                 self.set_start_math()
                 self.time_in_red_state = 0
                 self.time_in_yellow_state = 0
@@ -267,7 +267,7 @@ class Pupil(Agent):
                 return 1
             return
         self.type = 1
-        self.model.model_state_params.learning_count += 1
+        self.model.model_state.learning_count += 1
         self.set_start_math()
         self.time_in_red_state = 0
         self.time_in_yellow_state = 0
@@ -290,14 +290,14 @@ class Pupil(Agent):
         colour = max(Pturn_red, Pturn_green, Pturn_yellow)
         if Pturn_red == colour:
             self.type = 3
-            self.model.model_state_params.disruptive_count += 1
+            self.model.model_state.disruptive_count += 1
             return
         if Pturn_yellow == colour:
             self.type = 2
             return
         if Pturn_green == colour:
             self.type = 1
-            self.model.model_state_params.learning_count += 1
+            self.model.model_state.learning_count += 1
             self.set_start_math()
             return
 
@@ -313,7 +313,7 @@ class Pupil(Agent):
             self.time_in_red_state = 0
             self.time_in_yellow_state = 0
             self.time_in_green_state += 1
-            self.model.model_state_params.learning_count += 1
+            self.model.model_state.learning_count += 1
             self.set_start_math()
             return 1
 
@@ -326,7 +326,7 @@ class Pupil(Agent):
             self.time_in_red_state = 0
             self.time_in_yellow_state = 0
             self.time_in_green_state += 1
-            self.model.model_state_params.learning_count += 1
+            self.model.model_state.learning_count += 1
             self.set_start_math()
 
             return 1
@@ -360,7 +360,7 @@ class Pupil(Agent):
             self.time_in_red_state = 0
             self.time_in_yellow_state = 0
             self.time_in_green_state += 1
-            self.model.model_state_params.learning_count += 1
+            self.model.model_state.learning_count += 1
             # self.set_start_math()
 
             return 1
@@ -435,12 +435,12 @@ class Pupil(Agent):
             >= self.randomised_agent_attribute
         ):
             self.type = 1
-            if self.model.model_state_params.disruptive_count > 0:
-                self.model.model_state_params.disruptive_count -= 1
+            if self.model.model_state.disruptive_count > 0:
+                self.model.model_state.disruptive_count -= 1
             self.time_in_red_state = 0
             self.time_in_yellow_state = 0
             self.time_in_green_state += 1
-            self.model.model_state_params.learning_count += 1
+            self.model.model_state.learning_count += 1
             self.set_start_math()
             return 1
         if self.time_in_green_state > self.model.pupil_params.attention_span:
@@ -448,8 +448,8 @@ class Pupil(Agent):
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
-            if self.model.model_state_params.learning_count > 0:
-                self.model.model_state_params.learning_count -= 1
+            if self.model.model_state.learning_count > 0:
+                self.model.model_state.learning_count -= 1
             return 1
 
     def set_start_math(self):
