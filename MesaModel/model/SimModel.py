@@ -8,36 +8,26 @@ from mesa.time import RandomActivation
 from scipy import stats as stats
 
 from .Pupil import Pupil
-from .utils import compute_ave, compute_ave_disruptive
+from .utils import (
+    compute_ave,
+    compute_ave_disruptive,
+    get_num_disruptors,
+    get_num_learning,
+)
 
 
 class SimModel(Model):
-    def __init__(
-        self,
-        height=6,
-        width=6,
-        quality=1,
-        Inattentiveness=0,
-        control=3,
-        hyper_Impulsive=0,
-        AttentionSpan=0,
-    ):
+    def __init__(self, grid_params, teacher_params, pupil_params, model_initial_state):
 
-        self.height = height
-        self.width = width
-        self.quality = quality
-        self.Inattentiveness = Inattentiveness
-        self.control = control
-        self.hyper_Impulsive = hyper_Impulsive
+        self.grid_params = grid_params
+        self.teacher_params = teacher_params
+        self.pupil_params = pupil_params
+        self.model_state = model_initial_state
+
         self.schedule = RandomActivation(self)
-        self.grid = SingleGrid(width, height, torus=True)
-        self.AttentionSpan = AttentionSpan
-
-        self.learning = 0
-        self.distruptive = 0
-        self.redState = 0
-        self.yellowState = 0
-        self.greenState = 0
+        self.grid = SingleGrid(
+            self.grid_params.height, self.grid_params.width, torus=True
+        )
 
         # Load data
 
@@ -50,10 +40,7 @@ class SimModel(Model):
         # Set up agents
 
         counter = 0
-        for cell in self.grid.coord_iter():
-            x = cell[1]
-            y = cell[2]
-
+        for cell_content, x, y in self.grid.coord_iter():
             # Initial State for all student is random
             agent_type = self.random.randint(1, 3)
             ability = ability_zscore[counter]
@@ -70,15 +57,15 @@ class SimModel(Model):
             )
             # Place Agents on grid
             self.grid.position_agent(agent, (x, y))
-            print("agent pos:", x, y)
+            # print("agent pos:", x, y)
             self.schedule.add(agent)
             counter += 1
 
         # Collecting data while running the model
         self.datacollector = DataCollector(
             model_reporters={
-                "Distruptive Students": "distruptive",
-                "Learning Students": "learning",
+                "Learning Students": get_num_learning,
+                "Disruptive Students": get_num_disruptors,
                 "Average End Math": compute_ave,
                 "disruptiveTend": compute_ave_disruptive,
             },
@@ -102,9 +89,12 @@ class SimModel(Model):
 
     def step(self):
 
-        self.learning = 0  # Reset counter of learing and disruptive agents
-        self.distruptive = 0
+        # Reset counter of learning and disruptive agents
+        self.model_state.learning_count = 0
+        self.model_state.disruptive_count = 0
         self.datacollector.collect(self)
+
+        # Advance the model by one step
         self.schedule.step()
 
         # collect data

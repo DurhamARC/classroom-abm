@@ -1,10 +1,7 @@
 import numpy as np
-from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.ModularVisualization import VisualizationElement
 from mesa.visualization.UserParam import UserSettableParameter
 from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
-
-from model.SimModel import SimModel
 
 
 class HistogramModule(VisualizationElement):
@@ -71,7 +68,7 @@ canvas_element = CanvasGrid(simclass_draw, 6, 5, 400, 400)
 sim_chart = ChartModule(
     [
         {"Label": "Learning Students", "Color": "green"},
-        {"Label": "Distruptive Students", "Color": "red"},
+        {"Label": "Disruptive Students", "Color": "red"},
         {"Label": "Average End Math", "Color": "black"},
     ]
 )
@@ -93,6 +90,3 @@ model_params = {
 }
 
 histogram = HistogramModule(list(range(10)), 200, 500)
-server = ModularServer(
-    SimModel, [canvas_element, sim_element, sim_chart], "Classroom ABM", model_params
-)

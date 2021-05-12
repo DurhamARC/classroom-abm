@@ -4,6 +4,14 @@ import statistics
 import math
 
 
+def get_num_disruptors(model):
+    return model.model_state.disruptive_count
+
+
+def get_num_learning(model):
+    return model.model_state.learning_count
+
+
 def compute_ave(model):
     agent_maths = [agent.e_math for agent in model.schedule.agents]
     x = sum(agent_maths)
@@ -46,7 +54,6 @@ def compute_SD(model, x):
 
 
 def normal(agent_ability, x):
-
     minValue = min(agent_ability)
     maxValue = max(agent_ability)
     rescale = (x - minValue) / maxValue - minValue
