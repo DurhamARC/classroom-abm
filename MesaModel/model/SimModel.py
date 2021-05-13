@@ -1,5 +1,3 @@
-import os
-
 import pandas as pd
 from mesa import Model
 from mesa.datacollection import DataCollector
@@ -17,7 +15,14 @@ from .utils import (
 
 
 class SimModel(Model):
-    def __init__(self, grid_params, teacher_params, pupil_params, model_initial_state):
+    def __init__(
+        self,
+        input_filepath,
+        grid_params,
+        teacher_params,
+        pupil_params,
+        model_initial_state,
+    ):
 
         self.grid_params = grid_params
         self.teacher_params = teacher_params
@@ -30,12 +35,16 @@ class SimModel(Model):
         )
 
         # Load data
+        all_data = pd.read_csv(input_filepath)
+        grouped = all_data.groupby("class_id")
 
-        data = pd.read_csv(os.path.join(os.getcwd(), "Input/DataSample.csv"))
-        maths = data["s_maths"].to_numpy()
+        # For now, just get first class.
+        data = grouped.get_group((list(grouped.groups)[0]))
+
+        maths = data["start_maths"].to_numpy()
         ability_zscore = stats.zscore(maths)
-        behave = data["behav1"].to_numpy()
-        behav2 = data["behav2"].to_numpy()
+        inattentiveness = data["Inattentiveness"].to_numpy()
+        hyper_impulsive = data["hyper_impulsive"].to_numpy()
 
         # Set up agents
 
@@ -50,8 +59,8 @@ class SimModel(Model):
                 (x, y),
                 self,
                 agent_type,
-                behave[counter],
-                behav2[counter],
+                inattentiveness[counter],
+                hyper_impulsive[counter],
                 maths[counter],
                 ability,
             )
@@ -73,8 +82,8 @@ class SimModel(Model):
             agent_reporters={
                 "x": lambda a: a.pos[0],
                 "y": lambda a: a.pos[1],
-                "Inattentiveness_score": "behave",
-                "Hyber_Inattinteveness": "behave_2",
+                "Inattentiveness_score": "inattentiveness",
+                "Hyper_Impulsivity": "hyper_impulsive",
                 "S_math": "s_math",
                 "S_read": "s_read",
                 "E_math": "e_math",
