@@ -58,13 +58,16 @@ def simclass_draw(agent):
     return portrayal
 
 
+def create_canvas_grid(grid_params):
+    return CanvasGrid(simclass_draw, grid_params.width, grid_params.height, 400, 400)
+
+
 def hist(model):
     Average = model.datacollector.get_model_vars_dataframe()
     Average.plot()
 
 
 sim_element = simElement()
-canvas_element = CanvasGrid(simclass_draw, 6, 5, 400, 400)
 sim_chart = ChartModule(
     [
         {"Label": "Learning Students", "Color": "green"},

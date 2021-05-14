@@ -1,4 +1,5 @@
 import pandas as pd
+import math
 from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
@@ -11,13 +12,14 @@ from .utils import (
     compute_ave_disruptive,
     get_num_disruptors,
     get_num_learning,
+    get_grid_size,
 )
 
 
 class SimModel(Model):
     def __init__(
         self,
-        input_filepath,
+        class_data,
         grid_params,
         teacher_params,
         pupil_params,
@@ -30,31 +32,34 @@ class SimModel(Model):
         self.model_state = model_initial_state
 
         self.schedule = RandomActivation(self)
+
+        # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid = SingleGrid(
-            self.grid_params.height, self.grid_params.width, torus=True
+            self.grid_params.width, self.grid_params.height, torus=False
         )
 
-        # Load data
-        all_data = pd.read_csv(input_filepath)
-        grouped = all_data.groupby("class_id")
-
-        # For now, just get first class.
-        data = grouped.get_group((list(grouped.groups)[0]))
-
-        maths = data["start_maths"].to_numpy()
+        class_size = len(class_data)
+        maths = class_data["start_maths"].to_numpy()
         ability_zscore = stats.zscore(maths)
-        inattentiveness = data["Inattentiveness"].to_numpy()
-        hyper_impulsive = data["hyper_impulsive"].to_numpy()
+        inattentiveness = class_data["Inattentiveness"].to_numpy()
+        hyper_impulsive = class_data["hyper_impulsive"].to_numpy()
+
+        # Work out how many rows should be full - we spread the gaps
+        # across rows rather than the last row being nearly empty
+        rows_with_gaps = self.grid.width * self.grid.height - class_size
+        full_rows = self.grid.height - rows_with_gaps
 
         # Set up agents
-
         counter = 0
         for cell_content, x, y in self.grid.coord_iter():
+            if y >= full_rows and x == self.grid.width - 1:
+                continue
+
             # Initial State for all student is random
             agent_type = self.random.randint(1, 3)
             ability = ability_zscore[counter]
 
-            # create agents form data
+            # create agents from data
             agent = Pupil(
                 (x, y),
                 self,
@@ -65,8 +70,7 @@ class SimModel(Model):
                 ability,
             )
             # Place Agents on grid
-            self.grid.position_agent(agent, (x, y))
-            # print("agent pos:", x, y)
+            self.grid.position_agent(agent, x, y)
             self.schedule.add(agent)
             counter += 1
 
