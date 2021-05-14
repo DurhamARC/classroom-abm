@@ -12,3 +12,4 @@ dependencies:
   - black
   - conda-lock
   - pre_commit
+  - pytest
