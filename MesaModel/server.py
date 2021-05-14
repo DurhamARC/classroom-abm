@@ -76,20 +76,4 @@ sim_chart = ChartModule(
     ]
 )
 
-model_params = {
-    "height": 5,
-    "width": 6,
-    "quality": UserSettableParameter("slider", "Teaching quality", 5.0, 0.00, 5.0, 1.0),
-    "control": UserSettableParameter("slider", "Control", 5.0, 0.00, 5.0, 1.0),
-    "Inattentiveness": UserSettableParameter(
-        "slider", "Inattentiveness ", 1.0, 0.00, 1.0, 1.0
-    ),
-    "hyper_Impulsive": UserSettableParameter(
-        "slider", "Hyperactivity ", 1.0, 0.00, 1.0, 1.0
-    ),
-    "AttentionSpan": UserSettableParameter(
-        "slider", "Attention Span", 5.0, 0.00, 5.0, 1.0
-    ),
-}
-
 histogram = HistogramModule(list(range(10)), 200, 500)

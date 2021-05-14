@@ -46,8 +46,8 @@ class Pupil(Agent):
 
     # define the step function
     def step(self):
-        print(self.model.schedule.steps)
-        print("Agent position", self.pos)
+        # print(self.model.schedule.steps)
+        # print("Agent position", self.pos)
         if self.redStateCange() == 1:
             self.changeState()
             if self.type == 3:
@@ -124,7 +124,7 @@ class Pupil(Agent):
             return 1
 
         if (
-            self.model.pupil_params.hyper_impulsiveness == 1
+            self.model.pupil_params.hyper_impulsivity == 1
             and self.model.teacher_params.control <= self.randomised_agent_attribute
             and self.hyper_impulsive > self.randomised_agent_attribute
         ):
@@ -244,7 +244,7 @@ class Pupil(Agent):
                 return 1
 
             if (
-                self.model.pupil_params.hyper_impulsiveness == 0
+                self.model.pupil_params.hyper_impulsivity == 0
                 and self.model.teacher_params.control
                 > self.randomised_agent_attribute
                 >= self.hyper_impulsive

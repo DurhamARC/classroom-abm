@@ -6,6 +6,7 @@ from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 from scipy import stats as stats
 
+from .data_types import TeacherParamType, PupilParamType
 from .Pupil import Pupil
 from .utils import (
     compute_ave,
@@ -18,18 +19,33 @@ from .utils import (
 
 class SimModel(Model):
     def __init__(
-        self,
-        class_data,
-        grid_params,
-        teacher_params,
-        pupil_params,
-        model_initial_state,
+        self, class_data, model_initial_state, grid_params, fixed_params=None, **kwargs
     ):
-
-        self.grid_params = grid_params
-        self.teacher_params = teacher_params
-        self.pupil_params = pupil_params
         self.model_state = model_initial_state
+        self.grid_params = grid_params
+
+        if fixed_params:
+            self.teacher_params, self.pupil_params = fixed_params
+        else:
+            if "teacher_quality" in kwargs and "teacher_control" in kwargs:
+                self.teacher_params = TeacherParamType(
+                    kwargs["teacher_quality"], kwargs["teacher_control"]
+                )
+            else:
+                self.teacher_params = TeacherParamType(0, 0)
+
+            if (
+                "pupil_inattentiveness" in kwargs
+                and "pupil_hyper_impulsivity" in kwargs
+                and "pupil_attention_span" in kwargs
+            ):
+                self.pupil_params = PupilParamType(
+                    kwargs["pupil_inattentiveness"],
+                    kwargs["pupil_hyper_impulsivity"],
+                    kwargs["pupil_attention_span"],
+                )
+            else:
+                self.pupil_params = PupilParamType(0, 0, 2)
 
         self.schedule = RandomActivation(self)
 

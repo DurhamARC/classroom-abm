@@ -10,7 +10,7 @@ from collections import namedtuple
 GridParamType = namedtuple("grid_parameters", "height width")
 TeacherParamType = namedtuple("teacher_parameters", "quality control")
 PupilParamType = namedtuple(
-    "pupil_parameters", "inattentiveness hyper_impulsiveness attention_span"
+    "pupil_parameters", "inattentiveness hyper_impulsivity attention_span"
 )
 
 
