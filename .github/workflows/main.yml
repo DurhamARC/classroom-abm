@@ -11,8 +11,8 @@ on:
       - master
 
 jobs:
-  conda-lock-ci:
-    name: Test conda lock
+  model-ci:
+    name: Test model code
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -39,6 +39,10 @@ jobs:
           conda config --show-sources
           conda config --show
           printenv | sort
+      - name: Run unit tests
+        run: pytest
+        working-directory: MesaModel
+
 
   multilevel-analysis:
     name: Test multilevel analysis

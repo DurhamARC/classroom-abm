@@ -28,11 +28,24 @@ conda create --name classroom_abm --file conda_locks/conda-<operating-sys>-64.lo
 conda activate classroom_abm
 ```
 
-Execute python code:
+Execute python code on command line:
 
 ```
 cd MesaModel
 python run.py
+```
+
+More options for running the model:
+
+```
+Usage: run.py [OPTIONS]
+
+Options:
+  -i, --input-file TEXT    Input file path, relative to current working
+                           directory
+  -c, --class_id INTEGER   ID of class to run model for
+  -w, --webserver BOOLEAN  Whether to run an interactive web server
+  --help                   Show this message and exit.
 ```
 
 ### Contributing to the mesa model:

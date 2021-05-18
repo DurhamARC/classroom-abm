@@ -7,12 +7,14 @@ from .utils import compute_ave_disruptive, compute_SD, compute_zscore
 
 class Pupil(Agent):
     # 1 Initialization
-    def __init__(self, pos, model, agent_type, behave, behave_2, math, ability):
+    def __init__(
+        self, pos, model, agent_type, inattentiveness, hyper_impulsive, math, ability
+    ):
         super().__init__(pos, model)
         self.pos = pos
         self.type = agent_type
-        self.behave = behave
-        self.behave_2 = behave_2
+        self.inattentiveness = inattentiveness
+        self.hyper_impulsive = hyper_impulsive
         self.s_math = math
         self.e_math = math
 
@@ -24,7 +26,7 @@ class Pupil(Agent):
         self.time_in_yellow_state = 0
         self.disruptive = 0
         self.countLearning = 0
-        self.disruptiveTend = behave
+        self.disruptiveTend = inattentiveness
 
     def neighbour(self):
         neighbourCount = 0
@@ -44,8 +46,8 @@ class Pupil(Agent):
 
     # define the step function
     def step(self):
-        print(self.model.schedule.steps)
-        print("Agent position", self.pos)
+        # print(self.model.schedule.steps)
+        # print("Agent position", self.pos)
         if self.redStateCange() == 1:
             self.changeState()
             if self.type == 3:
@@ -98,7 +100,7 @@ class Pupil(Agent):
         if (
             self.model.pupil_params.inattentiveness == 1
             and self.model.teacher_params.quality <= self.randomised_agent_attribute + 1
-            and self.behave > self.randomised_agent_attribute
+            and self.inattentiveness > self.randomised_agent_attribute
         ):
             self.type = 3
             self.model.model_state.disruptive_count += 1
@@ -111,7 +113,7 @@ class Pupil(Agent):
         if (
             self.model.pupil_params.inattentiveness == 1
             and self.model.teacher_params.control <= self.randomised_agent_attribute + 1
-            and self.behave > self.randomised_agent_attribute
+            and self.inattentiveness > self.randomised_agent_attribute
         ):
             self.type = 3
             self.model.model_state.disruptive_count += 1
@@ -122,9 +124,9 @@ class Pupil(Agent):
             return 1
 
         if (
-            self.model.pupil_params.hyper_impulsiveness == 1
+            self.model.pupil_params.hyper_impulsivity == 1
             and self.model.teacher_params.control <= self.randomised_agent_attribute
-            and self.behave_2 > self.randomised_agent_attribute
+            and self.hyper_impulsive > self.randomised_agent_attribute
         ):
             self.type = 3
             self.model.model_state.disruptive_count += 1
@@ -140,7 +142,7 @@ class Pupil(Agent):
         if (
             self.model.pupil_params.inattentiveness == 1
             and self.model.teacher_params.quality >= self.randomised_agent_attribute
-            and self.behave <= self.randomised_agent_attribute
+            and self.inattentiveness <= self.randomised_agent_attribute
         ):
             self.type = 2
             self.time_in_red_state = 0
@@ -149,7 +151,7 @@ class Pupil(Agent):
             return 1
         if (
             self.model.pupil_params.inattentiveness == 0
-            and self.behave > self.randomised_agent_attribute
+            and self.inattentiveness > self.randomised_agent_attribute
         ):
             self.type = 2
             self.time_in_red_state = 0
@@ -159,7 +161,7 @@ class Pupil(Agent):
         if (
             compute_SD(self.model, self.disruptiveTend)
             and self.model.teacher_params.control >= self.randomised_agent_attribute
-            and self.behave_2 <= self.randomised_agent_attribute
+            and self.hyper_impulsive <= self.randomised_agent_attribute
         ):
             self.type = 2
             self.time_in_red_state = 0
@@ -168,7 +170,7 @@ class Pupil(Agent):
             return 1
         if (
             self.model.teacher_params.quality > self.randomised_agent_attribute
-            and self.behave > self.randomised_agent_attribute
+            and self.inattentiveness > self.randomised_agent_attribute
         ):
             self.type = 2
             self.time_in_red_state = 0
@@ -191,7 +193,7 @@ class Pupil(Agent):
         # At general if control is high turn into passive
         if (
             self.model.teacher_params.control > self.randomised_agent_attribute
-            and self.behave_2 > self.randomised_agent_attribute
+            and self.hyper_impulsive > self.randomised_agent_attribute
         ):
             self.type = 2
             self.time_in_red_state = 0
@@ -227,7 +229,7 @@ class Pupil(Agent):
         if (
             self.model.pupil_params.inattentiveness != 0
             or self.model.teacher_params.quality <= self.randomised_agent_attribute
-            or self.behave >= self.randomised_agent_attribute
+            or self.inattentiveness >= self.randomised_agent_attribute
         ):
             if (
                 self.model.pupil_params.inattentiveness == 0
@@ -242,10 +244,10 @@ class Pupil(Agent):
                 return 1
 
             if (
-                self.model.pupil_params.hyper_impulsiveness == 0
+                self.model.pupil_params.hyper_impulsivity == 0
                 and self.model.teacher_params.control
                 > self.randomised_agent_attribute
-                >= self.behave_2
+                >= self.hyper_impulsive
             ):
                 self.type = 1
                 self.model.model_state.learning_count += 1
@@ -318,7 +320,7 @@ class Pupil(Agent):
             return 1
 
         if (
-            self.behave_2 < self.randomised_agent_attribute
+            self.hyper_impulsive < self.randomised_agent_attribute
             and self.model.teacher_params.control <= self.randomised_agent_attribute
             and self.time_in_yellow_state > self.randomised_agent_attribute
         ):
@@ -332,7 +334,9 @@ class Pupil(Agent):
             return 1
         # Similar to above but red for long
         if (
-            self.behave_2 < self.randomised_agent_attribute < self.time_in_red_state
+            self.hyper_impulsive
+            < self.randomised_agent_attribute
+            < self.time_in_red_state
             and self.model.teacher_params.control <= self.randomised_agent_attribute
         ):
             self.type = 2
@@ -342,7 +346,9 @@ class Pupil(Agent):
             return 1
 
         if (
-            self.behave < self.randomised_agent_attribute < self.time_in_red_state
+            self.inattentiveness
+            < self.randomised_agent_attribute
+            < self.time_in_red_state
             and self.model.teacher_params.quality <= self.randomised_agent_attribute
         ):
             self.type = 2
@@ -352,7 +358,7 @@ class Pupil(Agent):
             return 1
 
         if (
-            self.behave < self.randomised_agent_attribute
+            self.inattentiveness < self.randomised_agent_attribute
             and self.model.teacher_params.quality <= self.randomised_agent_attribute
             and self.time_in_yellow_state > self.randomised_agent_attribute
         ):
@@ -366,7 +372,7 @@ class Pupil(Agent):
             return 1
 
         if (
-            self.behave > self.randomised_agent_attribute
+            self.inattentiveness > self.randomised_agent_attribute
             and self.model.teacher_params.quality > self.randomised_agent_attribute
             and self.time_in_red_state > self.randomised_agent_attribute
         ):
@@ -377,7 +383,7 @@ class Pupil(Agent):
             return 1
 
         if (
-            self.behave_2 > self.randomised_agent_attribute - 1
+            self.hyper_impulsive > self.randomised_agent_attribute - 1
             and self.model.teacher_params.control > self.randomised_agent_attribute - 1
             and self.time_in_red_state > 3
         ):
@@ -398,7 +404,7 @@ class Pupil(Agent):
             return 1
 
         if (
-            self.behave_2 <= self.randomised_agent_attribute
+            self.hyper_impulsive <= self.randomised_agent_attribute
             and self.model.teacher_params.quality <= self.randomised_agent_attribute
             and self.time_in_red_state > 2
         ):
@@ -408,7 +414,7 @@ class Pupil(Agent):
             self.time_in_green_state = 0
             return 1
         if (
-            self.behave_2 <= self.randomised_agent_attribute - 1
+            self.hyper_impulsive <= self.randomised_agent_attribute - 1
             and self.model.teacher_params.control <= self.randomised_agent_attribute - 1
             and self.time_in_red_state > self.randomised_agent_attribute
         ):
@@ -418,7 +424,7 @@ class Pupil(Agent):
             self.time_in_green_state = 0
             return 1
         if (
-            self.behave < self.randomised_agent_attribute
+            self.inattentiveness < self.randomised_agent_attribute
             and self.model.teacher_params.quality < self.randomised_agent_attribute
             and self.time_in_red_state > self.randomised_agent_attribute
         ):
@@ -468,7 +474,7 @@ class Pupil(Agent):
 
     def set_disruptive_tend(self):
 
-        self.initial_disruptive_tend = compute_zscore(self.model, self.behave)
+        self.initial_disruptive_tend = compute_zscore(self.model, self.inattentiveness)
 
         if self.model.schedule.steps == 0:
             self.model.schedule.steps = 1

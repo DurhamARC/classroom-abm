@@ -1,5 +1,5 @@
 # platform: linux-64
-# env_hash: 1030c13a521fba5bb68561ccf16d0cde45bf7fa3ffcc340bf821cc5ed9fe5829
+# env_hash: 46366f4c0d55068ad5a917c65b526246ff60b6799d86dc908ee4b47e2b9a2494
 @EXPLICIT
 https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2#d7c89558ba9fa0495403155b64376d81
 https://conda.anaconda.org/anaconda/linux-64/ca-certificates-2020.10.14-0.tar.bz2#48642e3fd8fda4a7b17fddecc4b6dbca
@@ -36,11 +36,16 @@ https://conda.anaconda.org/anaconda/noarch/decorator-4.4.2-py_0.tar.bz2#4e298eec
 https://conda.anaconda.org/anaconda/linux-64/distlib-0.3.1-py38_0.tar.bz2#d20bd0c1384ca6778ea0e158d6ed561e
 https://conda.anaconda.org/anaconda/noarch/filelock-3.0.12-py_0.tar.bz2#e4dc56729eccc8ad5932a332bd1cbf82
 https://conda.anaconda.org/anaconda/noarch/idna-2.10-py_0.tar.bz2#4b382d70696184fe9fcb7c75682664dc
+https://conda.anaconda.org/anaconda/noarch/iniconfig-1.1.1-py_0.tar.bz2#364c9d53e3259fed8614eb6ab5994b86
 https://conda.anaconda.org/anaconda/linux-64/markupsafe-1.1.1-py38h7b6447c_0.tar.bz2#49c211162360afb259473cfb1b51dd89
+https://conda.anaconda.org/anaconda/noarch/more-itertools-8.5.0-py_0.tar.bz2#6924472841c02c4dad8e52f4054a86b7
 https://conda.anaconda.org/anaconda/linux-64/mypy_extensions-0.4.3-py38_0.tar.bz2#be0bad5a30ef6fe27466207ee01f75cf
 https://conda.anaconda.org/anaconda/noarch/pathspec-0.7.0-py_0.tar.bz2#8e43fac55472913240f0f2154e31836a
+https://conda.anaconda.org/anaconda/linux-64/pluggy-0.13.1-py38_0.tar.bz2#15436bcd5f084480d16af74d0201da7f
 https://conda.anaconda.org/conda-forge/noarch/poyo-0.5.0-py_0.tar.bz2#f7e49e76e34d946c607757ad68e6b3f2
+https://conda.anaconda.org/anaconda/noarch/py-1.9.0-py_0.tar.bz2#3d61b4901f058ccd003b04613659cfd8
 https://conda.anaconda.org/anaconda/noarch/pycparser-2.20-py_2.tar.bz2#bc20c885814700fdc0187918f9aff9ac
+https://conda.anaconda.org/anaconda/noarch/pyparsing-2.4.7-py_0.tar.bz2#f185dd8ef8d8d543666158c07b3afe13
 https://conda.anaconda.org/anaconda/linux-64/pysocks-1.7.1-py38_0.tar.bz2#5fe976f37976a7a2199bea982d7cde6e
 https://conda.anaconda.org/conda-forge/linux-64/python_abi-3.8-1_cp38.tar.bz2#8d05152d6fb3012b27a0e6fbcc14bea1
 https://conda.anaconda.org/anaconda/noarch/pytz-2020.1-py_0.tar.bz2#ed81825324989d8f8f77a4ffd6ad1fdc
@@ -61,6 +66,7 @@ https://conda.anaconda.org/anaconda/linux-64/cffi-1.14.3-py38he30daa8_0.tar.bz2#
 https://conda.anaconda.org/conda-forge/noarch/cfgv-3.2.0-py_0.tar.bz2#4972efcb3e2cbd3954b24a17266be25c
 https://conda.anaconda.org/conda-forge/noarch/click-default-group-1.2.2-pyhd8ed1ab_1.tar.bz2#72a46ffc25701c173932fd55cf0965d3
 https://conda.anaconda.org/anaconda/linux-64/numpy-base-1.19.1-py38h75fe3a5_0.tar.bz2#85b813620e512b1403a4ad7e580df2b6
+https://conda.anaconda.org/anaconda/noarch/packaging-20.4-py_0.tar.bz2#80eb4e4cda8abe15fb013ab97a0b5bd9
 https://conda.anaconda.org/anaconda/noarch/python-dateutil-2.8.1-py_0.tar.bz2#58a898b1a4a13e8c0cfd0d4b1a999ba9
 https://conda.anaconda.org/anaconda/noarch/python-slugify-4.0.1-py_0.tar.bz2#d9cabf88812921d6f9fb5d93e6d15c89
 https://conda.anaconda.org/anaconda/linux-64/setuptools-50.3.0-py38hb0f4dca_1.tar.bz2#c49c24270f5d66abf6d58542615fdf6a
@@ -73,6 +79,7 @@ https://conda.anaconda.org/anaconda/noarch/jinja2-2.11.2-py_0.tar.bz2#4a4fc89f98
 https://conda.anaconda.org/anaconda/noarch/networkx-2.5-py_0.tar.bz2#c19d5d748d65345fa47a2f094e360663
 https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.6.0-pyhd8ed1ab_0.tar.bz2#0941325bf48969e2b3b19d0951740950
 https://conda.anaconda.org/anaconda/linux-64/numpy-1.19.1-py38h30dfecb_0.tar.bz2#bdc4592686d6a48ad19dd040ad7f12e5
+https://conda.anaconda.org/anaconda/linux-64/pytest-6.1.1-py38_0.tar.bz2#d0678f4969823f3449c9c7361e9550a8
 https://conda.anaconda.org/conda-forge/noarch/identify-2.2.4-pyhd8ed1ab_0.tar.bz2#86a6446475a53451a71e1515150cb532
 https://conda.anaconda.org/conda-forge/noarch/jinja2-time-0.2.0-py_2.tar.bz2#6e8d28fac1864c623fd4402168ca4d46
 https://conda.anaconda.org/anaconda/linux-64/pandas-1.1.3-py38he6710b0_0.tar.bz2#e1008a89186024eac5aca09337b722a8

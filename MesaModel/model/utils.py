@@ -3,6 +3,8 @@ from statistics import stdev
 import statistics
 import math
 
+from model.data_types import GridParamType
+
 
 def get_num_disruptors(model):
     return model.model_state.disruptive_count
@@ -32,10 +34,10 @@ def compute_ave_disruptive(model):
 
 
 def compute_zscore(model, x):
-    agent_behave = [agent.behave for agent in model.schedule.agents]
-    print("Calculate variance", agent_behave)
-    SD = stdev(agent_behave)
-    mean = statistics.mean(agent_behave)
+    agent_inattentiveness = [agent.inattentiveness for agent in model.schedule.agents]
+    print("Calculate variance", agent_inattentiveness)
+    SD = stdev(agent_inattentiveness)
+    mean = statistics.mean(agent_inattentiveness)
     zscore = (x - mean) / SD
     return zscore
 
@@ -74,3 +76,10 @@ def gen_random():
     arr2[args[-70:-1]] -= int(intg)
     arr2[args[-1]] -= int(np.round(decm * 69))
     return np.concatenate((arr1, mid, arr2))
+
+
+def get_grid_size(n_agents):
+    # Calculate squarest grid size that will fit the given number of agents
+    grid_width = math.ceil(math.sqrt(n_agents))
+    grid_height = math.ceil(n_agents / grid_width)
+    return GridParamType(grid_width, grid_height)

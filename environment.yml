@@ -4,6 +4,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - click
   - mesa
   - numpy
   - pandas
@@ -12,3 +13,4 @@ dependencies:
   - black
   - conda-lock
   - pre_commit
+  - pytest

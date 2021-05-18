@@ -1,5 +1,5 @@
 # platform: osx-64
-# env_hash: d4d96d052940dce50e018c90946a903d57fb81f9a3ec57a201e17cc624fe466f
+# env_hash: 4affa9b285d75d8937b72c6d058e9ad632e1585993944a4dcdf0b1520861513a
 @EXPLICIT
 https://conda.anaconda.org/anaconda/osx-64/blas-1.0-mkl.tar.bz2#e2f3248e2a5009a02f7b8e54f83314ef
 https://conda.anaconda.org/anaconda/osx-64/ca-certificates-2020.10.14-0.tar.bz2#a894a257ca27119745c5737cb95fc39e
@@ -27,11 +27,15 @@ https://conda.anaconda.org/anaconda/noarch/decorator-4.4.2-py_0.tar.bz2#4e298eec
 https://conda.anaconda.org/anaconda/osx-64/distlib-0.3.1-py37_0.tar.bz2#5b302c5dde8285c43076debd5f3ace62
 https://conda.anaconda.org/anaconda/noarch/filelock-3.0.12-py_0.tar.bz2#e4dc56729eccc8ad5932a332bd1cbf82
 https://conda.anaconda.org/anaconda/noarch/idna-2.10-py_0.tar.bz2#4b382d70696184fe9fcb7c75682664dc
+https://conda.anaconda.org/anaconda/noarch/iniconfig-1.1.1-py_0.tar.bz2#364c9d53e3259fed8614eb6ab5994b86
 https://conda.anaconda.org/anaconda/osx-64/markupsafe-1.1.1-py37h1de35cc_0.tar.bz2#6212b2ab14066988905f23773e4333fe
+https://conda.anaconda.org/anaconda/noarch/more-itertools-8.5.0-py_0.tar.bz2#6924472841c02c4dad8e52f4054a86b7
 https://conda.anaconda.org/anaconda/osx-64/mypy_extensions-0.4.3-py37_0.tar.bz2#287402ab3c0eb745ecb763a691a464aa
 https://conda.anaconda.org/anaconda/noarch/pathspec-0.7.0-py_0.tar.bz2#8e43fac55472913240f0f2154e31836a
 https://conda.anaconda.org/conda-forge/noarch/poyo-0.5.0-py_0.tar.bz2#f7e49e76e34d946c607757ad68e6b3f2
+https://conda.anaconda.org/anaconda/noarch/py-1.9.0-py_0.tar.bz2#3d61b4901f058ccd003b04613659cfd8
 https://conda.anaconda.org/anaconda/noarch/pycparser-2.20-py_2.tar.bz2#bc20c885814700fdc0187918f9aff9ac
+https://conda.anaconda.org/anaconda/noarch/pyparsing-2.4.7-py_0.tar.bz2#f185dd8ef8d8d543666158c07b3afe13
 https://conda.anaconda.org/anaconda/osx-64/pysocks-1.7.1-py37_0.tar.bz2#26d5222202475a037f5e1c38012bb16f
 https://conda.anaconda.org/conda-forge/osx-64/python_abi-3.7-1_cp37m.tar.bz2#d2cb192f8948ea603927a71f015574dd
 https://conda.anaconda.org/anaconda/noarch/pytz-2020.1-py_0.tar.bz2#ed81825324989d8f8f77a4ffd6ad1fdc
@@ -54,6 +58,7 @@ https://conda.anaconda.org/conda-forge/noarch/cfgv-3.2.0-py_0.tar.bz2#4972efcb3e
 https://conda.anaconda.org/conda-forge/noarch/click-default-group-1.2.2-pyhd8ed1ab_1.tar.bz2#72a46ffc25701c173932fd55cf0965d3
 https://conda.anaconda.org/anaconda/noarch/importlib-metadata-2.0.0-py_1.tar.bz2#6e77b21126e16cd89989c52d37162f59
 https://conda.anaconda.org/anaconda/osx-64/mkl-service-2.3.0-py37hfbe908c_0.tar.bz2#7949b23602ad74bfb829fb69d7055963
+https://conda.anaconda.org/anaconda/noarch/packaging-20.4-py_0.tar.bz2#80eb4e4cda8abe15fb013ab97a0b5bd9
 https://conda.anaconda.org/anaconda/noarch/python-dateutil-2.8.1-py_0.tar.bz2#58a898b1a4a13e8c0cfd0d4b1a999ba9
 https://conda.anaconda.org/anaconda/noarch/python-slugify-4.0.1-py_0.tar.bz2#d9cabf88812921d6f9fb5d93e6d15c89
 https://conda.anaconda.org/anaconda/osx-64/setuptools-50.3.0-py37h0dc7051_1.tar.bz2#5331608e93c0eb2c4852db1ad8ce52f2
@@ -69,8 +74,10 @@ https://conda.anaconda.org/anaconda/osx-64/numpy-base-1.19.1-py37hcfb5961_0.tar.
 https://conda.anaconda.org/anaconda/osx-64/virtualenv-20.0.35-py37_0.tar.bz2#81c956d5b172cde73de534441e29c74c
 https://conda.anaconda.org/conda-forge/noarch/identify-2.2.4-pyhd8ed1ab_0.tar.bz2#86a6446475a53451a71e1515150cb532
 https://conda.anaconda.org/conda-forge/noarch/jinja2-time-0.2.0-py_2.tar.bz2#6e8d28fac1864c623fd4402168ca4d46
+https://conda.anaconda.org/anaconda/osx-64/pluggy-0.13.1-py37_0.tar.bz2#b480aa97d228aebdc2a3a76f70dc880b
 https://conda.anaconda.org/anaconda/noarch/pyopenssl-19.1.0-py_1.tar.bz2#eae315d2cf67ea8da0ae585af683b60d
 https://conda.anaconda.org/conda-forge/osx-64/pre-commit-2.12.1-py37hf985489_0.tar.bz2#a79f4e3ee9079da58171b327036f0df1
+https://conda.anaconda.org/anaconda/osx-64/pytest-6.1.1-py37_0.tar.bz2#92bc005bddff15455538afbadf94135c
 https://conda.anaconda.org/anaconda/noarch/urllib3-1.25.11-py_0.tar.bz2#be7e845e2ccdd23fb14e7421336346bf
 https://conda.anaconda.org/conda-forge/noarch/pre_commit-2.12.1-hd8ed1ab_0.tar.bz2#d9d771199150fe0b52705f631332aad1
 https://conda.anaconda.org/anaconda/noarch/requests-2.24.0-py_0.tar.bz2#0da8872d36b3ef33859654b6d0fea148

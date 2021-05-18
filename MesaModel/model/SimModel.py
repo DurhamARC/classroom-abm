@@ -1,63 +1,92 @@
-import os
-
 import pandas as pd
+import math
 from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 from scipy import stats as stats
 
+from .data_types import TeacherParamType, PupilParamType
 from .Pupil import Pupil
 from .utils import (
     compute_ave,
     compute_ave_disruptive,
     get_num_disruptors,
     get_num_learning,
+    get_grid_size,
 )
 
 
 class SimModel(Model):
-    def __init__(self, grid_params, teacher_params, pupil_params, model_initial_state):
-
-        self.grid_params = grid_params
-        self.teacher_params = teacher_params
-        self.pupil_params = pupil_params
+    def __init__(
+        self, class_data, model_initial_state, grid_params, fixed_params=None, **kwargs
+    ):
         self.model_state = model_initial_state
+        self.grid_params = grid_params
+
+        if fixed_params:
+            self.teacher_params, self.pupil_params = fixed_params
+        else:
+            if "teacher_quality" in kwargs and "teacher_control" in kwargs:
+                self.teacher_params = TeacherParamType(
+                    kwargs["teacher_quality"], kwargs["teacher_control"]
+                )
+            else:
+                self.teacher_params = TeacherParamType(0, 0)
+
+            if (
+                "pupil_inattentiveness" in kwargs
+                and "pupil_hyper_impulsivity" in kwargs
+                and "pupil_attention_span" in kwargs
+            ):
+                self.pupil_params = PupilParamType(
+                    kwargs["pupil_inattentiveness"],
+                    kwargs["pupil_hyper_impulsivity"],
+                    kwargs["pupil_attention_span"],
+                )
+            else:
+                self.pupil_params = PupilParamType(0, 0, 2)
 
         self.schedule = RandomActivation(self)
+
+        # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid = SingleGrid(
-            self.grid_params.height, self.grid_params.width, torus=True
+            self.grid_params.width, self.grid_params.height, torus=False
         )
 
-        # Load data
-
-        data = pd.read_csv(os.path.join(os.getcwd(), "Input/DataSample.csv"))
-        maths = data["s_maths"].to_numpy()
+        class_size = len(class_data)
+        maths = class_data["start_maths"].to_numpy()
         ability_zscore = stats.zscore(maths)
-        behave = data["behav1"].to_numpy()
-        behav2 = data["behav2"].to_numpy()
+        inattentiveness = class_data["Inattentiveness"].to_numpy()
+        hyper_impulsive = class_data["hyper_impulsive"].to_numpy()
+
+        # Work out how many rows should be full - we spread the gaps
+        # across rows rather than the last row being nearly empty
+        rows_with_gaps = self.grid.width * self.grid.height - class_size
+        full_rows = self.grid.height - rows_with_gaps
 
         # Set up agents
-
         counter = 0
         for cell_content, x, y in self.grid.coord_iter():
+            if y >= full_rows and x == self.grid.width - 1:
+                continue
+
             # Initial State for all student is random
             agent_type = self.random.randint(1, 3)
             ability = ability_zscore[counter]
 
-            # create agents form data
+            # create agents from data
             agent = Pupil(
                 (x, y),
                 self,
                 agent_type,
-                behave[counter],
-                behav2[counter],
+                inattentiveness[counter],
+                hyper_impulsive[counter],
                 maths[counter],
                 ability,
             )
             # Place Agents on grid
-            self.grid.position_agent(agent, (x, y))
-            # print("agent pos:", x, y)
+            self.grid.position_agent(agent, x, y)
             self.schedule.add(agent)
             counter += 1
 
@@ -73,8 +102,8 @@ class SimModel(Model):
             agent_reporters={
                 "x": lambda a: a.pos[0],
                 "y": lambda a: a.pos[1],
-                "Inattentiveness_score": "behave",
-                "Hyber_Inattinteveness": "behave_2",
+                "Inattentiveness_score": "inattentiveness",
+                "Hyper_Impulsivity": "hyper_impulsive",
                 "S_math": "s_math",
                 "S_read": "s_read",
                 "E_math": "e_math",
