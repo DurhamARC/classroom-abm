@@ -19,10 +19,17 @@ from .utils import (
 
 class SimModel(Model):
     def __init__(
-        self, class_data, model_initial_state, grid_params, fixed_params=None, **kwargs
+        self,
+        class_data,
+        model_initial_state,
+        output_data,
+        grid_params,
+        fixed_params=None,
+        **kwargs
     ):
         self.model_state = model_initial_state
         self.grid_params = grid_params
+        self.output_data = output_data
 
         if fixed_params:
             self.teacher_params, self.pupil_params = fixed_params
@@ -54,15 +61,18 @@ class SimModel(Model):
             self.grid_params.width, self.grid_params.height, torus=False
         )
 
-        class_size = len(class_data)
+        self.class_size = len(class_data)
+        self.class_id = class_data["class_id"].iloc[0]
         maths = class_data["start_maths"].to_numpy()
+        student_id = class_data["student_id"].to_numpy()
         ability_zscore = stats.zscore(maths)
         inattentiveness = class_data["Inattentiveness"].to_numpy()
         hyper_impulsive = class_data["hyper_impulsive"].to_numpy()
+        deprivation = class_data["Deprivation"].to_numpy()
 
         # Work out how many rows should be full - we spread the gaps
         # across rows rather than the last row being nearly empty
-        rows_with_gaps = self.grid.width * self.grid.height - class_size
+        rows_with_gaps = self.grid.width * self.grid.height - self.class_size
         full_rows = self.grid.height - rows_with_gaps
 
         # Set up agents
@@ -79,9 +89,11 @@ class SimModel(Model):
             agent = Pupil(
                 (x, y),
                 self,
+                student_id[counter],
                 agent_type,
                 inattentiveness[counter],
                 hyper_impulsive[counter],
+                deprivation[counter],
                 maths[counter],
                 ability,
             )
@@ -91,27 +103,25 @@ class SimModel(Model):
             counter += 1
 
         # Collecting data while running the model
-        self.datacollector = DataCollector(
+        self.model_datacollector = DataCollector(
             model_reporters={
                 "Learning Students": get_num_learning,
                 "Disruptive Students": get_num_disruptors,
                 "Average End Math": compute_ave,
                 "disruptiveTend": compute_ave_disruptive,
-            },
-            # Model-level count of learning agent
+            }
+        )
+
+        self.agent_datacollector = DataCollector(
             agent_reporters={
-                "x": lambda a: a.pos[0],
-                "y": lambda a: a.pos[1],
-                "Inattentiveness_score": "inattentiveness",
-                "Hyper_Impulsivity": "hyper_impulsive",
-                "S_math": "s_math",
-                "S_read": "s_read",
-                "E_math": "e_math",
-                "E_read": "e_read",
-                "ability": "ability",
-                "LearningTime": "countLearning",
-                "disruptiveTend": "disruptiveTend",
-            },
+                "student_id": "student_id",
+                "end_maths": "e_math",
+                "start_maths": "s_math",
+                "Ability": "ability",
+                "Inattentiveness": "inattentiveness",
+                "hyper_impulsive": "hyper_impulsive",
+                "Deprivation": "deprivation",
+            }
         )
 
         self.running = True
@@ -121,14 +131,15 @@ class SimModel(Model):
         # Reset counter of learning and disruptive agents
         self.model_state.learning_count = 0
         self.model_state.disruptive_count = 0
-        self.datacollector.collect(self)
 
         # Advance the model by one step
         self.schedule.step()
 
         # collect data
-        self.datacollector.collect(self)
+        self.model_datacollector.collect(self)
+
         if self.schedule.steps == 8550.0 or self.running == False:
             self.running = False
-            dataAgent = self.datacollector.get_agent_vars_dataframe()
-            dataAgent.to_csv("Simulation.csv")
+            self.agent_datacollector.collect(self)
+            agent_data = self.agent_datacollector.get_agent_vars_dataframe()
+            self.output_data.append_data(agent_data, self.class_id, self.class_size)
