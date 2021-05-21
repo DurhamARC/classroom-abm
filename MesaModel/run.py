@@ -104,6 +104,7 @@ def run_model(input_file, output_file, class_id, all_classes, webserver):
                     "pupil_attention_span": UserSettableParameter(
                         "slider", "Pupil Attention Span Limit", 5.0, 0.00, 5.0, 1.0
                     ),
+                    "write_file": True,
                 },
             )
 

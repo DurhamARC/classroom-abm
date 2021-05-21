@@ -23,6 +23,7 @@ class SimModel(Model):
     ):
         self.model_state = model_initial_state
         self.output_data = output_data
+        self.write_file = False
 
         self.data = all_data
         if fixed_params:
@@ -52,6 +53,9 @@ class SimModel(Model):
                 self.class_id = kwargs["class_id"]
             else:
                 self.class_id = 489
+
+            if "write_file" in kwargs:
+                self.write_file = kwargs["write_file"]
 
         self.class_data = self.data.get_class_data(self.class_id)
         self.class_size = len(self.class_data)
@@ -144,3 +148,5 @@ class SimModel(Model):
             self.agent_datacollector.collect(self)
             agent_data = self.agent_datacollector.get_agent_vars_dataframe()
             self.output_data.append_data(agent_data, self.class_id, self.class_size)
+            if self.write_file:
+                self.output_data.write_file()
