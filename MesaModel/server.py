@@ -63,7 +63,7 @@ def create_canvas_grid(grid_params):
 
 
 def hist(model):
-    Average = model.datacollector.get_model_vars_dataframe()
+    Average = model.model_datacollector.get_model_vars_dataframe()
     Average.plot()
 
 
@@ -73,7 +73,8 @@ sim_chart = ChartModule(
         {"Label": "Learning Students", "Color": "green"},
         {"Label": "Disruptive Students", "Color": "red"},
         {"Label": "Average End Math", "Color": "black"},
-    ]
+    ],
+    data_collector_name="model_datacollector",
 )
 
 histogram = HistogramModule(list(range(10)), 200, 500)
