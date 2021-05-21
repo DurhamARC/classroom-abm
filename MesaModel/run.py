@@ -6,7 +6,7 @@ import click
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
-from model.data_types import TeacherParamType, PupilParamType, ModelState
+from model.data_types import GridParamType, TeacherParamType, PupilParamType, ModelState
 from model.input_data import InputData
 from model.output_data import OutputData
 from model.SimModel import SimModel
@@ -35,7 +35,7 @@ from model.utils import get_grid_size
     "-a",
     default=False,
     is_flag=True,
-    help="Whether to run over all classes (overrides class_id)",
+    help="Whether to run over all classes (overrides class_id; not available in webserver mode)",
 )
 @click.option(
     "--webserver",
@@ -49,13 +49,19 @@ def run_model(input_file, output_file, class_id, all_classes, webserver):
     all_data = InputData(input_filepath)
 
     class_ids = all_data.get_class_ids()
-    if not all_classes:
-        if class_id not in class_ids:
-            click.echo(f"Invalid class ID {class_id}. Valid classes are: {class_ids}")
-            sys.exit(1)
-        class_ids = [class_id]
-    elif webserver:
-        click.echo("Cannot run over all classes in webserver mode (yet!)")
+    if webserver:
+        if all_classes:
+            click.echo("Cannot run over all classes in webserver mode (yet!)")
+            sys.exit(2)
+    else:
+        if not all_classes:
+            if class_id not in class_ids:
+                click.echo(
+                    f"Invalid class ID {class_id}. Valid classes are: {class_ids}"
+                )
+                sys.exit(1)
+            if not webserver:
+                class_ids = [class_id]
 
     output_data = OutputData(output_file)
 
@@ -63,20 +69,26 @@ def run_model(input_file, output_file, class_id, all_classes, webserver):
         click.echo(f"Running on class {class_id}")
 
         # Get data first to determine grid size
-        class_data = all_data.get_class_data(class_id)
-        grid_params = get_grid_size(len(class_data))
         model_initial_state = ModelState(0, 0, 0, 0, 0)
+        canvas_grid = create_canvas_grid(GridParamType(8, 8))
 
         if webserver:
             server = ModularServer(
                 SimModel,
-                [create_canvas_grid(grid_params), sim_element, sim_chart],
+                [canvas_grid, sim_element, sim_chart],
                 "Classroom ABM",
                 {
-                    "class_data": class_data,
+                    "all_data": all_data,
                     "model_initial_state": model_initial_state,
                     "output_data": output_data,
-                    "grid_params": grid_params,
+                    "canvas_grid": canvas_grid,
+                    "instructions": UserSettableParameter(
+                        "static_text",
+                        value="Modify the parameters below then click Reset to update the model.",
+                    ),
+                    "class_id": UserSettableParameter(
+                        "choice", "Class ID", value=class_ids[0], choices=class_ids
+                    ),
                     "teacher_quality": UserSettableParameter(
                         "slider", "Teaching quality", 5.0, 0.00, 5.0, 1.0
                     ),
@@ -101,11 +113,10 @@ def run_model(input_file, output_file, class_id, all_classes, webserver):
             pupil_params = PupilParamType(0, 0, 2)
 
             model = SimModel(
-                class_data,
+                all_data,
                 model_initial_state,
                 output_data,
-                grid_params,
-                fixed_params=(teacher_params, pupil_params),
+                fixed_params=(class_id, teacher_params, pupil_params),
             )
             model.run_model()
 

@@ -19,20 +19,14 @@ from .utils import (
 
 class SimModel(Model):
     def __init__(
-        self,
-        class_data,
-        model_initial_state,
-        output_data,
-        grid_params,
-        fixed_params=None,
-        **kwargs
+        self, all_data, model_initial_state, output_data, fixed_params=None, **kwargs
     ):
         self.model_state = model_initial_state
-        self.grid_params = grid_params
         self.output_data = output_data
 
+        self.data = all_data
         if fixed_params:
-            self.teacher_params, self.pupil_params = fixed_params
+            self.class_id, self.teacher_params, self.pupil_params = fixed_params
         else:
             if "teacher_quality" in kwargs and "teacher_control" in kwargs:
                 self.teacher_params = TeacherParamType(
@@ -54,21 +48,28 @@ class SimModel(Model):
             else:
                 self.pupil_params = PupilParamType(0, 0, 2)
 
+            if "class_id" in kwargs:
+                self.class_id = kwargs["class_id"]
+            else:
+                self.class_id = 489
+
+        self.class_data = self.data.get_class_data(self.class_id)
+        self.class_size = len(self.class_data)
+
         self.schedule = RandomActivation(self)
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
+        self.grid_params = get_grid_size(len(self.class_data))
         self.grid = SingleGrid(
             self.grid_params.width, self.grid_params.height, torus=False
         )
 
-        self.class_size = len(class_data)
-        self.class_id = class_data["class_id"].iloc[0]
-        maths = class_data["start_maths"].to_numpy()
-        student_id = class_data["student_id"].to_numpy()
+        maths = self.class_data["start_maths"].to_numpy()
+        student_id = self.class_data["student_id"].to_numpy()
         ability_zscore = stats.zscore(maths)
-        inattentiveness = class_data["Inattentiveness"].to_numpy()
-        hyper_impulsive = class_data["hyper_impulsive"].to_numpy()
-        deprivation = class_data["Deprivation"].to_numpy()
+        inattentiveness = self.class_data["Inattentiveness"].to_numpy()
+        hyper_impulsive = self.class_data["hyper_impulsive"].to_numpy()
+        deprivation = self.class_data["Deprivation"].to_numpy()
 
         # Work out how many rows should be full - we spread the gaps
         # across rows rather than the last row being nearly empty
