@@ -1,5 +1,7 @@
 .DS_Store
 *.tmp.nlogo
+classes_output/*
+!classes_output/.gitkeep
 NetLogo/classes_output/*
 !NetLogo/classes_output/.gitkeep
 __pycache__

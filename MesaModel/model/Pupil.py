@@ -8,13 +8,24 @@ from .utils import compute_ave_disruptive, compute_SD, compute_zscore
 class Pupil(Agent):
     # 1 Initialization
     def __init__(
-        self, pos, model, agent_type, inattentiveness, hyper_impulsive, math, ability
+        self,
+        pos,
+        model,
+        student_id,
+        agent_type,
+        inattentiveness,
+        hyper_impulsive,
+        deprivation,
+        math,
+        ability,
     ):
         super().__init__(pos, model)
         self.pos = pos
+        self.student_id = student_id
         self.type = agent_type
         self.inattentiveness = inattentiveness
         self.hyper_impulsive = hyper_impulsive
+        self.deprivation = deprivation
         self.s_math = math
         self.e_math = math
 
