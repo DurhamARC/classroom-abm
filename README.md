@@ -102,7 +102,7 @@ cd multilevel_analysis
 python multilevel_analysis.py
 ```
 
-### Running the multi-level model on the Hamilton supercomputer:
+### Running the multilevel analysis on the Hamilton supercomputer:
 
 Issue the following commands:
 
