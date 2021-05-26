@@ -101,3 +101,29 @@ Run the script from the `multilevel_analysis` directory:
 cd multilevel_analysis
 python multilevel_analysis.py
 ```
+
+### Running the multilevel analysis on the Hamilton supercomputer:
+
+Issue the following commands:
+
+```
+module purge
+module load miniconda2/4.1.11
+module load r/4.0.3
+```
+
+Activating the conda environment is slightly different:
+
+```
+source activate classroom_abm
+```
+
+Then download MLwiN and mlnscript as described above, but be sure to download it for Centos 7. Use scp and put it in /ddn/data/<usr>. Then issue the following commands:
+
+```
+rpm2cpio mlnscript-3.05-1.el7.x86_64.rpm | cpio -idv
+export MLNSCRIPT_PATH=/ddn/data/<usr>/usr/bin/mlnscript
+export LD_LIBRARY_PATH=/ddn/data/<usr>/usr/lib64
+```
+
+Then build the classroommlm R package and run as described above.
