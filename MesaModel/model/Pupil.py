@@ -113,7 +113,7 @@ class Pupil(Agent):
             self.time_in_green_state = 0
             return 1
 
-        # If the pupils' inattentive switch is on and the teacher cohort is of
+        # If the model's inattentive switch is on and the teacher cohort is of
         # a lower quality than a random number and the pupil's inattentiveness
         # is greater than a random number, pupil will become disruptive
         if (
@@ -129,7 +129,7 @@ class Pupil(Agent):
             self.time_in_green_state = 0
             return 1
 
-        # If the pupils' inattentive switch is on and the teacher cohort has less control
+        # If the model's inattentive switch is on and the teacher cohort has less control
         # of the class than a random number and the pupil's inattentiveness exceeds
         # a random number, then the pupil will become disruptive
         if (
@@ -145,7 +145,7 @@ class Pupil(Agent):
             self.time_in_green_state = 0
             return 1
 
-        # If the pupils' hyperactive-impulsive switch is on and the teacher cohort has less
+        # If the model's hyperactive-impulsive switch is on and the teacher cohort has less
         # control than a random number and the pupil's hyperactive-impulsive nature is
         # greater than a random number, then the pupil will become disruptive
         if (
@@ -165,7 +165,7 @@ class Pupil(Agent):
 
         count, red, yellow, green = self.neighbour()
 
-        # If the pupils' inattentive switch is on and the teacher cohort is of
+        # If the model's inattentive switch is on and the teacher cohort is of
         # a greater quality than a random number and the pupil's inattentiveness
         # is lower than a random number, then the pupil will become passive
         if (
@@ -179,7 +179,7 @@ class Pupil(Agent):
             self.time_in_green_state = 0
             return 1
 
-        # If the pupils' inattentive switch is off and the pupil's inattentiveness
+        # If the model's inattentive switch is off and the pupil's inattentiveness
         # is greater than a random number, pupil will become passive
         if (
             self.model.pupil_params.inattentiveness == 0
@@ -272,7 +272,7 @@ class Pupil(Agent):
             self.time_in_green_state += 1
             return 1
 
-        # If the pupils' inattentive switch is off or the quality of the teacher
+        # If the model's inattentive switch is off or the quality of the teacher
         # cohort is less than a random number or the pupil's inattentiveness is
         # greater than a random number, then the following conditions are considered:
         if (
@@ -280,7 +280,7 @@ class Pupil(Agent):
             or self.model.teacher_params.quality <= self.randomised_agent_attribute
             or self.inattentiveness >= self.randomised_agent_attribute
         ):
-            # If the pupils' inattentive switch is off and the teacher cohort's quality is
+            # If the model's inattentive switch is off and the teacher cohort's quality is
             # greater than a random number, then the pupil will be in a learning state.
             if (
                 self.model.pupil_params.inattentiveness == 0
@@ -293,7 +293,7 @@ class Pupil(Agent):
                 self.time_in_yellow_state = 0
                 self.time_in_green_state += 1
                 return 1
-            # If the pupils' hyperactive-impulsive switch is off and the teacher cohort's
+            # If the model's hyperactive-impulsive switch is off and the teacher cohort's
             # level of control is greater than a random number which is greater than the
             # pupil's hyperactive-intensiveness, then the pupil will be in a learning state
             if (
@@ -561,7 +561,14 @@ class Pupil(Agent):
             return 1
 
     # Calculate the end maths score based on the time spent by a pupil in
-    # a learning state and the pupil's starting maths score
+    # a learning state and the pupil's starting maths score. The formula is:
+    #   scaled_start_maths = (2.7 ^ start_maths) ^ (1/7.6)
+    #   total_learnt = learning_counter + scaled_start_maths
+    #   end_maths = (7.6 * log(total_learnt)) + pupil_ability
+    # Learning counter is incremented every time the end maths score is calculated.
+    # That is, it is not the same as the number of steps that the pupil has spent learning.
+    # Peter and Chris should be consulted to verify/decide if this is a good formula.
+    # The way in which the start maths score is scaled seems a bit arbitrary.
     def set_end_math(self):
         # Increment the learning counter
         self.count_learning += 1
@@ -573,7 +580,11 @@ class Pupil(Agent):
     def get_type(self):
         return self.type
 
-    # Compute the pupil's disruptive tendency
+    # Compute the pupil's disruptive tendency. First step is:
+    # initial_disruptive_tendency =
+    #       (pupil_inattentiveness - mean_pupil_inattentiveness) / std_dev_pupil_inattentiveness
+    # disruptive_tend = ((pupil_disruptiveness / step_number) - (learning_count_number / step_number)) + initial_disruptive_tendency
+    # Again Peter and Chris should be consulted.
     def set_disruptive_tend(self):
 
         self.initial_disruptive_tend = compute_zscore(self.model, self.inattentiveness)
