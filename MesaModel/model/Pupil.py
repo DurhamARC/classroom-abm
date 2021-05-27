@@ -560,15 +560,18 @@ class Pupil(Agent):
                 self.model.model_state.learning_count -= 1
             return 1
 
-    # Calculate the end maths score based on the time spent by a pupil in
-    # a learning state and the pupil's starting maths score. The formula is:
-    #   scaled_start_maths = (2.7 ^ start_maths) ^ (1/7.6)
-    #   total_learnt = learning_counter + scaled_start_maths
-    #   end_maths = (7.6 * log(total_learnt)) + pupil_ability
-    # Learning counter is incremented every time the end maths score is calculated.
-    # That is, it is not the same as the number of steps that the pupil has spent learning.
-    # Peter and Chris should be consulted to verify/decide if this is a good formula.
-    # The way in which the start maths score is scaled seems a bit arbitrary.
+    """
+    Calculate the end maths score based on the time spent by a pupil in
+    a learning state and the pupil's starting maths score. The formula is:
+      scaled_start_maths = (2.7 ^ start_maths) ^ (1/7.6)
+      total_learnt = learning_counter + scaled_start_maths
+      end_maths = (7.6 * log(total_learnt)) + pupil_ability
+    Learning counter is incremented every time the end maths score is calculated. That 
+    is, it is not the same as the number of steps that the pupil has spent learning.
+    scaled_start_maths represents the number of minutes of learning and is used to fit
+    a logarithmic function.
+    """
+
     def set_end_math(self):
         # Increment the learning counter
         self.count_learning += 1
@@ -580,11 +583,15 @@ class Pupil(Agent):
     def get_type(self):
         return self.type
 
-    # Compute the pupil's disruptive tendency. First step is:
-    # initial_disruptive_tendency =
-    #       (pupil_inattentiveness - mean_pupil_inattentiveness) / std_dev_pupil_inattentiveness
-    # disruptive_tend = ((pupil_disruptiveness / step_number) - (learning_count_number / step_number)) + initial_disruptive_tendency
-    # Again Peter and Chris should be consulted.
+    """
+    Compute the pupil's disruptive tendency. First step is:
+      initial_disruptive_tendency =
+          (pupil_inattentiveness - mean_pupil_inattentiveness) / std_dev_pupil_inattentiveness
+      disruptive_tend = ((pupil_disruptiveness / step_number) - 
+          (learning_count_number / step_number)) + initial_disruptive_tendency
+    The more pupils are disrupted the greater their own disruptive tendency will become.
+    """
+
     def set_disruptive_tend(self):
 
         self.initial_disruptive_tend = compute_zscore(self.model, self.inattentiveness)
