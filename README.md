@@ -1,14 +1,15 @@
 # Agent-based modelling of a classroom
 
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Agent-based modelling of a classroom](#agent-based-modelling-of-a-classroom)
-	- [Overview](#overview)
-	- [Running the Mesa model](#running-the-mesa-model)
-		- [Contributing to the mesa model:](#contributing-to-the-mesa-model)
-	- [Multilevel analysis](#multilevel-analysis)
-		- [Installation](#installation)
-		- [Running](#running)
+- [Overview](#overview)
+- [Running the Mesa model](#running-the-mesa-model)
+	- [Contributing to the mesa model:](#contributing-to-the-mesa-model)
+- [Multilevel analysis](#multilevel-analysis)
+	- [Installation](#installation)
+	- [Running the multilevel analysis](#running-the-multilevel-analysis)
+	- [Running the full pipeline](#running-the-full-pipeline)
+	- [Running the multilevel analysis on the Hamilton supercomputer](#running-the-multilevel-analysis-on-the-hamilton-supercomputer)
 
 <!-- /TOC -->
 
@@ -66,14 +67,14 @@ conda create --name classroom_abm --file conda_locks/conda-<operating-sys>-64.lo
 
 ## Multilevel analysis
 
-The multilevel_analysis folder contains scripts to run a multilevel model over the data. It uses [MLwiN](http://www.bristol.ac.uk/cmm/software/mlwin/) via its R script, R2MLWin.
+The multilevel_analysis folder contains scripts to run a multilevel model over the data, and calculate a mean square error score. It uses [MLwiN](http://www.bristol.ac.uk/cmm/software/mlwin/) via its R script, R2MLWin.
 
 The R directory contains:
 
  * A `classroommlm` directory containing an R package with 2 methods, `null_model` and `full_model`, which runs the multilevel model over the given data, and produces the coefficients and variances.
  * A `run_mlm` R project (using `renv` for package management) which imports the CSV `classes_input/test_input.csv` and runs the models from `classroommlm`.
 
-The `multilevel_analysis.py` script runs the model from R (currently just to show it can be used from python).
+The `multilevel_analysis.py` script runs the multilevel model from R, and calculates the mean squared error. The `run_pipeline.py` script runs the agent based model, then calculautes the mean squared error.
 
 ### Installation
 
@@ -94,7 +95,7 @@ The `multilevel_analysis.py` script runs the model from R (currently just to sho
 
   (You'll need to do this whenever changes are made in the `classroommlm` directory.)
 
-### Running
+### Running the multilevel analysis
 Run the script from the `multilevel_analysis` directory:
 
 ```bash
@@ -102,7 +103,44 @@ cd multilevel_analysis
 python multilevel_analysis.py
 ```
 
-### Running the multilevel analysis on the Hamilton supercomputer:
+Options for running the script:
+
+```bash
+Usage: multilevel_analysis.py [OPTIONS]
+
+Options:
+  -r, --real-data-file TEXT       File path containing real data, relative to
+                                  multilevel_analysis directory. Defaults to
+                                  ../classes_input/test_input.csv
+  -s, --simulated-data-file TEXT  Output file path, relative to current
+                                  working directory  [required]
+  --help                          Show this message and exit.
+```
+
+### Running the full pipeline
+You can run the model and calculate the mean squared error using the `run_pipeline.py` script
+from the `multilevel_analysis` directory:
+
+```bash
+cd multilevel_analysis
+python run_pipeline.py -i ../classes_input/test_input_short.csv
+```
+
+`run_pipeline.py` accepts input and output file parameters:
+
+```bash
+Usage: run_pipeline.py [OPTIONS]
+
+Options:
+  -i, --input-file TEXT   File path containing real data, relative to
+                          multilevel_analysis directory. Defaults to
+                          ../classes_input/test_input.csv
+  -o, --output-file TEXT  Output file path, relative to current working
+                          directory.
+  --help                  Show this message and exit.
+```
+
+### Running the multilevel analysis on the Hamilton supercomputer
 
 Issue the following commands:
 
