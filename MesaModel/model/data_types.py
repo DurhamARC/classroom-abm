@@ -1,17 +1,26 @@
 """
-Global data types. These serve as containers for model parameters. Where our
-containers are intended to be mutable we use dataclasse, where non-mutability
-is required we use namedtuple.
+Global data types. These serve as containers for model parameters.
 """
 from dataclasses import dataclass
-from collections import namedtuple
 
 
-GridParamType = namedtuple("grid_parameters", "height width")
-TeacherParamType = namedtuple("teacher_parameters", "quality control")
-PupilParamType = namedtuple(
-    "pupil_parameters", "inattentiveness hyper_impulsivity attention_span"
-)
+@dataclass(unsafe_hash=True)
+class GridParamType:
+    height: int
+    width: int
+
+
+@dataclass(unsafe_hash=True)
+class TeacherParamType:
+    quality: float
+    control: float
+
+
+@dataclass(unsafe_hash=True)
+class PupilParamType:
+    inattentiveness: float
+    hyper_impulsivity: float
+    attention_span: float
 
 
 @dataclass(unsafe_hash=True)
