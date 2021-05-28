@@ -44,7 +44,13 @@ from model.utils import get_grid_size
     is_flag=True,
     help="Whether to run an interactive web server",
 )
-def run_model(input_file, output_file, class_id, all_classes, webserver):
+def run_model_cli(input_file, output_file, class_id, all_classes, webserver):
+    run_model(input_file, output_file, class_id, all_classes, webserver)
+
+
+def run_model(
+    input_file, output_file, class_id=None, all_classes=True, webserver=False
+):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
 

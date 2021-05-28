@@ -49,6 +49,10 @@ def run_rscript(script=None, scriptname=None, args=None):
     help="Output file path, relative to current working directory",
 )
 def run_mlm(real_data_file, simulated_data_file):
+    run_multilevel_analysis(real_data_file, simulated_data_file)
+
+
+def run_multilevel_analysis(real_data_file, simulated_data_file):
     here = os.path.dirname(os.path.realpath(__file__))
     real_data_path = os.path.join(
         here,
