@@ -119,7 +119,7 @@ jobs:
       - name: Run multilevel analysis
         run: |
           cd multilevel_analysis
-          python run_pipeline.py -i ../classes_input/test_input_short.csv
+          python run_pipeline.py -i ../classes_input/test_input_2_classes.csv
       - name: Upload check results
         if: failure()
         uses: actions/upload-artifact@main
