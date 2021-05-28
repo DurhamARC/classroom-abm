@@ -3,15 +3,15 @@ import os
 import sys
 
 import click
+from mesa.batchrunner import BatchRunnerMP
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
 from model.data_types import GridParamType, TeacherParamType, PupilParamType, ModelState
 from model.input_data import InputData
-from model.output_data import OutputData
+from model.output_data import OutputDataWriter
 from model.SimModel import SimModel
 from server import create_canvas_grid, sim_element, sim_chart
-from model.utils import get_grid_size
 
 
 @click.command()
@@ -63,65 +63,80 @@ def run_model(input_file, output_file, class_id, all_classes, webserver):
             if not webserver:
                 class_ids = [class_id]
 
-    output_data = OutputData(output_file)
+    output_data_writer = OutputDataWriter(output_file)
 
-    for class_id in class_ids:
-        click.echo(f"Running on class {class_id}")
+    # Get data first to determine grid size
+    model_initial_state = ModelState(0, 0, 0, 0, 0)
+    canvas_grid = create_canvas_grid(GridParamType(8, 8))
+    click.echo(f"Running on class {class_ids}")
 
-        # Get data first to determine grid size
-        model_initial_state = ModelState(0, 0, 0, 0, 0)
-        canvas_grid = create_canvas_grid(GridParamType(8, 8))
+    if webserver:
+        server = ModularServer(
+            SimModel,
+            [canvas_grid, sim_element, sim_chart],
+            "Classroom ABM",
+            {
+                "all_data": all_data,
+                "model_initial_state": model_initial_state,
+                "output_data": output_data_writer,
+                "canvas_grid": canvas_grid,
+                "instructions": UserSettableParameter(
+                    "static_text",
+                    value="Modify the parameters below then click Reset to update the model.",
+                ),
+                "class_id": UserSettableParameter(
+                    "choice", "Class ID", value=class_ids[0], choices=class_ids
+                ),
+                "teacher_quality": UserSettableParameter(
+                    "slider", "Teaching quality", 5.0, 0.00, 5.0, 1.0
+                ),
+                "teacher_control": UserSettableParameter(
+                    "slider", "Teaching control", 5.0, 0.00, 5.0, 1.0
+                ),
+                "pupil_inattentiveness": UserSettableParameter(
+                    "slider", "Use Pupil Inattentiveness ", 1.0, 0.00, 1.0, 1.0
+                ),
+                "pupil_hyper_impulsivity": UserSettableParameter(
+                    "slider", "Use Pupil Hyperactivity ", 1.0, 0.00, 1.0, 1.0
+                ),
+                "pupil_attention_span": UserSettableParameter(
+                    "slider", "Pupil Attention Span Limit", 5.0, 0.00, 5.0, 1.0
+                ),
+            },
+        )
 
-        if webserver:
-            server = ModularServer(
-                SimModel,
-                [canvas_grid, sim_element, sim_chart],
-                "Classroom ABM",
-                {
-                    "all_data": all_data,
-                    "model_initial_state": model_initial_state,
-                    "output_data": output_data,
-                    "canvas_grid": canvas_grid,
-                    "instructions": UserSettableParameter(
-                        "static_text",
-                        value="Modify the parameters below then click Reset to update the model.",
-                    ),
-                    "class_id": UserSettableParameter(
-                        "choice", "Class ID", value=class_ids[0], choices=class_ids
-                    ),
-                    "teacher_quality": UserSettableParameter(
-                        "slider", "Teaching quality", 5.0, 0.00, 5.0, 1.0
-                    ),
-                    "teacher_control": UserSettableParameter(
-                        "slider", "Teaching control", 5.0, 0.00, 5.0, 1.0
-                    ),
-                    "pupil_inattentiveness": UserSettableParameter(
-                        "slider", "Use Pupil Inattentiveness ", 1.0, 0.00, 1.0, 1.0
-                    ),
-                    "pupil_hyper_impulsivity": UserSettableParameter(
-                        "slider", "Use Pupil Hyperactivity ", 1.0, 0.00, 1.0, 1.0
-                    ),
-                    "pupil_attention_span": UserSettableParameter(
-                        "slider", "Pupil Attention Span Limit", 5.0, 0.00, 5.0, 1.0
-                    ),
-                    "write_file": True,
-                },
-            )
+        server.launch()
 
-            server.launch()
-        else:
-            teacher_params = TeacherParamType(1, 1)
-            pupil_params = PupilParamType(0, 0, 2)
+    else:
+        # Num processes is set to 2 for now. If we don't pass the nr_processes
+        # arg then Batchrunner will use all available cores. This will be useful
+        # for Hamilton, but not ideal on a laptop.
+        batch_run = BatchRunnerMP(
+            SimModel,
+            variable_parameters={"class_id": class_ids},
+            fixed_parameters={
+                "all_data": all_data,
+                "model_initial_state": model_initial_state,
+                "output_data": output_data_writer,
+                "canvas_grid": canvas_grid,
+                "teacher_params": TeacherParamType(1, 1),
+                "pupil_params": PupilParamType(0, 0, 2),
+            },
+            nr_processes=2,
+            iterations=1,
+            max_steps=10000,
+            agent_reporters={
+                "student_id": "student_id",
+                "end_maths": "e_math",
+                "start_maths": "s_math",
+                "Ability": "ability",
+                "Inattentiveness": "inattentiveness",
+                "hyper_impulsive": "hyper_impulsive",
+                "Deprivation": "deprivation",
+            },
+        )
 
-            model = SimModel(
-                all_data,
-                model_initial_state,
-                output_data,
-                fixed_params=(class_id, teacher_params, pupil_params),
-            )
-            model.run_model()
-
-    output_data.write_file()
+        batch_run.run_all()
 
 
 if __name__ == "__main__":
