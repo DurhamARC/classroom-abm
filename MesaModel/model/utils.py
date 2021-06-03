@@ -19,23 +19,18 @@ def compute_ave(model):
     x = sum(agent_maths)
     N = len(agent_maths)
     B = x / N
-    print("the AVARAGE of end math", B, agent_maths)
     return B
 
 
 def compute_ave_disruptive(model):
     agent_disruptiveTend = [agent.disruptiveTend for agent in model.schedule.agents]
-    print("Calculate disrubtive tend original", agent_disruptiveTend)
     # B = statistics.mean(agent_disruptiveTend)
     B = np.mean(agent_disruptiveTend)
-    print("Calculate disrubtive tend after mean", agent_disruptiveTend)
-    print("the AVARAGE of disruptive", B, agent_disruptiveTend)
     return B
 
 
 def compute_zscore(model, x):
     agent_inattentiveness = [agent.inattentiveness for agent in model.schedule.agents]
-    print("Calculate variance", agent_inattentiveness)
     SD = stdev(agent_inattentiveness)
     mean = statistics.mean(agent_inattentiveness)
     zscore = (x - mean) / SD
@@ -44,7 +39,6 @@ def compute_zscore(model, x):
 
 def compute_SD(model, x):
     agent_disruptiveTend = [agent.disruptiveTend for agent in model.schedule.agents]
-    print("Calculate variance", agent_disruptiveTend)
     b = [float(s) for s in agent_disruptiveTend]
     SD = stdev(b)
     mean = statistics.mean(b)
