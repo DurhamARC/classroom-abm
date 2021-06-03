@@ -94,10 +94,10 @@ def run_model(
 
     # Get data first to determine grid size
     model_initial_state = ModelState(0, 0, 0, 0, 0)
-    canvas_grid = create_canvas_grid(GridParamType(8, 8))
     click.echo(f"Running on class {class_ids}")
 
     if webserver:
+        canvas_grid = create_canvas_grid(GridParamType(8, 8))
         server = ModularServer(
             SimModel,
             [canvas_grid, sim_element, sim_chart],
