@@ -143,7 +143,6 @@ def run_model(
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
                 "output_data": output_data_writer,
-                "canvas_grid": canvas_grid,
                 "teacher_params": TeacherParamType(1, 1),
                 "pupil_params": PupilParamType(0, 0, 2),
             },
