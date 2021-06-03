@@ -17,6 +17,10 @@ module load r/4.0.3
 
 pushd <path-to-repo>/MesaModel
 
-# prepend 'time' to the following command
-# if doing benchmarking work
+# prepend 'time' to the following command if doing
+# benchmarking work. Note: this runs all 6 classes in
+# ../classes_input/test_input_short.csv but will not run
+# the full pipeline (for that use the above structure
+# on ../multilevel_analysis/run_pipeline.py). To run on
+# the full dataset add -i ../classes_input/test_input.csv
 python run.py -a -npr 24
