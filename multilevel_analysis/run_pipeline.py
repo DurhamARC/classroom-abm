@@ -21,8 +21,14 @@ from run import run_model
     default=f"../classes_output/output{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv",
     help="Output file path, relative to current working directory.",
 )
-def run_model_and_mlm(input_file, output_file):
-    run_model(input_file, output_file)
+@click.option(
+    "--n-processors",
+    "-npr",  # 'np' is avoided given the meaning this already has in MPI contexts
+    default=2,
+    help="Number of processors to be used by the batchrunner",
+)
+def run_model_and_mlm(input_file, output_file, n_processors):
+    run_model(input_file, output_file, n_processors)
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
     print(f"Mean squared error: {mean_squared_error}")
     return mean_squared_error

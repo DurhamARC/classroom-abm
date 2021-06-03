@@ -28,6 +28,12 @@ from server import create_canvas_grid, sim_element, sim_chart
     help="Output file path, relative to current working directory",
 )
 @click.option(
+    "--n-processors",
+    "-npr",  # 'np' is avoided given the meaning this already has in MPI contexts
+    default=2,
+    help="Number of processors to be used by the batchrunner (used only if -a is set)",
+)
+@click.option(
     "--class_id", "-c", default=489, type=int, help="ID of class to run model for"
 )
 @click.option(
@@ -44,8 +50,10 @@ from server import create_canvas_grid, sim_element, sim_chart
     is_flag=True,
     help="Whether to run an interactive web server",
 )
-def run_model_cli(input_file, output_file, class_id, all_classes, webserver):
-    run_model(input_file, output_file, class_id, all_classes, webserver)
+def run_model_cli(
+    input_file, output_file, n_processors, class_id, all_classes, webserver
+):
+    run_model(input_file, output_file, n_processors, class_id, all_classes, webserver)
 
 
 """
@@ -57,7 +65,12 @@ that facilitates the running of the model without the multilevel model postproce
 
 
 def run_model(
-    input_file, output_file, class_id=None, all_classes=True, webserver=False
+    input_file,
+    output_file,
+    n_processors,
+    class_id=None,
+    all_classes=True,
+    webserver=False,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -122,9 +135,7 @@ def run_model(
         server.launch()
 
     else:
-        # Num processes is set to 2 for now. If we don't pass the nr_processes
-        # arg then Batchrunner will use all available cores. This will be useful
-        # for Hamilton, but not ideal on a laptop.
+        print(f"BatchRunnerMP will use {n_processors} processors")
         batch_run = BatchRunnerMP(
             SimModel,
             variable_parameters={"class_id": class_ids},
@@ -136,7 +147,7 @@ def run_model(
                 "teacher_params": TeacherParamType(1, 1),
                 "pupil_params": PupilParamType(0, 0, 2),
             },
-            nr_processes=2,
+            nr_processes=n_processors,
             iterations=1,
             max_steps=10000,
             agent_reporters={
