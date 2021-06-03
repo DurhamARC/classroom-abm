@@ -48,6 +48,14 @@ def run_model_cli(input_file, output_file, class_id, all_classes, webserver):
     run_model(input_file, output_file, class_id, all_classes, webserver)
 
 
+"""
+run_model() has been separated from run_model_cli() so that it can be imported in 
+run_pipeline.py without the commandline argument infrastructure that is associated
+with run_model_cli(). Therefore, run_model_cli() is simply a wrapper around run_model()
+that facilitates the running of the model without the multilevel model postprocessing.
+"""
+
+
 def run_model(
     input_file, output_file, class_id=None, all_classes=True, webserver=False
 ):
@@ -146,4 +154,4 @@ def run_model(
 
 
 if __name__ == "__main__":
-    run_model()
+    run_model_cli()
