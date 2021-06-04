@@ -42,18 +42,30 @@ More options for running the model:
 Usage: run.py [OPTIONS]
 
 Options:
-  -i, --input-file TEXT    Input file path, relative to current working
-                           directory
-  -c, --class_id INTEGER   ID of class to run model for
-  -w, --webserver BOOLEAN  Whether to run an interactive web server
-  --help                   Show this message and exit.
+  -i, --input-file TEXT         Input file path, relative to current working
+                                directory
+
+  -o, --output-file TEXT        Output file path, relative to current working
+                                directory
+
+  -p, --n-processors INTEGER  Number of processors to be used by the
+                                batchrunner (used only if -a is set)
+
+  -c, --class_id INTEGER        ID of class to run model for
+  -a, --all_classes             Whether to run over all classes (overrides
+                                class_id; not available in webserver mode)
+
+  -w, --webserver               Whether to run an interactive web server
+  --help                        Show this message and exit.
 ```
+
+To run the model with the full pipeline (inlcuding multilevel analysis) see [below](###Running-the-full-pipeline).
 
 ### Contributing to the mesa model:
 
 To use Black as a Git hook on all commits run `pre-commit install` from the root of the repository.
 
-Add new dependencies to environment.yml. Then execute `conda-lock` from the root of the repository. This will create lock files for osx, linux and windows which we store in the conda\_locks/ directory to minimise clutter:
+Add new dependencies to environment.yml. Then execute `conda-lock` from the root of the repository. This will create lock files for osx, linux and windows which we store in the conda_locks/ directory to minimise clutter:
 
 ```
 conda-lock --filename-template conda_locks/conda-{platform}.lock
@@ -132,12 +144,17 @@ python run_pipeline.py -i ../classes_input/test_input_short.csv
 Usage: run_pipeline.py [OPTIONS]
 
 Options:
-  -i, --input-file TEXT   File path containing real data, relative to
-                          multilevel_analysis directory. Defaults to
-                          ../classes_input/test_input.csv
-  -o, --output-file TEXT  Output file path, relative to current working
-                          directory.
-  --help                  Show this message and exit.
+  -i, --input-file TEXT         File path containing real data, relative to
+                                multilevel_analysis directory. Defaults to
+                                ../classes_input/test_input.csv
+
+  -o, --output-file TEXT        Output file path, relative to current working
+                                directory.
+
+  -p, --n-processors INTEGER  Number of processors to be used by the
+                                batchrunner
+
+  --help                        Show this message and exit.
 ```
 
 ### Running the multilevel analysis on the Hamilton supercomputer

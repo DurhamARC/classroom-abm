@@ -22,7 +22,7 @@ class SimModel(Model):
         self, all_data, model_initial_state, output_data, fixed_params=None, **kwargs
     ):
         self.model_state = model_initial_state
-        self.output_data = output_data
+        self.output_data_writer = output_data
         self.write_file = False
 
         self.data = all_data
@@ -132,7 +132,6 @@ class SimModel(Model):
         self.running = True
 
     def step(self):
-
         # Reset counter of learning and disruptive agents
         self.model_state.learning_count = 0
         self.model_state.disruptive_count = 0
@@ -147,6 +146,6 @@ class SimModel(Model):
             self.running = False
             self.agent_datacollector.collect(self)
             agent_data = self.agent_datacollector.get_agent_vars_dataframe()
-            self.output_data.append_data(agent_data, self.class_id, self.class_size)
-            if self.write_file:
-                self.output_data.write_file()
+            self.output_data_writer.write_data(
+                agent_data, self.class_id, self.class_size
+            )
