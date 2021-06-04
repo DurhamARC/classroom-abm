@@ -48,7 +48,7 @@ Options:
   -o, --output-file TEXT        Output file path, relative to current working
                                 directory
 
-  -npr, --n-processors INTEGER  Number of processors to be used by the
+  -p, --n-processors INTEGER  Number of processors to be used by the
                                 batchrunner (used only if -a is set)
 
   -c, --class_id INTEGER        ID of class to run model for
@@ -151,7 +151,7 @@ Options:
   -o, --output-file TEXT        Output file path, relative to current working
                                 directory.
 
-  -npr, --n-processors INTEGER  Number of processors to be used by the
+  -p, --n-processors INTEGER  Number of processors to be used by the
                                 batchrunner
 
   --help                        Show this message and exit.
