@@ -23,4 +23,6 @@ pushd <path-to-repo>/MesaModel
 # the full pipeline (for that use the above structure
 # on ../multilevel_analysis/run_pipeline.py). To run on
 # the full dataset add -i ../classes_input/test_input.csv
-python run.py -a -npr 24
+# If you do this set -p to 24 to exploit all of the cores
+# one of Hamilton's nodes.
+python run.py -a -p 6
