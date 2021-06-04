@@ -23,7 +23,7 @@ from run import run_model
 )
 @click.option(
     "--n-processors",
-    "-npr",  # 'np' is avoided given the meaning this already has in MPI contexts
+    "-p",  # 'np' is avoided given the meaning this already has in MPI contexts
     default=2,
     help="Number of processors to be used by the batchrunner",
 )

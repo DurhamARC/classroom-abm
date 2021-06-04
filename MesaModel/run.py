@@ -29,7 +29,7 @@ from server import create_canvas_grid, sim_element, sim_chart
 )
 @click.option(
     "--n-processors",
-    "-npr",  # 'np' is avoided given the meaning this already has in MPI contexts
+    "-p",  # 'np' is avoided given the meaning this already has in MPI contexts
     default=2,
     help="Number of processors to be used by the batchrunner (used only if -a is set)",
 )
