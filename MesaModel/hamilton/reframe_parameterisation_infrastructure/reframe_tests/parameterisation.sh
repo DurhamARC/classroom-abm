@@ -1,10 +1,10 @@
 #!/bin/bash
 case "$1" in
     "--with-big-dataset")
-        export DATASET=../../../../classes_input/test_input.csv
+        export DATASET=../classes_input/test_input.csv
         ;;
     "--with-small-dataset")
-        export DATASET=../../../../classes_input/test_input_short.csv
+        export DATASET=../classes_input/test_input_short.csv
         ;;
     (*)
         echo "Please name a dataset for this job. Options are: "
