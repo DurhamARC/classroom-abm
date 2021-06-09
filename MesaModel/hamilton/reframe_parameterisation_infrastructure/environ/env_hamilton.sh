@@ -1,6 +1,6 @@
 #!/bin/bash
 module purge
-module load python/3.6.5
+module load python/3.6.8
 
 export STAGE_DIR=/ddn/data/$USER/reframe_stage
 export OUTPUT_DIR=/ddn/data/$USER/reframe_output
