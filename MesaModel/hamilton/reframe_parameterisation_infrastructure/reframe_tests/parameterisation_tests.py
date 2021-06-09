@@ -47,6 +47,7 @@ class EAGLE25SingleBenchmarkTest(rfm.RegressionTest):
             "--input-file",
             os.environ["DATASET"],
             "--output-file",
-            "pupil_data_output.csv" "--n-processors",
+            "pupil_data_output.csv",
+            "--n-processors",
             n_processors,
         ]
