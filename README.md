@@ -177,8 +177,8 @@ Then download MLwiN and mlnscript as described above, but be sure to download it
 
 ```
 rpm2cpio mlnscript-3.05-1.el7.x86_64.rpm | cpio -idv
-export MLNSCRIPT_PATH=/ddn/data/<usr>/usr/bin/mlnscript
-export LD_LIBRARY_PATH=/ddn/data/<usr>/usr/lib64
+export MLNSCRIPT_PATH=/ddn/data/$USER/usr/bin/mlnscript
+export LD_LIBRARY_PATH=/ddn/data/$USER/usr/lib64
 ```
 
 Then build the classroommlm R package and run as described above.
