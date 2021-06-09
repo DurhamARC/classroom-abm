@@ -49,5 +49,5 @@ class Parameterisation(rfm.RegressionTest):
             "--output-file",
             "pupil_data_output.csv",
             "--n-processors",
-            n_processors,
+            f"{n_processors}",
         ]
