@@ -34,6 +34,10 @@ site_configuration = {
             "cxx": "icpc",
             "ftn": "",
             "target_systems": ["hamilton"],
+            "variables": [
+                ["MLNSCRIPT_PATH", "/ddn/data/$USER/usr/bin/mlnscript"],
+                ["LD_LIBRARY", "/ddn/data/$USER/usr/lib64"],
+            ],
         }
     ],
     "logging": [
