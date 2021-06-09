@@ -42,7 +42,9 @@ screen
 ./parameterisation.sh --with-<small/big>-dataset
 ```
 
-At the moment this will just run the pipeline with three different numbers of processors 
+This assumes that the classroom-abm repo is setup with a working multilevel model implementation. 
+The steps for how to do this on Hamilton are documented in the top level README. Further,
+at the moment this will just run the pipeline with three different numbers of processors 
 (8, 16 and 24). Once our parameter set is stable they will all be added following Latin Hypercube sampling.
 
 Tests will run independently over as many nodes as SLURM allows adding an extra layer of 
