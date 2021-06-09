@@ -16,7 +16,7 @@ import reframe.utility.sanity as sn
         for example_param_2 in [1]
     )
 )  # accepts an arbitrary number of parameters
-class EAGLE25SingleBenchmarkTest(rfm.RegressionTest):
+class Parameterisation(rfm.RegressionTest):
     def __init__(self, n_processors, example_param_1, example_param_2):
         if n_processors == 8:
             self.time_limit = "1h45m"

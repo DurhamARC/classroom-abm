@@ -26,7 +26,7 @@ source ../environ/env_hamilton.sh
     -v \
     --performance-report \
     -n \
-    'parameterisation' \
+    'Parameterisation' \
     --output $OUTPUT_DIR \
     --report-file=parameterisation.log
 
