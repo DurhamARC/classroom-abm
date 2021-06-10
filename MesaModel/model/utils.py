@@ -72,8 +72,31 @@ def gen_random():
     return np.concatenate((arr1, mid, arr2))
 
 
-def get_grid_size(n_agents):
-    # Calculate squarest grid size that will fit the given number of agents
-    grid_width = math.ceil(math.sqrt(n_agents))
-    grid_height = math.ceil(n_agents / grid_width)
-    return GridParamType(grid_width, grid_height)
+def get_grid_size(n_agents, max_group_size):
+    # Calculate squarest grid size that will fit the given number of agents in
+    # the given number of groups
+    if max_group_size > n_agents:
+        max_group_size = n_agents
+
+    n_groups = math.ceil(n_agents / max_group_size)
+    n_full_groups = n_groups
+    if n_groups * max_group_size != n_agents:
+        n_full_groups = n_agents % n_groups
+
+    n_group_rows = math.ceil(math.sqrt(n_groups))
+    n_group_cols = math.ceil(n_groups / n_group_rows)
+    group_width = math.ceil(math.sqrt(max_group_size))
+    group_height = math.ceil(max_group_size / group_width)
+
+    grid_width = n_group_cols * (group_width + 1) - 1
+    grid_height = n_group_rows * (group_height + 1) - 1
+    return GridParamType(
+        width=grid_width,
+        height=grid_height,
+        n_groups=n_groups,
+        n_full_groups=n_full_groups,
+        n_group_cols=n_group_cols,
+        n_group_rows=n_group_rows,
+        group_width=group_width,
+        group_height=group_height,
+    )

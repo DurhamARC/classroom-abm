@@ -1,3 +1,5 @@
+import math
+
 from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
@@ -70,49 +72,62 @@ class SimModel(Model):
         self.schedule = RandomActivation(self)
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
-        self.grid_params = get_grid_size(len(self.class_data))
+        self.grid_params = get_grid_size(
+            len(self.class_data), self.model_params.group_size
+        )
         self.grid = SingleGrid(
             self.grid_params.width, self.grid_params.height, torus=False
         )
 
-        maths = self.class_data["start_maths"].to_numpy()
-        student_id = self.class_data["student_id"].to_numpy()
-        ability_zscore = stats.zscore(maths)
-        inattentiveness = self.class_data["Inattentiveness"].to_numpy()
-        hyper_impulsive = self.class_data["hyper_impulsive"].to_numpy()
-        deprivation = self.class_data["Deprivation"].to_numpy()
-
-        # Work out how many rows should be full - we spread the gaps
-        # across rows rather than the last row being nearly empty
-        rows_with_gaps = self.grid.width * self.grid.height - self.class_size
-        full_rows = self.grid.height - rows_with_gaps
+        sorted_pupils = []
+        if self.model_params.group_by_ability:
+            sorted_pupils = self.class_data.sort_values("Ability")
+        else:
+            sorted_pupils = self.class_data.sample(frac=1)
 
         # Set up agents
-        counter = 0
-        for cell_content, x, y in self.grid.coord_iter():
-            if y >= full_rows and x == self.grid.width - 1:
-                continue
+        pupil_counter = 0
+        for i in range(self.grid_params.n_groups):
+            group_size = self.model_params.group_size
+            if i >= self.grid_params.n_full_groups:
+                group_size -= 1
 
-            # Initial learning state for all student is random
-            learning_state = self.random.choice(list(PupilLearningState))
-            ability = ability_zscore[counter]
+            group_pupils = sorted_pupils.iloc[
+                pupil_counter : pupil_counter + group_size
+            ]
+            group_x = math.floor(i / self.grid_params.n_group_rows)
+            group_y = i % self.grid_params.n_group_rows
 
-            # create agents from data
-            agent = Pupil(
-                (x, y),
-                self,
-                student_id[counter],
-                learning_state,
-                inattentiveness[counter],
-                hyper_impulsive[counter],
-                deprivation[counter],
-                maths[counter],
-                ability,
-            )
-            # Place Agents on grid
-            self.grid.position_agent(agent, x, y)
-            self.schedule.add(agent)
-            counter += 1
+            for j, row in enumerate(group_pupils.iterrows()):
+                index, pupil_data = row
+                # Initial learning state for all student is random
+                learning_state = self.random.choice(list(PupilLearningState))
+
+                # Work out position on grid
+                x = (group_x * self.grid_params.group_width + group_x) + math.floor(
+                    j / self.grid_params.group_height
+                )
+                y = (group_y * self.grid_params.group_height + group_y) + (
+                    j % self.grid_params.group_height
+                )
+
+                # create agents from data
+                agent = Pupil(
+                    (x, y),
+                    self,
+                    pupil_data.student_id,
+                    learning_state,
+                    pupil_data.Inattentiveness,
+                    pupil_data.hyper_impulsive,
+                    pupil_data.Deprivation,
+                    pupil_data.start_maths,
+                    pupil_data.Ability,
+                )
+                # Place Agents on grid
+                self.grid.position_agent(agent, x, y)
+                self.schedule.add(agent)
+
+            pupil_counter += group_size
 
         # Collecting data while running the model
         self.model_datacollector = DataCollector(

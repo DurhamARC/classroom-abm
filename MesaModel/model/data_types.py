@@ -7,8 +7,14 @@ from enum import Enum
 
 @dataclass(unsafe_hash=True)
 class GridParamType:
-    height: int
     width: int
+    height: int
+    n_groups: int
+    n_full_groups: int
+    n_group_cols: int
+    n_group_rows: int
+    group_width: int
+    group_height: int
 
 
 @dataclass(unsafe_hash=True)

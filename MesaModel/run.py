@@ -103,7 +103,7 @@ def run_model(
     click.echo(f"Running on class {class_ids}")
 
     if webserver:
-        canvas_grid = create_canvas_grid(GridParamType(8, 8))
+        canvas_grid = create_canvas_grid(12, 12)
         server = ModularServer(
             SimModel,
             [canvas_grid, sim_element, sim_chart],

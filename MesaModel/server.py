@@ -35,8 +35,8 @@ def simclass_draw(agent):
     return portrayal
 
 
-def create_canvas_grid(grid_params):
-    return CanvasGrid(simclass_draw, grid_params.width, grid_params.height, 400, 400)
+def create_canvas_grid(width, height):
+    return CanvasGrid(simclass_draw, width, height, 400, 400)
 
 
 def hist(model):
