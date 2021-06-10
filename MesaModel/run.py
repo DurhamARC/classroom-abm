@@ -7,7 +7,13 @@ from mesa.batchrunner import BatchRunnerMP
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
-from model.data_types import GridParamType, TeacherParamType, PupilParamType, ModelState
+from model.data_types import (
+    GridParamType,
+    TeacherParamType,
+    PupilParamType,
+    ModelParamType,
+    ModelState,
+)
 from model.input_data import InputData
 from model.output_data import OutputDataWriter
 from model.SimModel import SimModel
@@ -57,7 +63,7 @@ def run_model_cli(
 
 
 """
-run_model() has been separated from run_model_cli() so that it can be imported in 
+run_model() has been separated from run_model_cli() so that it can be imported in
 run_pipeline.py without the commandline argument infrastructure that is associated
 with run_model_cli(). Therefore, run_model_cli() is simply a wrapper around run_model()
 that facilitates the running of the model without the multilevel model postprocessing.
@@ -105,7 +111,10 @@ def run_model(
             {
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
-                "output_data": output_data_writer,
+                "output_data_writer": output_data_writer,
+                "model_params": ModelParamType(
+                    2, 0.12, 0.0043, 800, 0.04, 0.2, 100, 2, 2, 5, True
+                ),
                 "canvas_grid": canvas_grid,
                 "instructions": UserSettableParameter(
                     "static_text",
@@ -142,9 +151,12 @@ def run_model(
             fixed_parameters={
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
-                "output_data": output_data_writer,
-                "teacher_params": TeacherParamType(1, 1),
+                "output_data_writer": output_data_writer,
+                "teacher_params": TeacherParamType(3.5, 3.5),
                 "pupil_params": PupilParamType(0, 0, 2),
+                "model_params": ModelParamType(
+                    2, 0.12, 0.0043, 800, 0.04, 0.2, 100, 2, 2, 5, True
+                ),
             },
             nr_processes=n_processors,
             iterations=1,

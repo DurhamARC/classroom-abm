@@ -19,43 +19,52 @@ from .utils import (
 
 class SimModel(Model):
     def __init__(
-        self, all_data, model_initial_state, output_data, fixed_params=None, **kwargs
+        self,
+        all_data,
+        model_initial_state,
+        output_data_writer,
+        class_id=None,
+        teacher_params=None,
+        pupil_params=None,
+        model_params=None,
+        **kwargs
     ):
+        self.data = all_data
         self.model_state = model_initial_state
-        self.output_data_writer = output_data
+        self.output_data_writer = output_data_writer
+        self.class_id = class_id
+        self.teacher_params = teacher_params
+        self.pupil_params = pupil_params
+        self.model_params = model_params
         self.write_file = False
 
-        self.data = all_data
-        if fixed_params:
-            self.class_id, self.teacher_params, self.pupil_params = fixed_params
-        else:
-            if "teacher_quality" in kwargs and "teacher_control" in kwargs:
-                self.teacher_params = TeacherParamType(
-                    kwargs["teacher_quality"], kwargs["teacher_control"]
-                )
-            else:
-                self.teacher_params = TeacherParamType(0, 0)
+        if "teacher_quality" in kwargs and "teacher_control" in kwargs:
+            self.teacher_params = TeacherParamType(
+                kwargs["teacher_quality"], kwargs["teacher_control"]
+            )
+        elif not self.teacher_params:
+            self.teacher_params = TeacherParamType(0, 0)
 
-            if (
-                "pupil_inattentiveness" in kwargs
-                and "pupil_hyper_impulsivity" in kwargs
-                and "pupil_attention_span" in kwargs
-            ):
-                self.pupil_params = PupilParamType(
-                    kwargs["pupil_inattentiveness"],
-                    kwargs["pupil_hyper_impulsivity"],
-                    kwargs["pupil_attention_span"],
-                )
-            else:
-                self.pupil_params = PupilParamType(0, 0, 2)
+        if (
+            "pupil_inattentiveness" in kwargs
+            and "pupil_hyper_impulsivity" in kwargs
+            and "pupil_attention_span" in kwargs
+        ):
+            self.pupil_params = PupilParamType(
+                kwargs["pupil_inattentiveness"],
+                kwargs["pupil_hyper_impulsivity"],
+                kwargs["pupil_attention_span"],
+            )
+        elif not self.pupil_params:
+            self.pupil_params = PupilParamType(0, 0, 2)
 
-            if "class_id" in kwargs:
-                self.class_id = kwargs["class_id"]
-            else:
-                self.class_id = 489
+        if "class_id" in kwargs:
+            self.class_id = kwargs["class_id"]
+        elif not self.class_id:
+            self.class_id = 489
 
-            if "write_file" in kwargs:
-                self.write_file = kwargs["write_file"]
+        if "write_file" in kwargs:
+            self.write_file = kwargs["write_file"]
 
         self.class_data = self.data.get_class_data(self.class_id)
         self.class_size = len(self.class_data)

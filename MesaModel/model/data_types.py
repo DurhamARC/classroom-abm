@@ -12,6 +12,24 @@ class GridParamType:
 
 
 @dataclass(unsafe_hash=True)
+class ModelParamType:
+    # For parameterisation
+    random_select: float
+    school_learn_factor: float
+    home_learn_factor: float
+    school_learn_mean_divisor: float
+    school_learn_sd: float
+    school_learn_random_proportion: float
+    ticks_per_school_day: int
+
+    # For user manipulation
+    number_of_holidays: int
+    weeks_per_holiday: int
+    group_size: int
+    group_by_ability: bool
+
+
+@dataclass(unsafe_hash=True)
 class TeacherParamType:
     quality: float
     control: float
