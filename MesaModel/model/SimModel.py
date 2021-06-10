@@ -1,5 +1,3 @@
-import pandas as pd
-import math
 from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
