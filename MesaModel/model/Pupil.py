@@ -2,6 +2,7 @@ import math
 
 from mesa import Agent
 
+from .data_types import PupilLearningState
 from .utils import compute_ave_disruptive, compute_SD, compute_zscore
 
 
@@ -12,7 +13,7 @@ class Pupil(Agent):
         pos,
         model,
         student_id,
-        agent_type,
+        learning_state,
         inattentiveness,
         hyper_impulsive,
         deprivation,
@@ -22,7 +23,7 @@ class Pupil(Agent):
         super().__init__(pos, model)
         self.pos = pos
         self.student_id = student_id
-        self.type = agent_type
+        self.learning_state = learning_state
         self.inattentiveness = inattentiveness
         self.hyper_impulsive = hyper_impulsive
         self.deprivation = deprivation
@@ -46,9 +47,9 @@ class Pupil(Agent):
         yellow = 0
         for neighbor in self.model.grid.neighbor_iter(self.pos):
             neighbourCount += 1
-            if neighbor.type == 3:
+            if neighbor.learning_state == PupilLearningState.RED:
                 red += 1
-            elif neighbor.type == 2:
+            elif neighbor.learning_state == PupilLearningState.YELLOW:
                 yellow += 1
             else:
                 green += 1
@@ -61,7 +62,7 @@ class Pupil(Agent):
         # print("Agent position", self.pos)
         if self.redStateCange() == 1:
             self.changeState()
-            if self.type == 3:
+            if self.learning_state == PupilLearningState.RED:
                 self.model.model_state.disruptive_count += 1
             self.set_disruptive_tend()
             self.randomised_agent_attribute = self.random.randint(2, 6)
@@ -78,7 +79,7 @@ class Pupil(Agent):
         elif self.yellowStateCange() == 1:
             self.set_disruptive_tend()
             self.changeState()
-            if self.type == 3:
+            if self.learning_state == 3:
                 self.model.model_state.disruptive_count += 1
             self.randomised_agent_attribute = self.random.randint(2, 6)
 
@@ -91,8 +92,8 @@ class Pupil(Agent):
 
         # If more than 5 neighbours are disruptive and pupil is passive,
         # pupil will also become disruptive
-        if red > 5 and self.type == 2:
-            self.type = 3
+        if red > 5 and self.learning_state == PupilLearningState.YELLOW:
+            self.learning_state = PupilLearningState.RED
             self.model.model_state.disruptive_count += 1
             self.disruptive += 1
             self.time_in_red_state += 1
@@ -107,7 +108,7 @@ class Pupil(Agent):
             red > self.randomised_agent_attribute + 1
             and self.disruptiveTend > compute_ave_disruptive(self.model)
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -121,7 +122,7 @@ class Pupil(Agent):
             and self.model.teacher_params.quality <= self.randomised_agent_attribute + 1
             and self.inattentiveness > self.randomised_agent_attribute
         ):
-            self.type = 3
+            self.learning_state = PupilLearningState.RED
             self.model.model_state.disruptive_count += 1
             self.disruptive += 1
             self.time_in_red_state += 1
@@ -137,7 +138,7 @@ class Pupil(Agent):
             and self.model.teacher_params.control <= self.randomised_agent_attribute + 1
             and self.inattentiveness > self.randomised_agent_attribute
         ):
-            self.type = 3
+            self.learning_state = PupilLearningState.RED
             self.model.model_state.disruptive_count += 1
             self.disruptive += 1
             self.time_in_red_state += 1
@@ -153,7 +154,7 @@ class Pupil(Agent):
             and self.model.teacher_params.control <= self.randomised_agent_attribute
             and self.hyper_impulsive > self.randomised_agent_attribute
         ):
-            self.type = 3
+            self.learning_state = PupilLearningState.RED
             self.model.model_state.disruptive_count += 1
             self.disruptive += 1
             self.time_in_red_state += 1
@@ -173,7 +174,7 @@ class Pupil(Agent):
             and self.model.teacher_params.quality >= self.randomised_agent_attribute
             and self.inattentiveness <= self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -185,7 +186,7 @@ class Pupil(Agent):
             self.model.pupil_params.inattentiveness == 0
             and self.inattentiveness > self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -200,7 +201,7 @@ class Pupil(Agent):
             and self.model.teacher_params.control >= self.randomised_agent_attribute
             and self.hyper_impulsive <= self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -212,7 +213,7 @@ class Pupil(Agent):
             self.model.teacher_params.quality > self.randomised_agent_attribute
             and self.inattentiveness > self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -222,9 +223,9 @@ class Pupil(Agent):
         # currently learning, then pupil will become passive
         if (
             self.model.teacher_params.control <= self.randomised_agent_attribute
-            and self.type == 1
+            and self.learning_state == PupilLearningState.GREEN
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             if self.model.model_state.learning_count > 0:
                 self.model.model_state.learning_count -= 1
             self.time_in_red_state = 0
@@ -239,7 +240,7 @@ class Pupil(Agent):
             self.model.teacher_params.control > self.randomised_agent_attribute
             and self.hyper_impulsive > self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -247,8 +248,8 @@ class Pupil(Agent):
 
         # If pupil is surrounded by 3 disruptive pupil's and it is currently learning,
         # pupil will move to a passive state.
-        if red > 3 and self.type == 1:
-            self.type = 2
+        if red > 3 and self.learning_state == PupilLearningState.GREEN:
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -263,8 +264,8 @@ class Pupil(Agent):
 
         # If more than 5 of the pupil's neighbours are learning and pupil is passive,
         # then pupil will be in a learning state.
-        if green > 5 and self.type == 2:
-            self.type = 1
+        if green > 5 and self.learning_state == PupilLearningState.YELLOW:
+            self.learning_state = PupilLearningState.GREEN
             self.model.model_state.learning_count += 1
             self.set_end_math()
             self.time_in_red_state = 0
@@ -286,7 +287,7 @@ class Pupil(Agent):
                 self.model.pupil_params.inattentiveness == 0
                 and self.model.teacher_params.quality > self.randomised_agent_attribute
             ):
-                self.type = 1
+                self.learning_state = PupilLearningState.GREEN
                 self.model.model_state.learning_count += 1
                 self.set_end_math()
                 self.time_in_red_state = 0
@@ -302,7 +303,7 @@ class Pupil(Agent):
                 > self.randomised_agent_attribute
                 >= self.hyper_impulsive
             ):
-                self.type = 1
+                self.learning_state = PupilLearningState.GREEN
                 self.model.model_state.learning_count += 1
                 self.set_end_math()
                 self.time_in_red_state = 0
@@ -314,9 +315,9 @@ class Pupil(Agent):
             # a learning state
             if (
                 self.model.teacher_params.control > self.randomised_agent_attribute
-                and self.type == 2
+                and self.learning_state == PupilLearningState.YELLOW
             ):
-                self.type = 1
+                self.learning_state = PupilLearningState.GREEN
                 self.model.model_state.learning_count += 1
                 self.set_end_math()
                 self.time_in_red_state = 0
@@ -324,7 +325,7 @@ class Pupil(Agent):
                 self.time_in_green_state += 1
                 return 1
             return
-        self.type = 1
+        self.learning_state = PupilLearningState.GREEN
         self.model.model_state.learning_count += 1
         self.set_end_math()
         self.time_in_red_state = 0
@@ -339,22 +340,22 @@ class Pupil(Agent):
         Pturn_green = green / count
         Pturn_yellow = yellow / count
 
-        if self.type == 3:
+        if self.learning_state == PupilLearningState.RED:
             Pturn_red += 0.2
-        elif self.type == 2:
+        elif self.learning_state == PupilLearningState.YELLOW:
             Pturn_yellow += 0.2
         else:
             Pturn_green += 0.2
         colour = max(Pturn_red, Pturn_green, Pturn_yellow)
         if Pturn_red == colour:
-            self.type = 3
+            self.learning_state = PupilLearningState.RED
             self.model.model_state.disruptive_count += 1
             return
         if Pturn_yellow == colour:
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             return
         if Pturn_green == colour:
-            self.type = 1
+            self.learning_state = PupilLearningState.GREEN
             self.model.model_state.learning_count += 1
             self.set_end_math()
             return
@@ -369,7 +370,7 @@ class Pupil(Agent):
             > self.randomised_agent_attribute
             and self.time_in_yellow_state >= self.randomised_agent_attribute
         ):
-            self.type = 1
+            self.learning_state = PupilLearningState.GREEN
             self.time_in_red_state = 0
             self.time_in_yellow_state = 0
             self.time_in_green_state += 1
@@ -386,7 +387,7 @@ class Pupil(Agent):
             and self.model.teacher_params.control <= self.randomised_agent_attribute
             and self.time_in_yellow_state > self.randomised_agent_attribute
         ):
-            self.type = 1
+            self.learning_state = PupilLearningState.GREEN
             self.time_in_red_state = 0
             self.time_in_yellow_state = 0
             self.time_in_green_state += 1
@@ -404,7 +405,7 @@ class Pupil(Agent):
             < self.time_in_red_state
             and self.model.teacher_params.control <= self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -419,7 +420,7 @@ class Pupil(Agent):
             < self.time_in_red_state
             and self.model.teacher_params.quality <= self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -433,7 +434,7 @@ class Pupil(Agent):
             and self.model.teacher_params.quality <= self.randomised_agent_attribute
             and self.time_in_yellow_state > self.randomised_agent_attribute
         ):
-            self.type = 1
+            self.learning_state = PupilLearningState.GREEN
             self.time_in_red_state = 0
             self.time_in_yellow_state = 0
             self.time_in_green_state += 1
@@ -451,7 +452,7 @@ class Pupil(Agent):
             and self.model.teacher_params.quality > self.randomised_agent_attribute
             and self.time_in_red_state > self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -466,7 +467,7 @@ class Pupil(Agent):
             and self.model.teacher_params.control > self.randomised_agent_attribute - 1
             and self.time_in_red_state > 3
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -479,7 +480,7 @@ class Pupil(Agent):
             self.model.teacher_params.control > self.randomised_agent_attribute
             and self.time_in_red_state > 2
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -494,7 +495,7 @@ class Pupil(Agent):
             and self.model.teacher_params.quality <= self.randomised_agent_attribute
             and self.time_in_red_state > 2
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -509,7 +510,7 @@ class Pupil(Agent):
             and self.model.teacher_params.control <= self.randomised_agent_attribute - 1
             and self.time_in_red_state > self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -524,7 +525,7 @@ class Pupil(Agent):
             and self.model.teacher_params.quality < self.randomised_agent_attribute
             and self.time_in_red_state > self.randomised_agent_attribute
         ):
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.disruptive += 1
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
@@ -539,7 +540,7 @@ class Pupil(Agent):
             and (self.model.teacher_params.quality or self.model.teacher_params.control)
             >= self.randomised_agent_attribute
         ):
-            self.type = 1
+            self.learning_state = PupilLearningState.GREEN
             if self.model.model_state.disruptive_count > 0:
                 self.model.model_state.disruptive_count -= 1
             self.time_in_red_state = 0
@@ -552,7 +553,7 @@ class Pupil(Agent):
         # If the pupil's time in a learning state is greater than the pupil cohort's
         # attention span, then the pupil will be in a passive state
         if self.time_in_green_state > self.model.pupil_params.attention_span:
-            self.type = 2
+            self.learning_state = PupilLearningState.YELLOW
             self.time_in_red_state = 0
             self.time_in_yellow_state += 1
             self.time_in_green_state = 0
@@ -566,7 +567,7 @@ class Pupil(Agent):
       scaled_start_maths = (2.7 ^ start_maths) ^ (1/7.6)
       total_learnt = learning_counter + scaled_start_maths
       end_maths = (7.6 * log(total_learnt)) + pupil_ability
-    Learning counter is incremented every time the end maths score is calculated. That 
+    Learning counter is incremented every time the end maths score is calculated. That
     is, it is not the same as the number of steps that the pupil has spent learning.
     scaled_start_maths represents the number of minutes of learning and is used to fit
     a logarithmic function.
@@ -580,14 +581,14 @@ class Pupil(Agent):
         total_learn = self.count_learning + scaled_s_math
         self.e_math = (7.621204857 * math.log(total_learn)) + self.ability
 
-    def get_type(self):
-        return self.type
+    def get_learning_state(self):
+        return self.learning_state
 
     """
     Compute the pupil's disruptive tendency. First step is:
       initial_disruptive_tendency =
           (pupil_inattentiveness - mean_pupil_inattentiveness) / std_dev_pupil_inattentiveness
-      disruptive_tend = ((pupil_disruptiveness / step_number) - 
+      disruptive_tend = ((pupil_disruptiveness / step_number) -
           (learning_count_number / step_number)) + initial_disruptive_tendency
     The more pupils are disrupted the greater their own disruptive tendency will become.
     """

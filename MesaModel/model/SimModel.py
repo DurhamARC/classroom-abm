@@ -6,7 +6,7 @@ from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 from scipy import stats as stats
 
-from .data_types import TeacherParamType, PupilParamType
+from .data_types import TeacherParamType, PupilParamType, PupilLearningState
 from .Pupil import Pupil
 from .utils import (
     compute_ave,
@@ -86,8 +86,8 @@ class SimModel(Model):
             if y >= full_rows and x == self.grid.width - 1:
                 continue
 
-            # Initial State for all student is random
-            agent_type = self.random.randint(1, 3)
+            # Initial learning state for all student is random
+            learning_state = self.random.choice(list(PupilLearningState))
             ability = ability_zscore[counter]
 
             # create agents from data
@@ -95,7 +95,7 @@ class SimModel(Model):
                 (x, y),
                 self,
                 student_id[counter],
-                agent_type,
+                learning_state,
                 inattentiveness[counter],
                 hyper_impulsive[counter],
                 deprivation[counter],

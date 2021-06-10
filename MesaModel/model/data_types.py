@@ -2,6 +2,7 @@
 Global data types. These serve as containers for model parameters.
 """
 from dataclasses import dataclass
+from enum import Enum
 
 
 @dataclass(unsafe_hash=True)
@@ -30,3 +31,9 @@ class ModelState:
     red_state_count: int
     yellow_state_count: int
     green_state_count: int
+
+
+class PupilLearningState(Enum):
+    GREEN = 1
+    YELLOW = 2
+    RED = 3

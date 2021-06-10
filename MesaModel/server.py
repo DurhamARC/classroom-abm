@@ -1,5 +1,7 @@
 from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
 
+from model.data_types import PupilLearningState
+
 
 class simElement(TextElement):
     def __init__(self):
@@ -17,16 +19,16 @@ def simclass_draw(agent):
         return None
 
     portrayal = {"Shape": "circle", "r": 0.8, "Filled": "true", "Layer": 0}
-    type = agent.get_type()
+    learning_state = agent.get_learning_state()
 
-    if type == 3:
+    if learning_state == PupilLearningState.RED:
         portrayal["Color"] = ["red", "red"]
         portrayal["stroke_color"] = "#00FF00"
 
-    if type == 2:
+    if learning_state == PupilLearningState.YELLOW:
         portrayal["Color"] = ["yellow", "yellow"]
         portrayal["stroke_color"] = "#00FF00"
-    if type == 1:
+    if learning_state == PupilLearningState.GREEN:
         portrayal["Color"] = ["green", "green"]
         portrayal["stroke_color"] = "#000000"
 
