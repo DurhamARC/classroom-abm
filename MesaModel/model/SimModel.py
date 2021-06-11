@@ -83,7 +83,6 @@ class SimModel(Model):
             self.model_params.number_of_holidays,
             self.model_params.weeks_per_holiday,
         )
-        print(self.holiday_week_numbers)
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid_params = get_grid_size(
@@ -210,27 +209,17 @@ class SimModel(Model):
         else:
             # Currently pupil is at home
             if time_in_day == 0:
-                print(
-                    f"Step: {self.schedule.steps}, start of day, ",
-                )
                 # A new day - is it a weekend or holiday?
                 day_number = math.floor(self.schedule.steps / self.ticks_per_day)
                 day_in_week = day_number % 7
                 if day_in_week > 4:
-                    print("Weekend")
                     # It's a weekend so remain at home
                     return
                 else:
-                    print(
-                        "Weekday",
-                    )
                     # Is it a holiday?
                     week_number = math.floor(day_number / 7)
                     if week_number not in self.holiday_week_numbers:
-                        print("Term time")
                         self.is_school_time = True
-                    else:
-                        print("Holiday")
             else:
                 # Not a new day so continue in home time
                 return
