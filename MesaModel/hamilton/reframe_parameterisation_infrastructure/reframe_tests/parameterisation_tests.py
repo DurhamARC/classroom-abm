@@ -3,21 +3,23 @@ import os
 import reframe as rfm
 import reframe.utility.sanity as sn
 
+from MesaModel.model.data_types import TeacherParamType, PupilParamType
+
 
 @rfm.parameterized_test(
     *(
-        [n_processors, example_param_1, example_param_2]
+        [n_processors, teacher_params, pupil_params]
         for n_processors in [
             8,
             16,
             24,
         ]  # end on 24 as par7.q on Hamilton has 24 cores per node
-        for example_param_1 in [1]
-        for example_param_2 in [1]
+        for teacher_params in [TeacherParamType(1, 1), TeacherParamType(0, 0)]
+        for pupil_params in [PupilParamType(0, 0, 2), PupilParamType(1, 1, 1)]
     )
 )  # accepts an arbitrary number of parameters
 class Parameterisation(rfm.RunOnlyRegressionTest):
-    def __init__(self, n_processors, example_param_1, example_param_2):
+    def __init__(self, n_processors, teacher_params, pupil_params):
         if n_processors == 8:
             self.time_limit = "1h45m"
         elif n_processors == 16:
@@ -52,4 +54,8 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "pupil_data_output.csv",
             "--n-processors",
             f"{n_processors}",
+            "--teacher-params",
+            teacher_params,
+            "--pupil-params",
+            pupil_params,
         ]

@@ -71,6 +71,8 @@ def run_model(
     class_id=None,
     all_classes=True,
     webserver=False,
+    teacher_params=TeacherParamType(1, 1),
+    pupil_params=PupilParamType(0, 0, 2),
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -143,8 +145,8 @@ def run_model(
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
                 "output_data": output_data_writer,
-                "teacher_params": TeacherParamType(1, 1),
-                "pupil_params": PupilParamType(0, 0, 2),
+                "teacher_params": teacher_params,
+                "pupil_params": pupil_params,
             },
             nr_processes=n_processors,
             iterations=1,
