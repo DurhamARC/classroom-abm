@@ -1,5 +1,31 @@
 # Running on Hamilton
 
+### Running the multilevel analysis on the Hamilton supercomputer
+
+Issue the following commands:
+
+```
+module purge
+module load miniconda2/4.1.11
+module load r/4.0.3
+```
+
+Activating the conda environment is slightly different:
+
+```
+source activate classroom_abm
+```
+
+Then download MLwiN and mlnscript as described above, but be sure to download it for Centos 7. Use scp and put it in /ddn/data/<usr>. Then issue the following commands:
+
+```
+rpm2cpio mlnscript-3.05-1.el7.x86_64.rpm | cpio -idv
+export MLNSCRIPT_PATH=/ddn/data/$USER/usr/bin/mlnscript
+export LD_LIBRARY_PATH=/ddn/data/$USER/usr/lib64
+```
+
+Then build the classroommlm R package and run as described [here](https://github.com/DurhamARC/classroom-abm/blob/master/README.md)
+
 ### Single runs
 
 There is an example job script in this directory that illustrates how the MesaModel can be run on Hamilton: 
@@ -43,7 +69,7 @@ screen
 ```
 
 This assumes that the classroom-abm repo is setup with a working multilevel model implementation. 
-The steps for how to do this on Hamilton are documented in the top level README. Further,
+The steps for how to do this on Hamilton are documented above. Further,
 at the moment this will just run the pipeline with three different numbers of processors 
 (8, 16 and 24). Once our parameter set is stable they will all be added following Latin Hypercube sampling.
 
