@@ -6,7 +6,7 @@ from multilevel_analysis import run_multilevel_analysis
 
 sys.path.append("../MesaModel")
 from run import run_model
-from MesaModel.model.data_types import TeacherParamType, PupilParamType
+from model.data_types import TeacherParamType, PupilParamType
 
 
 @click.command()
