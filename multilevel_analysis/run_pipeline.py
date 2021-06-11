@@ -28,19 +28,18 @@ from MesaModel.model.data_types import TeacherParamType, PupilParamType
     default=2,
     help="Number of processors to be used by the batchrunner",
 )
-@click.option(
-    "--teacher-params",
-    default=TeacherParamType(1, 1),
-    help="A set of parameters contained in TeacherParamType (for definition see MesaModel/model/data_types.py)",
-)
-@click.option(
-    "--pupil-params",
-    default=PupilParamType(0, 0, 2),
-    help="A set of parameters contained in PupilParamType (for definition see MesaModel/model/data_types.py)",
-)
 def run_model_and_mlm(
-    input_file, output_file, n_processors, teacher_params, pupil_params
+    input_file,
+    output_file,
+    n_processors,
+    teacher_params_string="1_1",
+    pupil_params_string="0_0_1",
 ):
+    p = teacher_params_string.split("_")
+    teacher_params = TeacherParamType(p[0], p[1])
+    p = pupil_params_string.split("_")
+    pupil_params = PupilParamType(p[0], p[1], p[2])
+
     run_model(
         input_file,
         output_file,
