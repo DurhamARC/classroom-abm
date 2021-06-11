@@ -27,7 +27,7 @@ class SimModel(Model):
         teacher_params=None,
         pupil_params=None,
         model_params=None,
-        **kwargs
+        **kwargs,
     ):
         self.data = all_data
         self.model_state = model_initial_state
@@ -70,6 +70,20 @@ class SimModel(Model):
         self.class_size = len(self.class_data)
 
         self.schedule = RandomActivation(self)
+
+        # Calculate steps per day and holidays
+        self.is_school_time = True
+        # 330 minutes is time awake at home: 5.5 hours * 60 minutes
+        self.ticks_per_day = 330 + self.model_params.ticks_per_school_day
+        total_days = 317  # days from 1st September to 16th July
+        self.total_steps = self.ticks_per_day * total_days
+
+        self.holiday_week_numbers = self.calculate_holiday_weeks(
+            total_days,
+            self.model_params.number_of_holidays,
+            self.model_params.weeks_per_holiday,
+        )
+        print(self.holiday_week_numbers)
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid_params = get_grid_size(
@@ -153,6 +167,74 @@ class SimModel(Model):
 
         self.running = True
 
+    @staticmethod
+    def calculate_holiday_weeks(total_days, number_of_holidays, weeks_per_holiday):
+        """Calculate which weeks should be holidays given the total number of
+        days from start to end of the school year, and the number and length
+        of holidays
+
+        Returns an array of week numbers which are holidays
+        """
+        n_terms = number_of_holidays + 1
+        n_holiday_weeks = number_of_holidays * weeks_per_holiday
+        n_school_weeks = math.ceil(total_days / 7) - n_holiday_weeks
+        min_weeks_per_term = math.floor(n_school_weeks / n_terms)
+        remainder_weeks = n_school_weeks % n_terms
+
+        weeks_per_term = []
+        for i in range(n_terms):
+            term_weeks = min_weeks_per_term
+            if i < remainder_weeks:
+                term_weeks += 1
+            weeks_per_term.append(term_weeks)
+
+        holiday_week_numbers = []
+        current_week = 0
+        for term_weeks in weeks_per_term[:-1]:
+            start_week = current_week + term_weeks
+            holiday_week_numbers.extend(
+                list(range(start_week, start_week + weeks_per_holiday))
+            )
+            current_week += term_weeks + weeks_per_holiday
+        return holiday_week_numbers
+
+    def update_school_time(self):
+        time_in_day = self.schedule.steps % self.ticks_per_day
+
+        # If currently in school, remain so until time in day is > ticks_per_school_day
+        if self.is_school_time:
+            if time_in_day < self.model_params.ticks_per_school_day:
+                return
+            else:
+                self.is_school_time = False
+        else:
+            # Currently pupil is at home
+            if time_in_day == 0:
+                print(
+                    f"Step: {self.schedule.steps}, start of day, ",
+                )
+                # A new day - is it a weekend or holiday?
+                day_number = math.floor(self.schedule.steps / self.ticks_per_day)
+                day_in_week = day_number % 7
+                if day_in_week > 4:
+                    print("Weekend")
+                    # It's a weekend so remain at home
+                    return
+                else:
+                    print(
+                        "Weekday",
+                    )
+                    # Is it a holiday?
+                    week_number = math.floor(day_number / 7)
+                    if week_number not in self.holiday_week_numbers:
+                        print("Term time")
+                        self.is_school_time = True
+                    else:
+                        print("Holiday")
+            else:
+                # Not a new day so continue in home time
+                return
+
     def step(self):
         # Reset counter of learning and disruptive agents
         self.model_state.learning_count = 0
@@ -161,10 +243,12 @@ class SimModel(Model):
         # Advance the model by one step
         self.schedule.step()
 
+        self.update_school_time()
+
         # collect data
         self.model_datacollector.collect(self)
 
-        if self.schedule.steps == 8550.0 or self.running == False:
+        if self.schedule.steps == self.total_steps or self.running == False:
             self.running = False
             self.agent_datacollector.collect(self)
             agent_data = self.agent_datacollector.get_agent_vars_dataframe()
