@@ -14,7 +14,7 @@ import reframe.utility.sanity as sn
         ]  # end on 24 as par7.q on Hamilton has 24 cores per node
         for teacher_params in [
             "1_1",
-            "1_1",
+            "0_0",
         ]  # params according to data_types.py that will be read out of a csv following LHS
         for pupil_params in ["0_0_2", "1_1_1"]
     )
