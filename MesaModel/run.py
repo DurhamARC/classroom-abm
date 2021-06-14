@@ -160,7 +160,7 @@ def run_model(
             },
             nr_processes=n_processors,
             iterations=1,
-            max_steps=10000,
+            max_steps=1000000,
             agent_reporters={
                 "student_id": "student_id",
                 "end_maths": "e_math",
