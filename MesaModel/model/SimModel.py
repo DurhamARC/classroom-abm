@@ -72,7 +72,10 @@ class SimModel(Model):
         # Calculate steps per day and holidays
         self.is_school_time = True
         # 330 minutes is time awake at home: 5.5 hours * 60 minutes
-        self.ticks_per_day = 330 + self.model_params.ticks_per_school_day
+        self.ticks_per_day = (
+            self.model_params.ticks_per_school_day
+            + self.model_params.ticks_per_home_day
+        )
         total_days = 317  # days from 1st September to 16th July
         self.total_steps = self.ticks_per_day * total_days
 

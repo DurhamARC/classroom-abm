@@ -56,10 +56,25 @@ from server import create_canvas_grid, sim_element, sim_chart
     is_flag=True,
     help="Whether to run an interactive web server",
 )
+@click.option(
+    "--test-mode",
+    "-t",
+    default=False,
+    is_flag=True,
+    help="Whether to run in test mode (only 10 ticks per day)",
+)
 def run_model_cli(
-    input_file, output_file, n_processors, class_id, all_classes, webserver
+    input_file, output_file, n_processors, class_id, all_classes, webserver, test_mode
 ):
-    run_model(input_file, output_file, n_processors, class_id, all_classes, webserver)
+    run_model(
+        input_file,
+        output_file,
+        n_processors,
+        class_id,
+        all_classes,
+        webserver,
+        test_mode,
+    )
 
 
 """
@@ -77,6 +92,7 @@ def run_model(
     class_id=None,
     all_classes=True,
     webserver=False,
+    test_mode=False,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -102,6 +118,25 @@ def run_model(
     model_initial_state = ModelState(0, 0, 0, 0, 0)
     click.echo(f"Running on class {class_ids}")
 
+    model_params = ModelParamType(
+        random_select=2,
+        school_learn_factor=0.12,
+        home_learn_factor=0.0043,
+        school_learn_mean_divisor=800,
+        school_learn_sd=0.04,
+        school_learn_random_proportion=0.2,
+        ticks_per_school_day=100,
+        ticks_per_home_day=330,
+        number_of_holidays=2,
+        weeks_per_holiday=2,
+        group_size=5,
+        group_by_ability=True,
+    )
+
+    if test_mode:
+        model_params.ticks_per_school_day = 10
+        model_params.ticks_per_home_day = 10
+
     if webserver:
         canvas_grid = create_canvas_grid(12, 12)
         server = ModularServer(
@@ -112,9 +147,7 @@ def run_model(
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
-                "model_params": ModelParamType(
-                    2, 0.12, 0.0043, 800, 0.04, 0.2, 100, 2, 2, 5, True
-                ),
+                "model_params": model_params,
                 "canvas_grid": canvas_grid,
                 "instructions": UserSettableParameter(
                     "static_text",
@@ -152,11 +185,9 @@ def run_model(
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
-                "teacher_params": TeacherParamType(3.5, 3.5),
+                "teacher_params": TeacherParamType(2, 2),
                 "pupil_params": PupilParamType(0, 0, 2),
-                "model_params": ModelParamType(
-                    2, 0.12, 0.0043, 800, 0.04, 0.2, 100, 2, 2, 5, True
-                ),
+                "model_params": model_params,
             },
             nr_processes=n_processors,
             iterations=1,

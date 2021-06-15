@@ -27,6 +27,7 @@ class ModelParamType:
     school_learn_sd: float
     school_learn_random_proportion: float
     ticks_per_school_day: int
+    ticks_per_home_day: int
 
     # For user manipulation
     number_of_holidays: int

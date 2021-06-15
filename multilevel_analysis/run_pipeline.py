@@ -27,8 +27,15 @@ from run import run_model
     default=2,
     help="Number of processors to be used by the batchrunner",
 )
-def run_model_and_mlm(input_file, output_file, n_processors):
-    run_model(input_file, output_file, n_processors)
+@click.option(
+    "--test-mode",
+    "-t",
+    default=False,
+    is_flag=True,
+    help="Whether to run in test mode (only 10 ticks per day)",
+)
+def run_model_and_mlm(input_file, output_file, n_processors, test_mode):
+    run_model(input_file, output_file, n_processors, test_mode=test_mode)
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
     print(f"Mean squared error: {mean_squared_error}")
     return mean_squared_error
