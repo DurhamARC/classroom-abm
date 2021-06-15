@@ -10,7 +10,6 @@ from mesa.visualization.UserParam import UserSettableParameter
 from model.data_types import (
     GridParamType,
     TeacherParamType,
-    PupilParamType,
     ModelParamType,
     ModelState,
 )
@@ -177,7 +176,6 @@ def run_model(
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
                 "teacher_params": TeacherParamType(2, 2),
-                "pupil_params": PupilParamType(0, 0, 2),
                 "model_params": model_params,
             },
             nr_processes=n_processors,

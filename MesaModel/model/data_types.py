@@ -43,13 +43,6 @@ class TeacherParamType:
 
 
 @dataclass(unsafe_hash=True)
-class PupilParamType:
-    inattentiveness: float
-    hyper_impulsivity: float
-    attention_span: float
-
-
-@dataclass(unsafe_hash=True)
 class ModelState:
     learning_count: int
     disruptive_count: int
