@@ -4,13 +4,11 @@ from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
-from scipy import stats as stats
 
 from .data_types import TeacherParamType, PupilParamType, PupilLearningState
 from .Pupil import Pupil
 from .utils import (
     compute_ave,
-    compute_ave_disruptive,
     get_num_disruptors,
     get_num_learning,
     get_grid_size,
@@ -113,8 +111,6 @@ class SimModel(Model):
 
             for j, row in enumerate(group_pupils.iterrows()):
                 index, pupil_data = row
-                # Initial learning state for all student is random
-                learning_state = self.random.choice(list(PupilLearningState))
 
                 # Work out position on grid
                 x = (group_x * self.grid_params.group_width + group_x) + math.floor(
@@ -129,7 +125,7 @@ class SimModel(Model):
                     (x, y),
                     self,
                     pupil_data.student_id,
-                    learning_state,
+                    PupilLearningState.YELLOW,
                     pupil_data.Inattentiveness,
                     pupil_data.hyper_impulsive,
                     pupil_data.Deprivation,
@@ -148,9 +144,9 @@ class SimModel(Model):
                 "Learning Students": get_num_learning,
                 "Disruptive Students": get_num_disruptors,
                 "Average End Math": compute_ave,
-                "disruptiveTend": compute_ave_disruptive,
             }
         )
+        self.model_datacollector.collect(self)
 
         self.agent_datacollector = DataCollector(
             agent_reporters={
@@ -220,6 +216,10 @@ class SimModel(Model):
                     week_number = math.floor(day_number / 7)
                     if week_number not in self.holiday_week_numbers:
                         self.is_school_time = True
+                        if day_in_week == 0:
+                            # New week so reset all pupils to Yellow
+                            for pupil in self.schedule.agents:
+                                pupil.learning_state = PupilLearningState.YELLOW
             else:
                 # Not a new day so continue in home time
                 return

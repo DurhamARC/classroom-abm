@@ -124,10 +124,10 @@ def run_model(
                     "choice", "Class ID", value=class_ids[0], choices=class_ids
                 ),
                 "teacher_quality": UserSettableParameter(
-                    "slider", "Teaching quality", 5.0, 0.00, 5.0, 1.0
+                    "slider", "Teaching quality", 1.0, 0.00, 5.0, 1.0
                 ),
                 "teacher_control": UserSettableParameter(
-                    "slider", "Teaching control", 5.0, 0.00, 5.0, 1.0
+                    "slider", "Teaching control", 2.0, 0.00, 5.0, 1.0
                 ),
                 "pupil_inattentiveness": UserSettableParameter(
                     "slider", "Use Pupil Inattentiveness ", 1.0, 0.00, 1.0, 1.0

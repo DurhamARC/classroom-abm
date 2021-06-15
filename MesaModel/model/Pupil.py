@@ -1,9 +1,8 @@
-import math
+import statistics
 
 from mesa import Agent
 
 from .data_types import PupilLearningState
-from .utils import compute_ave_disruptive, compute_SD, compute_zscore
 
 
 class Pupil(Agent):
@@ -27,20 +26,12 @@ class Pupil(Agent):
         self.inattentiveness = inattentiveness
         self.hyper_impulsive = hyper_impulsive
         self.deprivation = deprivation
+        self.ability = ability
         self.s_math = math
         self.e_math = math
+        self.randomised_agent_attribute = 0
 
-        self.ability = ability
-
-        self.randomised_agent_attribute = self.random.randint(2, 8)
-        self.time_in_green_state = 0
-        self.time_in_red_state = 0
-        self.time_in_yellow_state = 0
-        self.disruptive = 0
-        self.count_learning = 0
-        self.disruptiveTend = inattentiveness
-
-    def neighbour(self):
+    def getNeighbourCount(self):
         neighbourCount = 0
         red = 0
         green = 0
@@ -58,549 +49,112 @@ class Pupil(Agent):
 
     # define the step function
     def step(self):
-        # print(self.model.schedule.steps)
-        # print("Agent position", self.pos)
-        if self.redStateCange() == 1:
-            self.changeState()
-            if self.learning_state == PupilLearningState.RED:
-                self.model.model_state.disruptive_count += 1
-            self.set_disruptive_tend()
-            self.randomised_agent_attribute = self.random.randint(2, 6)
+        self.randomised_agent_attribute = (
+            self.random.randint(0, self.model.model_params.random_select) + 1
+        )
 
-            return
+        # Change the state
+        self.changeState()
 
-        elif self.greenStateChange == 1:
-            self.changeState()
-            self.set_disruptive_tend()
-            self.randomised_agent_attribute = self.random.randint(2, 6)
-
-            return
-
-        elif self.yellowStateCange() == 1:
-            self.set_disruptive_tend()
-            self.changeState()
-            if self.learning_state == 3:
-                self.model.model_state.disruptive_count += 1
-            self.randomised_agent_attribute = self.random.randint(2, 6)
-
-            return
-
-        self.randomised_agent_attribute = self.random.randrange(2, 6)
-
-    def redStateCange(self):
-        count, red, yellow, green = self.neighbour()
-
-        # If more than 5 neighbours are disruptive and pupil is passive,
-        # pupil will also become disruptive
-        if red > 5 and self.learning_state == PupilLearningState.YELLOW:
-            self.learning_state = PupilLearningState.RED
-            self.model.model_state.disruptive_count += 1
-            self.disruptive += 1
-            self.time_in_red_state += 1
-            self.time_in_yellow_state = 0
-            self.time_in_green_state = 0
-            return 1
-
-        # If more neighbours are disruptive than a randomly generated
-        # number and the pupil is more disruptive than the mean
-        # disruptive tendency of all pupils, pupil will become passive
-        if (
-            red > self.randomised_agent_attribute + 1
-            and self.disruptiveTend > compute_ave_disruptive(self.model)
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the model's inattentive switch is on and the teacher cohort is of
-        # a lower quality than a random number and the pupil's inattentiveness
-        # is greater than a random number, pupil will become disruptive
-        if (
-            self.model.pupil_params.inattentiveness == 1
-            and self.model.teacher_params.quality <= self.randomised_agent_attribute + 1
-            and self.inattentiveness > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.RED
-            self.model.model_state.disruptive_count += 1
-            self.disruptive += 1
-            self.time_in_red_state += 1
-            self.time_in_yellow_state = 0
-            self.time_in_green_state = 0
-            return 1
-
-        # If the model's inattentive switch is on and the teacher cohort has less control
-        # of the class than a random number and the pupil's inattentiveness exceeds
-        # a random number, then the pupil will become disruptive
-        if (
-            self.model.pupil_params.inattentiveness == 1
-            and self.model.teacher_params.control <= self.randomised_agent_attribute + 1
-            and self.inattentiveness > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.RED
-            self.model.model_state.disruptive_count += 1
-            self.disruptive += 1
-            self.time_in_red_state += 1
-            self.time_in_yellow_state = 0
-            self.time_in_green_state = 0
-            return 1
-
-        # If the model's hyperactive-impulsive switch is on and the teacher cohort has less
-        # control than a random number and the pupil's hyperactive-impulsive nature is
-        # greater than a random number, then the pupil will become disruptive
-        if (
-            self.model.pupil_params.hyper_impulsivity == 1
-            and self.model.teacher_params.control <= self.randomised_agent_attribute
-            and self.hyper_impulsive > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.RED
-            self.model.model_state.disruptive_count += 1
-            self.disruptive += 1
-            self.time_in_red_state += 1
-            self.time_in_yellow_state = 0
-            self.time_in_green_state = 0
-            return 1
-
-    def yellowStateCange(self):
-
-        count, red, yellow, green = self.neighbour()
-
-        # If the model's inattentive switch is on and the teacher cohort is of
-        # a greater quality than a random number and the pupil's inattentiveness
-        # is lower than a random number, then the pupil will become passive
-        if (
-            self.model.pupil_params.inattentiveness == 1
-            and self.model.teacher_params.quality >= self.randomised_agent_attribute
-            and self.inattentiveness <= self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the model's inattentive switch is off and the pupil's inattentiveness
-        # is greater than a random number, pupil will become passive
-        if (
-            self.model.pupil_params.inattentiveness == 0
-            and self.inattentiveness > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If a function on the relationship between the pupil cohort's disruptiveness and
-        # the pupil's own disruptiveness is greater than 1 and the teacher cohort's
-        # control is greater than a random number and the pupil's hyperactive-impulsiveness
-        # is less than a random number, then pupil will become passive
-        if (
-            compute_SD(self.model, self.disruptiveTend)
-            and self.model.teacher_params.control >= self.randomised_agent_attribute
-            and self.hyper_impulsive <= self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the teacher cohort's quality is greater than a random number and the pupil
-        # is more inattentive than a random number, the pupil will become passive
-        if (
-            self.model.teacher_params.quality > self.randomised_agent_attribute
-            and self.inattentiveness > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the teacher cohort's control is less than a random number and pupil is
-        # currently learning, then pupil will become passive
-        if (
-            self.model.teacher_params.control <= self.randomised_agent_attribute
-            and self.learning_state == PupilLearningState.GREEN
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            if self.model.model_state.learning_count > 0:
-                self.model.model_state.learning_count -= 1
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return
-
-        # If the teacher cohort's control is greater than a random number and
-        # the pupil's hyperactive-impulsivenesss is greater than a random number,
-        # then pupil will become passive
-        if (
-            self.model.teacher_params.control > self.randomised_agent_attribute
-            and self.hyper_impulsive > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If pupil is surrounded by 3 disruptive pupil's and it is currently learning,
-        # pupil will move to a passive state.
-        if red > 3 and self.learning_state == PupilLearningState.GREEN:
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            if self.model.model_state.learning_count > 0:
-                self.model.model_state.learning_count -= 1
-            return 1
-
-    @property
-    def greenStateChange(self):
-
-        count, red, yellow, green = self.neighbour()
-
-        # If more than 5 of the pupil's neighbours are learning and pupil is passive,
-        # then pupil will be in a learning state.
-        if green > 5 and self.learning_state == PupilLearningState.YELLOW:
-            self.learning_state = PupilLearningState.GREEN
-            self.model.model_state.learning_count += 1
-            self.set_end_math()
-            self.time_in_red_state = 0
-            self.time_in_yellow_state = 0
-            self.time_in_green_state += 1
-            return 1
-
-        # If the model's inattentive switch is off or the quality of the teacher
-        # cohort is less than a random number or the pupil's inattentiveness is
-        # greater than a random number, then the following conditions are considered:
-        if (
-            self.model.pupil_params.inattentiveness != 0
-            or self.model.teacher_params.quality <= self.randomised_agent_attribute
-            or self.inattentiveness >= self.randomised_agent_attribute
-        ):
-            # If the model's inattentive switch is off and the teacher cohort's quality is
-            # greater than a random number, then the pupil will be in a learning state.
-            if (
-                self.model.pupil_params.inattentiveness == 0
-                and self.model.teacher_params.quality > self.randomised_agent_attribute
-            ):
-                self.learning_state = PupilLearningState.GREEN
-                self.model.model_state.learning_count += 1
-                self.set_end_math()
-                self.time_in_red_state = 0
-                self.time_in_yellow_state = 0
-                self.time_in_green_state += 1
-                return 1
-            # If the model's hyperactive-impulsive switch is off and the teacher cohort's
-            # level of control is greater than a random number which is greater than the
-            # pupil's hyperactive-intensiveness, then the pupil will be in a learning state
-            if (
-                self.model.pupil_params.hyper_impulsivity == 0
-                and self.model.teacher_params.control
-                > self.randomised_agent_attribute
-                >= self.hyper_impulsive
-            ):
-                self.learning_state = PupilLearningState.GREEN
-                self.model.model_state.learning_count += 1
-                self.set_end_math()
-                self.time_in_red_state = 0
-                self.time_in_yellow_state = 0
-                self.time_in_green_state += 1
-                return 1
-            # If the teacher cohort's control is greater than a random number
-            # and the student is currently passive, then the student will enter
-            # a learning state
-            if (
-                self.model.teacher_params.control > self.randomised_agent_attribute
-                and self.learning_state == PupilLearningState.YELLOW
-            ):
-                self.learning_state = PupilLearningState.GREEN
-                self.model.model_state.learning_count += 1
-                self.set_end_math()
-                self.time_in_red_state = 0
-                self.time_in_yellow_state = 0
-                self.time_in_green_state += 1
-                return 1
-            return
-        self.learning_state = PupilLearningState.GREEN
-        self.model.model_state.learning_count += 1
-        self.set_end_math()
-        self.time_in_red_state = 0
-        self.time_in_yellow_state = 0
-        self.time_in_green_state += 1
-        return 1
-
-    def neighbourState(self):
-        count, red, yellow, green = self.neighbour()
-        # calculate the probability of each colour
-        Pturn_red = red / count
-        Pturn_green = green / count
-        Pturn_yellow = yellow / count
-
-        if self.learning_state == PupilLearningState.RED:
-            Pturn_red += 0.2
-        elif self.learning_state == PupilLearningState.YELLOW:
-            Pturn_yellow += 0.2
-        else:
-            Pturn_green += 0.2
-        colour = max(Pturn_red, Pturn_green, Pturn_yellow)
-        if Pturn_red == colour:
-            self.learning_state = PupilLearningState.RED
-            self.model.model_state.disruptive_count += 1
-            return
-        if Pturn_yellow == colour:
-            self.learning_state = PupilLearningState.YELLOW
-            return
-        if Pturn_green == colour:
-            self.learning_state = PupilLearningState.GREEN
-            self.model.model_state.learning_count += 1
-            self.set_end_math()
-            return
+        # Update the end maths score
+        self.learn()
 
     def changeState(self):
+        total_count, red_count, yellow_count, green_count = self.getNeighbourCount()
 
-        # If the teacher cohort quality or teacher cohort control is greater than a random number
-        # and the time spent by the pupil in a passive state is greater than a random
-        # number, pupil will enter a learning state
-        if (
-            (self.model.teacher_params.quality or self.model.teacher_params.control)
-            > self.randomised_agent_attribute
-            and self.time_in_yellow_state >= self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.GREEN
-            self.time_in_red_state = 0
-            self.time_in_yellow_state = 0
-            self.time_in_green_state += 1
-            self.model.model_state.learning_count += 1
-            self.set_end_math()
-            return 1
+        if self.learning_state == PupilLearningState.GREEN:
+            # if state is green change to yellow if:
+            # 3 neighbours or more are red
+            # at random but more likely if the teaching quality is low
+            if (
+                red_count > 2
+                or self.randomised_agent_attribute > self.model.teacher_params.quality
+            ):
+                self.learning_state = PupilLearningState.YELLOW
 
-        # If the pupil's hyperactive-impulsiveness is less than a random number and
-        # the teacher cohort's level of control is less than a random number and
-        # the pupil's time in a passive state is greater than a random number
-        # then the pupil will enter a learning state
-        if (
-            self.hyper_impulsive < self.randomised_agent_attribute
-            and self.model.teacher_params.control <= self.randomised_agent_attribute
-            and self.time_in_yellow_state > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.GREEN
-            self.time_in_red_state = 0
-            self.time_in_yellow_state = 0
-            self.time_in_green_state += 1
-            self.model.model_state.learning_count += 1
-            self.set_end_math()
+        elif self.learning_state == PupilLearningState.YELLOW:
+            # change to disruptive (red) at random if already passive (yellow)
+            # more likely if control is low or hyper-impulsive is high
+            if (
+                self.randomised_agent_attribute > self.model.teacher_params.control
+                or self.randomised_agent_attribute < self.hyper_impulsive
+            ):
+                self.learning_state = PupilLearningState.RED
+            # start teaching and passive students switch to learning mode (green)
+            # if teaching is good or they are not too inattentive
+            elif (
+                self.randomised_agent_attribute < self.model.teacher_params.quality
+                or self.randomised_agent_attribute > self.inattentiveness
+            ):
+                self.learning_state = PupilLearningState.GREEN
+            # if patch is yellow change to red if 6 neighbours or more are red
+            elif red_count > 5:
+                self.learning_state = PupilLearningState.RED
+            # if patch is yellow change to green if 6 neighbours or more are red
+            elif green_count > 5:
+                self.learning_state = PupilLearningState.GREEN
 
-            return 1
-        # If the pupil's hyperactive-impulsive nature is less than a random number which
-        # is less than the time the pupil has spent in a disruptive state and the teacher
-        # cohort's control is less than a random number, the pupil will enter a passive
-        # state
-        if (
-            self.hyper_impulsive
-            < self.randomised_agent_attribute
-            < self.time_in_red_state
-            and self.model.teacher_params.control <= self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the pupil's inattentiveness is lower than a random number which is less
-        # than the time the pupil has spent in a red state and the teacher cohort's
-        # quality is lower than a random number the pupil will be in a passive state
-        if (
-            self.inattentiveness
-            < self.randomised_agent_attribute
-            < self.time_in_red_state
-            and self.model.teacher_params.quality <= self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the pupil's inattentiveness is less than a random number and the teacher cohort
-        # has a lower quality than a random number and the pupil's time in a passive state is
-        # greater than a random number then the pupil will be in a learning state
-        if (
-            self.inattentiveness < self.randomised_agent_attribute
-            and self.model.teacher_params.quality <= self.randomised_agent_attribute
-            and self.time_in_yellow_state > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.GREEN
-            self.time_in_red_state = 0
-            self.time_in_yellow_state = 0
-            self.time_in_green_state += 1
-            self.model.model_state.learning_count += 1
-            # self.set_start_math()
-
-            return 1
-
-        # If the pupil's inattentiveness is greater than a random number and the teacher
-        # cohort's quality is greater than a random number and the pupil's time in a
-        # disruptive state is greater than a random number the pupil will be in a
-        # passive state
-        if (
-            self.inattentiveness > self.randomised_agent_attribute
-            and self.model.teacher_params.quality > self.randomised_agent_attribute
-            and self.time_in_red_state > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the pupil's hyperactive-impulsiveness is greater than a random number
-        # and the teacher cohort's level of control is greater than a random number
-        # and the pupil has been disruptive for more than three steps, then the
-        # pupil will be passive
-        if (
-            self.hyper_impulsive > self.randomised_agent_attribute - 1
-            and self.model.teacher_params.control > self.randomised_agent_attribute - 1
-            and self.time_in_red_state > 3
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the teacher cohort's level of control is greater than a random number
-        # and the pupil has been in a disruptive state for more than two steps,
-        # then the pupil will be passive
-        if (
-            self.model.teacher_params.control > self.randomised_agent_attribute
-            and self.time_in_red_state > 2
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the pupil's hyperactive-impulsiveness is less than a random number
-        # and the teacher cohort's quality is less than a random number and
-        # the pupil has been in a disruptive state for more than two steps,
-        # then the pupil will be in a passive state
-        if (
-            self.hyper_impulsive <= self.randomised_agent_attribute
-            and self.model.teacher_params.quality <= self.randomised_agent_attribute
-            and self.time_in_red_state > 2
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the pupil's hyperactive-impulsiveness is less than a random number
-        # and the teacher cohort's level of control is less than a random number
-        # and the pupil's time in a disruptive state is greater than a random
-        # number then the pupil will enter a passive state
-        if (
-            self.hyper_impulsive <= self.randomised_agent_attribute - 1
-            and self.model.teacher_params.control <= self.randomised_agent_attribute - 1
-            and self.time_in_red_state > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the pupil's inattentiveness is less than a random number and the
-        # teacher cohort's quality is less than a random number and the pupil's
-        # time in a disruptive state is greater than a random number, then pupil will
-        # enter a passive state
-        if (
-            self.inattentiveness < self.randomised_agent_attribute
-            and self.model.teacher_params.quality < self.randomised_agent_attribute
-            and self.time_in_red_state > self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.YELLOW
-            self.disruptive += 1
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            return 1
-
-        # If the pupil's time in a disruptive state is greater than a random number
-        # and the teacher cohort's quality or control is greater than a random number
-        # then the pupil will enter a learning state
-        if (
-            self.time_in_red_state > self.randomised_agent_attribute
-            and (self.model.teacher_params.quality or self.model.teacher_params.control)
-            >= self.randomised_agent_attribute
-        ):
-            self.learning_state = PupilLearningState.GREEN
-            if self.model.model_state.disruptive_count > 0:
-                self.model.model_state.disruptive_count -= 1
-            self.time_in_red_state = 0
-            self.time_in_yellow_state = 0
-            self.time_in_green_state += 1
-            self.model.model_state.learning_count += 1
-            self.set_end_math()
-            return 1
-
-        # If the pupil's time in a learning state is greater than the pupil cohort's
-        # attention span, then the pupil will be in a passive state
-        if self.time_in_green_state > self.model.pupil_params.attention_span:
-            self.learning_state = PupilLearningState.YELLOW
-            self.time_in_red_state = 0
-            self.time_in_yellow_state += 1
-            self.time_in_green_state = 0
-            if self.model.model_state.learning_count > 0:
-                self.model.model_state.learning_count -= 1
-            return 1
+        elif self.learning_state == PupilLearningState.RED:
+            # change from disruptive to passive if:
+            # - control is good at random
+            # - 3 or more neighbours are green
+            if (
+                green_count > 2
+                or self.randomised_agent_attribute < self.model.teacher_params.control
+            ):
+                self.learning_state = PupilLearningState.YELLOW
 
     """
-    Calculate the end maths score based on the time spent by a pupil in
-    a learning state and the pupil's starting maths score. The formula is:
-      scaled_start_maths = (2.7 ^ start_maths) ^ (1/7.6)
-      total_learnt = learning_counter + scaled_start_maths
-      end_maths = (7.6 * log(total_learnt)) + pupil_ability
-    Learning counter is incremented every time the end maths score is calculated. That
-    is, it is not the same as the number of steps that the pupil has spent learning.
-    scaled_start_maths represents the number of minutes of learning and is used to fit
-    a logarithmic function.
+    Calculate the end maths score
     """
 
-    def set_end_math(self):
-        # Increment the learning counter
-        self.count_learning += 1
+    def learn(self):
+        params = self.model.model_params
 
-        scaled_s_math = (2.718281828 ** self.s_math) ** (1 / 7.621204857)
-        total_learn = self.count_learning + scaled_s_math
-        self.e_math = (7.621204857 * math.log(total_learn)) + self.ability
+        if self.model.is_school_time:
+            if self.learning_state == PupilLearningState.GREEN:
+                ability_increment = (
+                    1 - params.school_learn_random_proportion
+                ) * self.random.normalvariate(
+                    (5 + self.ability) / params.school_learn_mean_divisor,
+                    params.school_learn_sd,
+                )
+                random_increment = (
+                    params.school_learn_random_proportion
+                    * self.random.normalvariate(
+                        (0.5 * 5) / params.school_learn_mean_divisor,
+                        params.school_learn_sd,
+                    )
+                )
+                self.e_math += params.school_learn_factor * (
+                    ability_increment + random_increment
+                )
+        else:
+            # by getting older maths changes
+            self.e_math += (
+                params.home_learn_factor
+                * ((6 - self.deprivation) / 3) ** 0.01
+                * (
+                    self.random.normalvariate((5 + self.ability) / 2000, 0.08)
+                    + self.random.normalvariate((5 / 2000), 0.08)
+                )
+            )
+
+            # ditto to adjustment
+            # add deprivation to a power to reduce its spread
+            # NB the last two rows of code have been adjusted by extensive trial
+            # and error on one class to give suitable growth overall and correlations between variables
+            # by getting older ability changes
+            # degrade the start_maths measure by a random amount on each tock
+            # FIXME: should this be done at every step rather than just in home learning?
+            self.e_math += 0.08 * (
+                self.random.random() - 0.5
+            )  # this did not work alone so now in combination with conformity
+            # try reducing the extremes - pull everyone back to the middle
+            mean_maths = statistics.mean(
+                [agent.e_math for agent in self.model.schedule.agents]
+            )
+            self.e_math = mean_maths + 0.999993 * (self.e_math - mean_maths)
 
     def get_learning_state(self):
         return self.learning_state
-
-    """
-    Compute the pupil's disruptive tendency. First step is:
-      initial_disruptive_tendency =
-          (pupil_inattentiveness - mean_pupil_inattentiveness) / std_dev_pupil_inattentiveness
-      disruptive_tend = ((pupil_disruptiveness / step_number) -
-          (learning_count_number / step_number)) + initial_disruptive_tendency
-    The more pupils are disrupted the greater their own disruptive tendency will become.
-    """
-
-    def set_disruptive_tend(self):
-
-        self.initial_disruptive_tend = compute_zscore(self.model, self.inattentiveness)
-
-        if self.model.schedule.steps == 0:
-            self.model.schedule.steps = 1
-
-        self.disruptiveTend = (
-            (self.disruptive / self.model.schedule.steps)
-            - (self.count_learning / self.model.schedule.steps)
-        ) + self.initial_disruptive_tend
