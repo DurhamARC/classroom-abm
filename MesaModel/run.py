@@ -162,15 +162,6 @@ def run_model(
                 "teacher_control": UserSettableParameter(
                     "slider", "Teaching control", 2.0, 0.00, 5.0, 1.0
                 ),
-                "pupil_inattentiveness": UserSettableParameter(
-                    "slider", "Use Pupil Inattentiveness ", 1.0, 0.00, 1.0, 1.0
-                ),
-                "pupil_hyper_impulsivity": UserSettableParameter(
-                    "slider", "Use Pupil Hyperactivity ", 1.0, 0.00, 1.0, 1.0
-                ),
-                "pupil_attention_span": UserSettableParameter(
-                    "slider", "Pupil Attention Span Limit", 5.0, 0.00, 5.0, 1.0
-                ),
             },
         )
 
