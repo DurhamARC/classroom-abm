@@ -1,26 +1,23 @@
 import os
+import csv
 
 import reframe as rfm
 import reframe.utility.sanity as sn
 
+with open("../../lhs_sampling/lhs_params.csv", "r") as f:
+    csv_reader = csv.reader(f)
+    ROWS = [",".join(row[1:]) for row in list(csv_reader)]
+
 
 @rfm.parameterized_test(
     *(
-        [n_processors, teacher_params, pupil_params]
-        for n_processors in [
-            8,
-            16,
-            24,
-        ]  # end on 24 as par7.q on Hamilton has 24 cores per node
-        for teacher_params in [
-            "1_1",
-            "0_0",
-        ]  # params according to data_types.py that will be read out of a csv following LHS
-        for pupil_params in ["0_0_2", "1_1_1"]
+        [n_processors, test_id]
+        for n_processors in [8, 16, 24]  # 24 only relevant for par7.q
+        for test_id in range(1, len(ROWS))
     )
-)  # accepts an arbitrary number of parameters
+)
 class Parameterisation(rfm.RunOnlyRegressionTest):
-    def __init__(self, n_processors, teacher_params, pupil_params):
+    def __init__(self, n_processors, test_id):
         if n_processors == 8:
             self.time_limit = "1h45m"
         elif n_processors == 16:
@@ -48,6 +45,8 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
 
         self.executable = "python run_pipeline.py"
 
+        params = ROWS[test_id]
+
         self.executable_opts = [
             "--input-file",
             os.environ["DATASET"],
@@ -55,8 +54,6 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "pupil_data_output.csv",
             "--n-processors",
             f"{n_processors}",
-            "--teacher-params",
-            teacher_params,
-            "--pupil-params",
-            pupil_params,
+            "--model-params",
+            params,
         ]

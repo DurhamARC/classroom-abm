@@ -29,34 +29,17 @@ from model.data_types import TeacherParamType, PupilParamType
     help="Number of processors to be used by the batchrunner",
 )
 @click.option(
-    "--teacher-params",
-    default="1_1",
-    help="Teacher parameters as specified in data_types.py",
-)
-@click.option(
-    "--pupil-params",
-    default="0_0_1",
-    help="Pupil parameters as specified in data_types.py",
+    "--model-params",
+    default="1,1",
+    help="Comma separated model params in form: teacher_control,teacher_quality",
 )
 def run_model_and_mlm(
     input_file,
     output_file,
     n_processors,
-    teacher_params,
-    pupil_params,
+    model_params,
 ):
-    p = teacher_params.split("_")
-    teacher_params = TeacherParamType(p[0], p[1])
-    p = pupil_params.split("_")
-    pupil_params = PupilParamType(p[0], p[1], p[2])
-
-    run_model(
-        input_file,
-        output_file,
-        n_processors,
-        teacher_params=teacher_params,
-        pupil_params=pupil_params,
-    )
+    run_model(input_file, output_file, n_processors, model_params=model_params)
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
     print(f"Mean squared error: {mean_squared_error}")
     return mean_squared_error
