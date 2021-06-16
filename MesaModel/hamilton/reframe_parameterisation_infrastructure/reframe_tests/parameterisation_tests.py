@@ -1,12 +1,18 @@
+import datetime
 import os
 import csv
+from multiprocessing import Lock
 
 import reframe as rfm
 import reframe.utility.sanity as sn
 
-with open("../../lhs_sampling/lhs_params.csv", "r") as f:
+mutex = Lock()
+with open("../../parameter_input/lhs_params.csv", "r") as f:
     csv_reader = csv.reader(f)
     ROWS = [",".join(row[1:]) for row in list(csv_reader)]
+OUTPUT_FILE = f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv"
+with open(OUTPUT_FILE, "w") as output:
+    output.write(ROWS[0] + ",mean_squared_error")
 
 
 @rfm.parameterized_test(
@@ -45,7 +51,8 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
 
         self.executable = "python run_pipeline.py"
 
-        params = ROWS[test_id]
+        self.test_id = test_id
+        params = ROWS[self.test_id]
 
         self.executable_opts = [
             "--input-file",
@@ -57,3 +64,17 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "--model-params",
             params,
         ]
+
+    def extract_mse(self):
+        target = "Mean squared error: "
+        for line in self.stdout:
+            if target in line:
+                return line.strip(target)
+
+    @run_after("run")
+    def add_mse_to_csv(self):
+        with mutex:
+            with open(OUTPUT_FILE, "a") as output:
+                output.write(ROWS[self.test_id])
+                output.write(self.extract_mse().strip("/n"))
+                output.write("\n")
