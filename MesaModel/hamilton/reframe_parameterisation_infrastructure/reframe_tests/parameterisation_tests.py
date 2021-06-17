@@ -12,7 +12,7 @@ with open("../../parameter_input/lhs_params.csv", "r") as f:
     ROWS = [",".join(row[1:]) for row in list(csv_reader)]
 OUTPUT_FILE = f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv"
 with open(OUTPUT_FILE, "w") as output:
-    output.write(ROWS[0] + ",mean_squared_error")
+    output.write(ROWS[0] + ",mean_squared_error\n")
 
 
 @rfm.parameterized_test(
@@ -67,14 +67,16 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
 
     def extract_mse(self):
         target = "Mean squared error: "
-        for line in self.stdout:
-            if target in line:
-                return line.strip(target)
+        with open(os.path.join(str(self.stagedir), str(self.stdout)), "r") as data:
+            for line in data:
+                if target in line:
+                    return line.strip(target)
+        return ""
 
-    @run_after("run")
+    @run_after("sanity")
     def add_mse_to_csv(self):
         with mutex:
             with open(OUTPUT_FILE, "a") as output:
-                output.write(ROWS[self.test_id])
-                output.write(self.extract_mse().strip("/n"))
+                output.write(ROWS[self.test_id] + ",")
+                output.write(self.extract_mse().strip("\n"))
                 output.write("\n")
