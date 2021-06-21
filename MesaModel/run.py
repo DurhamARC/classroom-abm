@@ -71,6 +71,7 @@ def run_model(
     class_id=None,
     all_classes=True,
     webserver=False,
+    model_params="1,1",
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -135,6 +136,10 @@ def run_model(
         server.launch()
 
     else:
+        # parse model params
+        p = model_params.split(",")
+        teacher_params = TeacherParamType(p[0], p[1])
+
         print(f"BatchRunnerMP will use {n_processors} processors")
         batch_run = BatchRunnerMP(
             SimModel,
@@ -143,7 +148,7 @@ def run_model(
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
                 "output_data": output_data_writer,
-                "teacher_params": TeacherParamType(1, 1),
+                "teacher_params": teacher_params,
                 "pupil_params": PupilParamType(0, 0, 2),
             },
             nr_processes=n_processors,

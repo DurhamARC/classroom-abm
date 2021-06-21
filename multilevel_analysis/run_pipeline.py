@@ -6,6 +6,7 @@ from multilevel_analysis import run_multilevel_analysis
 
 sys.path.append("../MesaModel")
 from run import run_model
+from model.data_types import TeacherParamType, PupilParamType
 
 
 @click.command()
@@ -27,8 +28,18 @@ from run import run_model
     default=2,
     help="Number of processors to be used by the batchrunner",
 )
-def run_model_and_mlm(input_file, output_file, n_processors):
-    run_model(input_file, output_file, n_processors)
+@click.option(
+    "--model-params",
+    default="1,1",
+    help="Comma separated model params in form: teacher_control,teacher_quality",
+)
+def run_model_and_mlm(
+    input_file,
+    output_file,
+    n_processors,
+    model_params,
+):
+    run_model(input_file, output_file, n_processors, model_params=model_params)
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
     print(f"Mean squared error: {mean_squared_error}")
     return mean_squared_error

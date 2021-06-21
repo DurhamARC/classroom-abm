@@ -12,8 +12,9 @@
 
 module purge
 module load miniconda2/4.1.11
-source activate classroom_abm
 module load r/4.0.3
+
+source activate classroom_abm
 
 pushd <path-to-repo>/MesaModel
 
@@ -25,4 +26,4 @@ pushd <path-to-repo>/MesaModel
 # the full dataset add -i ../classes_input/test_input.csv
 # If you do this set -p to 24 to exploit all of the cores
 # one of Hamilton's nodes.
-python run.py -a -p 6
+python run.py --all_classes --n-processors 6
