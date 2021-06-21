@@ -9,7 +9,18 @@ import reframe.utility.sanity as sn
 mutex = Lock()
 with open("../../parameter_input/lhs_params.csv", "r") as f:
     csv_reader = csv.reader(f)
-    ROWS = [",".join(row[1:]) for row in list(csv_reader)]
+    ROWS = []
+    TEST_IDS = []
+    id = 0
+    for row in list(csv_reader):
+        if row[0] == str(id) or row[0] == "test_id":
+            TEST_IDS.append(id)
+            ROWS.append(",".join(row[1:]))
+        else:
+            print(f"Parameter file does not contain params for test_id {id}")
+            exit(1)
+        id += 1
+
 OUTPUT_FILE = f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv"
 with open(OUTPUT_FILE, "w") as output:
     output.write(ROWS[0] + ",mean_squared_error\n")
