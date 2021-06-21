@@ -40,14 +40,14 @@ from model.data_types import TeacherParamType, PupilParamType
     is_flag=True,
     help="Whether to run in test mode (only 10 ticks per day)",
 )
-def run_model_and_mlm(
-    input_file,
-    output_file,
-    n_processors,
-    model_params,
-    test_mode
-):
-    run_model(input_file, output_file, n_processors, model_params=model_params, test_mode=test_mode)
+def run_model_and_mlm(input_file, output_file, n_processors, model_params, test_mode):
+    run_model(
+        input_file,
+        output_file,
+        n_processors,
+        model_params=model_params,
+        test_mode=test_mode,
+    )
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
     print(f"Mean squared error: {mean_squared_error}")
     return mean_squared_error
