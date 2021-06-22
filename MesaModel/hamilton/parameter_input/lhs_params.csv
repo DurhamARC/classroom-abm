@@ -1,4 +1,4 @@
-test_id,teacher_control,teacher_quality,random_select,school_learn_factor,home_learn_factor,school_learn_mean_divisor,school_learn_sd,school_learn_random_proportion,ticks_per_school_day,ticks_per_home_day,number_of_holidays,weeks_per_holiday,group_size,group_by_ability
+test_id,teacher_control_mean,teacher_quality_mean,random_select,school_learn_factor,home_learn_factor,school_learn_mean_divisor,school_learn_sd,school_learn_random_proportion,ticks_per_school_day,ticks_per_home_day,number_of_holidays,weeks_per_holiday,group_size,group_by_ability
 1,1,1,0.12,0.0043,800,0.04,0.2,100,330,2,2,5,True
 2,1,0,0.12,0.0043,800,0.04,0.2,100,330,2,2,5,True
 3,0,1,0.12,0.0043,800,0.04,0.2,100,330,2,2,5,True

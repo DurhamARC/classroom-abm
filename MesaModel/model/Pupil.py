@@ -68,8 +68,7 @@ class Pupil(Agent):
             # at random but more likely if the teaching quality is low
             if (
                 red_count > 2
-                or self.randomised_agent_attribute
-                > self.model.model_params.teacher_quality
+                or self.randomised_agent_attribute > self.model.teacher_quality
             ):
                 self.learning_state = PupilLearningState.YELLOW
 
@@ -77,16 +76,14 @@ class Pupil(Agent):
             # change to disruptive (red) at random if already passive (yellow)
             # more likely if control is low or hyper-impulsive is high
             if (
-                self.randomised_agent_attribute
-                > self.model.model_params.teacher_control
+                self.randomised_agent_attribute > self.model.teacher_control
                 or self.randomised_agent_attribute < self.hyper_impulsive
             ):
                 self.learning_state = PupilLearningState.RED
             # start teaching and passive students switch to learning mode (green)
             # if teaching is good or they are not too inattentive
             elif (
-                self.randomised_agent_attribute
-                < self.model.model_params.teacher_quality
+                self.randomised_agent_attribute < self.model.teacher_quality
                 or self.randomised_agent_attribute > self.inattentiveness
             ):
                 self.learning_state = PupilLearningState.GREEN
@@ -103,8 +100,7 @@ class Pupil(Agent):
             # - 3 or more neighbours are green
             if (
                 green_count > 2
-                or self.randomised_agent_attribute
-                < self.model.model_params.teacher_control
+                or self.randomised_agent_attribute < self.model.teacher_control
             ):
                 self.learning_state = PupilLearningState.YELLOW
 

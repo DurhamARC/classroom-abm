@@ -33,10 +33,10 @@ class SimModel(Model):
         self.write_file = False
 
         if "teacher_quality" in kwargs:
-            self.model_params.teacher_quality = kwargs["teacher_quality"]
+            self.model_params.teacher_quality_mean = kwargs["teacher_quality"]
 
         if "teacher_control" in kwargs:
-            self.model_params.teacher_control = kwargs["teacher_control"]
+            self.model_params.teacher_control_mean = kwargs["teacher_control"]
 
         if "class_id" in kwargs:
             self.class_id = kwargs["class_id"]
@@ -48,6 +48,13 @@ class SimModel(Model):
 
         self.class_data = self.data.get_class_data(self.class_id)
         self.class_size = len(self.class_data)
+
+        self.teacher_control = self.random.normalvariate(
+            self.model_params.teacher_control_mean, 1.26
+        )
+        self.teacher_quality = self.random.normalvariate(
+            self.model_params.teacher_quality_mean, 1.08
+        )
 
         self.schedule = RandomActivation(self)
 

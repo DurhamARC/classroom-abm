@@ -20,8 +20,8 @@ class GridParamType:
 @dataclass(unsafe_hash=True)
 class ModelParamType:
     # For parameterisation
-    teacher_quality: float
-    teacher_control: float
+    teacher_quality_mean: float
+    teacher_control_mean: float
     random_select: float
     school_learn_factor: float
     home_learn_factor: float
@@ -40,8 +40,8 @@ class ModelParamType:
 
 # Default set of model parameters
 DEFAULT_MODEL_PARAMS = ModelParamType(
-    teacher_quality=2,
-    teacher_control=2,
+    teacher_quality_mean=2,
+    teacher_control_mean=2,
     random_select=2,
     school_learn_factor=0.12,
     home_learn_factor=0.0043,
