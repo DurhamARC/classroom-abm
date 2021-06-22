@@ -38,6 +38,25 @@ class ModelParamType:
     group_by_ability: bool
 
 
+# Default set of model parameters
+DEFAULT_MODEL_PARAMS = ModelParamType(
+    teacher_quality=2,
+    teacher_control=2,
+    random_select=2,
+    school_learn_factor=0.12,
+    home_learn_factor=0.0043,
+    school_learn_mean_divisor=800,
+    school_learn_sd=0.04,
+    school_learn_random_proportion=0.2,
+    ticks_per_school_day=100,
+    ticks_per_home_day=330,
+    number_of_holidays=2,
+    weeks_per_holiday=2,
+    group_size=5,
+    group_by_ability=True,
+)
+
+
 @dataclass(unsafe_hash=True)
 class ModelState:
     learning_count: int

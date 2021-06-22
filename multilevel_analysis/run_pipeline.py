@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import sys
 
@@ -6,7 +7,7 @@ from multilevel_analysis import run_multilevel_analysis
 
 sys.path.append("../MesaModel")
 from run import run_model
-from model.data_types import ModelParamType
+from model.data_types import ModelParamType, DEFAULT_MODEL_PARAMS
 
 
 @click.command()
@@ -47,22 +48,7 @@ from model.data_types import ModelParamType
         int,
         bool,
     ),
-    default=(
-        2,
-        2,
-        2,
-        0.12,
-        0.0043,
-        800,
-        0.04,
-        0.2,
-        100,
-        330,
-        2,
-        2,
-        5,
-        True,
-    ),
+    default=dataclasses.astuple(DEFAULT_MODEL_PARAMS),
     help="""Space separated model params, e.g. 2 2 0.12 0.0043 800 ...
 
 Full parameter list (defined in data_type.ModelParamType) is:
