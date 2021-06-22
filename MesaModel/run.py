@@ -9,7 +9,6 @@ from mesa.visualization.UserParam import UserSettableParameter
 
 from model.data_types import (
     GridParamType,
-    TeacherParamType,
     ModelParamType,
     ModelState,
 )
@@ -91,7 +90,7 @@ def run_model(
     class_id=None,
     all_classes=True,
     webserver=False,
-    model_params="2,2",
+    model_params=None,
     test_mode=False,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
@@ -118,20 +117,23 @@ def run_model(
     model_initial_state = ModelState(0, 0, 0, 0, 0)
     click.echo(f"Running on class {class_ids}")
 
-    model_params = ModelParamType(
-        random_select=2,
-        school_learn_factor=0.12,
-        home_learn_factor=0.0043,
-        school_learn_mean_divisor=800,
-        school_learn_sd=0.04,
-        school_learn_random_proportion=0.2,
-        ticks_per_school_day=100,
-        ticks_per_home_day=330,
-        number_of_holidays=2,
-        weeks_per_holiday=2,
-        group_size=5,
-        group_by_ability=True,
-    )
+    if not model_params:
+        model_params = ModelParamType(
+            teacher_quality=2,
+            teacher_control=2,
+            random_select=2,
+            school_learn_factor=0.12,
+            home_learn_factor=0.0043,
+            school_learn_mean_divisor=800,
+            school_learn_sd=0.04,
+            school_learn_random_proportion=0.2,
+            ticks_per_school_day=100,
+            ticks_per_home_day=330,
+            number_of_holidays=2,
+            weeks_per_holiday=2,
+            group_size=5,
+            group_by_ability=True,
+        )
 
     if test_mode:
         model_params.ticks_per_school_day = 10
@@ -168,10 +170,6 @@ def run_model(
         server.launch()
 
     else:
-        # parse model params
-        p = model_params.split(",")
-        teacher_params = TeacherParamType(p[0], p[1])
-
         print(f"BatchRunnerMP will use {n_processors} processors")
         batch_run = BatchRunnerMP(
             SimModel,
@@ -180,7 +178,6 @@ def run_model(
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
-                "teacher_params": teacher_params,
                 "model_params": model_params,
             },
             nr_processes=n_processors,

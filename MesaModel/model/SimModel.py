@@ -5,7 +5,7 @@ from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 
-from .data_types import TeacherParamType, PupilLearningState
+from .data_types import PupilLearningState
 from .Pupil import Pupil
 from .utils import (
     compute_ave,
@@ -21,25 +21,22 @@ class SimModel(Model):
         all_data,
         model_initial_state,
         output_data_writer,
+        model_params,
         class_id=None,
-        teacher_params=None,
-        model_params=None,
         **kwargs,
     ):
         self.data = all_data
         self.model_state = model_initial_state
         self.output_data_writer = output_data_writer
         self.class_id = class_id
-        self.teacher_params = teacher_params
         self.model_params = model_params
         self.write_file = False
 
-        if "teacher_quality" in kwargs and "teacher_control" in kwargs:
-            self.teacher_params = TeacherParamType(
-                kwargs["teacher_quality"], kwargs["teacher_control"]
-            )
-        elif not self.teacher_params:
-            self.teacher_params = TeacherParamType(0, 0)
+        if "teacher_quality" in kwargs:
+            self.model_params.teacher_quality = kwargs["teacher_quality"]
+
+        if "teacher_control" in kwargs:
+            self.model_params.teacher_control = kwargs["teacher_control"]
 
         if "class_id" in kwargs:
             self.class_id = kwargs["class_id"]

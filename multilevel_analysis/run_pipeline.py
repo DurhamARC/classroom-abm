@@ -6,7 +6,7 @@ from multilevel_analysis import run_multilevel_analysis
 
 sys.path.append("../MesaModel")
 from run import run_model
-from model.data_types import TeacherParamType, PupilParamType
+from model.data_types import ModelParamType
 
 
 @click.command()
@@ -30,8 +30,58 @@ from model.data_types import TeacherParamType, PupilParamType
 )
 @click.option(
     "--model-params",
-    default="1,1",
-    help="Comma separated model params in form: teacher_control,teacher_quality",
+    "-mp",
+    type=(
+        float,
+        float,
+        float,
+        float,
+        float,
+        int,
+        float,
+        float,
+        int,
+        int,
+        int,
+        int,
+        int,
+        bool,
+    ),
+    default=(
+        2,
+        2,
+        2,
+        0.12,
+        0.0043,
+        800,
+        0.04,
+        0.2,
+        100,
+        330,
+        2,
+        2,
+        5,
+        True,
+    ),
+    help="""Space separated model params, e.g. 2 2 0.12 0.0043 800 ...
+
+Full parameter list (defined in data_type.ModelParamType) is:
+
+    teacher_quality: float
+    teacher_control: float
+    random_select: float
+    school_learn_factor: float
+    home_learn_factor: float
+    school_learn_mean_divisor: float
+    school_learn_sd: float
+    school_learn_random_proportion: float
+    ticks_per_school_day: int
+    ticks_per_home_day: int
+    number_of_holidays: int
+    weeks_per_holiday: int
+    group_size: int
+    group_by_ability: bool
+""",
 )
 @click.option(
     "--test-mode",
@@ -45,7 +95,7 @@ def run_model_and_mlm(input_file, output_file, n_processors, model_params, test_
         input_file,
         output_file,
         n_processors,
-        model_params=model_params,
+        model_params=ModelParamType(*model_params),
         test_mode=test_mode,
     )
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
