@@ -64,10 +64,10 @@ def run_model_cli(
         input_file,
         output_file,
         n_processors,
-        class_id,
-        all_classes,
-        webserver,
-        test_mode,
+        class_id=class_id,
+        all_classes=all_classes,
+        webserver=webserver,
+        test_mode=test_mode,
     )
 
 
