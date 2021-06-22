@@ -15,7 +15,7 @@ with open("../../parameter_input/lhs_params.csv", "r") as f:
     for row in list(csv_reader):
         if row[0] == str(id) or row[0] == "test_id":
             TEST_IDS.append(id)
-            ROWS.append(",".join(row[1:]))
+            ROWS.append(" ".join(row[1:]))
         else:
             print(f"Parameter file does not contain params for test_id {id}")
             exit(1)
