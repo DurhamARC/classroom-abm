@@ -29,7 +29,7 @@ with open(OUTPUT_FILE, "w") as output:
 @rfm.parameterized_test(
     *(
         [n_processors, test_id]
-        for n_processors in [8, 16, 24]  # 24 only relevant for par7.q
+        for n_processors in [24]  # 24 only relevant for par7.q
         for test_id in range(1, len(ROWS))
     )
 )
@@ -56,7 +56,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "/ddn/home/" + os.environ["USER"] + "/classroom-abm/multilevel_analysis"
         )
 
-        self.keep_files = [f"{execution_dir}/pupil_data_output.csv"]
+        self.keep_files = [f"{execution_dir}/pupil_data_output_{test_id}.csv"]
 
         self.prerun_cmds = [f"pushd {execution_dir}", "source activate classroom_abm"]
 
@@ -69,7 +69,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "--input-file",
             os.environ["DATASET"],
             "--output-file",
-            "pupil_data_output.csv",
+            f"pupil_data_output_{test_id}.csv",
             "--n-processors",
             f"{n_processors}",
             "--model-params",
