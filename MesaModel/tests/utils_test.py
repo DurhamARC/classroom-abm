@@ -56,3 +56,20 @@ def test_grid_size():
     # 7|XXX XXX|
     # 8|XXX XXX|
     assert utils.get_grid_size(30, 6) == GridParamType(7, 8, 5, 5, 2, 3, 3, 2)
+
+
+def test_min_neighbour_count_to_modify_state():
+    # if 8 or more neighbours, group size does not matter
+    assert utils.min_neighbour_count_to_modify_state(8, 1) == 6
+    assert utils.min_neighbour_count_to_modify_state(8, 100) == 6
+    assert utils.min_neighbour_count_to_modify_state(80, 1) == 6
+    assert utils.min_neighbour_count_to_modify_state(80, 100) == 6
+
+    # otherwise it depends on group size
+    assert utils.min_neighbour_count_to_modify_state(1, 2) == 1
+    assert utils.min_neighbour_count_to_modify_state(2, 3) == 2
+    assert utils.min_neighbour_count_to_modify_state(3, 4) == 3
+    assert utils.min_neighbour_count_to_modify_state(4, 5) == 3
+    assert utils.min_neighbour_count_to_modify_state(5, 6) == 4
+    assert utils.min_neighbour_count_to_modify_state(6, 7) == 5
+    assert utils.min_neighbour_count_to_modify_state(7, 8) == 6

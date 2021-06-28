@@ -125,6 +125,7 @@ class SimModel(Model):
                     pupil_data.Deprivation,
                     pupil_data.start_maths,
                     pupil_data.Ability,
+                    group_size,
                 )
                 # Place Agents on grid
                 self.grid.position_agent(agent, x, y)

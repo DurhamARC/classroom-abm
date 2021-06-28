@@ -3,6 +3,7 @@ import statistics
 from mesa import Agent
 
 from .data_types import PupilLearningState
+from .utils import min_neighbour_count_to_modify_state
 
 
 class Pupil(Agent):
@@ -18,6 +19,7 @@ class Pupil(Agent):
         deprivation,
         math,
         ability,
+        group_size,
     ):
         super().__init__(pos, model)
         self.pos = pos
@@ -30,6 +32,11 @@ class Pupil(Agent):
         self.s_math = math
         self.e_math = math
         self.randomised_agent_attribute = 0
+
+        neighbour_count = self.getNeighbourCount()[0]
+        self.min_neighbour_count_to_modify_state = min_neighbour_count_to_modify_state(
+            neighbour_count, group_size
+        )
 
     def getNeighbourCount(self):
         neighbourCount = 0
@@ -87,11 +94,13 @@ class Pupil(Agent):
                 or self.randomised_agent_attribute > self.inattentiveness
             ):
                 self.learning_state = PupilLearningState.GREEN
-            # if patch is yellow change to red if 6 neighbours or more are red
-            elif red_count > 5:
+            # if patch is yellow change to red if min_neighbour_count_to_modify_state
+            # (e.g. 6) neighbours or more are red
+            elif red_count >= self.min_neighbour_count_to_modify_state:
                 self.learning_state = PupilLearningState.RED
-            # if patch is yellow change to green if 6 neighbours or more are red
-            elif green_count > 5:
+            # if patch is yellow change to green if min_neighbour_count_to_modify_state
+            # (e.g. 6) neighbours or more are green
+            elif green_count >= self.min_neighbour_count_to_modify_state:
                 self.learning_state = PupilLearningState.GREEN
 
         elif self.learning_state == PupilLearningState.RED:
