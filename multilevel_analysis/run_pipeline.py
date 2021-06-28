@@ -7,7 +7,12 @@ from multilevel_analysis import run_multilevel_analysis
 
 sys.path.append("../MesaModel")
 from run import run_model
-from model.data_types import ModelParamType, DEFAULT_MODEL_PARAMS
+from model.data_types import (
+    ModelParamType,
+    DEFAULT_MODEL_PARAMS,
+    STATIC_PARAM_COUNT,
+    STATIC_PARAMS,
+)
 
 
 @click.command()
@@ -42,13 +47,8 @@ from model.data_types import ModelParamType, DEFAULT_MODEL_PARAMS
         float,
         float,
         int,
-        int,
-        int,
-        int,
-        int,
-        bool,
     ),
-    default=dataclasses.astuple(DEFAULT_MODEL_PARAMS),
+    default=dataclasses.astuple(DEFAULT_MODEL_PARAMS)[:-STATIC_PARAM_COUNT],
     help="""Space separated model params, e.g. 2 2 0.12 0.0043 800 ...
 
 Full parameter list (defined in data_type.ModelParamType) is:
@@ -77,6 +77,7 @@ Full parameter list (defined in data_type.ModelParamType) is:
     help="Whether to run in test mode (only 10 ticks per day)",
 )
 def run_model_and_mlm(input_file, output_file, n_processors, model_params, test_mode):
+    model_params = model_params + STATIC_PARAMS
     run_model(
         input_file,
         output_file,

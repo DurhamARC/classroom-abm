@@ -1,6 +1,7 @@
 """
 Global data types. These serve as containers for model parameters.
 """
+import dataclasses
 from dataclasses import dataclass
 from enum import Enum
 
@@ -29,6 +30,8 @@ class ModelParamType:
     school_learn_sd: float
     school_learn_random_proportion: float
     ticks_per_school_day: int
+
+    # For test purposes
     ticks_per_home_day: int
 
     # For user manipulation
@@ -55,6 +58,12 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     group_size=5,
     group_by_ability=True,
 )
+
+# The last STATIC_PARAM_COUNT parameters in ModelParamType
+# should not be modified when parameterising, but may be modified
+# by web app users later on
+STATIC_PARAM_COUNT = 5
+STATIC_PARAMS = dataclasses.astuple(DEFAULT_MODEL_PARAMS)[-STATIC_PARAM_COUNT:]
 
 
 @dataclass(unsafe_hash=True)
