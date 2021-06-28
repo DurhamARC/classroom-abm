@@ -50,10 +50,12 @@ class SimModel(Model):
         self.class_size = len(self.class_data)
 
         self.teacher_control = self.random.normalvariate(
-            self.model_params.teacher_control_mean, 1.26
+            self.model_params.teacher_control_mean,
+            self.model_params.teacher_control_sd,
         )
         self.teacher_quality = self.random.normalvariate(
-            self.model_params.teacher_quality_mean, 1.08
+            self.model_params.teacher_quality_mean,
+            self.model_params.teacher_quality_sd,
         )
 
         self.schedule = RandomActivation(self)
