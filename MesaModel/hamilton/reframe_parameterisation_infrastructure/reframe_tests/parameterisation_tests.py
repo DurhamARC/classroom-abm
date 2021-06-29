@@ -15,7 +15,7 @@ with open("../../parameter_input/lhs_params.csv", "r") as f:
     for row in list(csv_reader):
         if row[0] == str(id) or row[0] == "test_id":
             TEST_IDS.append(id)
-            ROWS.append(",".join(row[1:]))
+            ROWS.append(row[1:])
         else:
             print(f"Parameter file does not contain params for test_id {id}")
             exit(1)
@@ -23,13 +23,13 @@ with open("../../parameter_input/lhs_params.csv", "r") as f:
 
 OUTPUT_FILE = f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv"
 with open(OUTPUT_FILE, "w") as output:
-    output.write(ROWS[0] + ",mean_squared_error\n")
+    output.write(",".join(ROWS[0]) + ",mean_squared_error\n")
 
 
 @rfm.parameterized_test(
     *(
         [n_processors, test_id]
-        for n_processors in [8, 16, 24]  # 24 only relevant for par7.q
+        for n_processors in [24]  # 24 only relevant for par7.q
         for test_id in range(1, len(ROWS))
     )
 )
@@ -56,20 +56,20 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "/ddn/home/" + os.environ["USER"] + "/classroom-abm/multilevel_analysis"
         )
 
-        self.keep_files = [f"{execution_dir}/pupil_data_output.csv"]
+        self.keep_files = [f"{execution_dir}/pupil_data_output_{test_id}.csv"]
 
         self.prerun_cmds = [f"pushd {execution_dir}", "source activate classroom_abm"]
 
         self.executable = "python run_pipeline.py"
 
         self.test_id = test_id
-        params = ROWS[self.test_id]
+        params = " ".join(ROWS[self.test_id])
 
         self.executable_opts = [
             "--input-file",
             os.environ["DATASET"],
             "--output-file",
-            "pupil_data_output.csv",
+            f"pupil_data_output_{test_id}.csv",
             "--n-processors",
             f"{n_processors}",
             "--model-params",
@@ -88,6 +88,6 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
     def add_mse_to_csv(self):
         with mutex:
             with open(OUTPUT_FILE, "a") as output:
-                output.write(ROWS[self.test_id] + ",")
+                output.write(",".join(ROWS[self.test_id]) + ",")
                 output.write(self.extract_mse().strip("\n"))
                 output.write("\n")

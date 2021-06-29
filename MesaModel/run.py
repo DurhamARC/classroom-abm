@@ -7,7 +7,7 @@ from mesa.batchrunner import BatchRunnerMP
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
-from model.data_types import GridParamType, TeacherParamType, PupilParamType, ModelState
+from model.data_types import ModelState, DEFAULT_MODEL_PARAMS
 from model.input_data import InputData
 from model.output_data import OutputDataWriter
 from model.SimModel import SimModel
@@ -50,14 +50,29 @@ from server import create_canvas_grid, sim_element, sim_chart
     is_flag=True,
     help="Whether to run an interactive web server",
 )
+@click.option(
+    "--test-mode",
+    "-t",
+    default=False,
+    is_flag=True,
+    help="Whether to run in test mode (only 10 ticks per day)",
+)
 def run_model_cli(
-    input_file, output_file, n_processors, class_id, all_classes, webserver
+    input_file, output_file, n_processors, class_id, all_classes, webserver, test_mode
 ):
-    run_model(input_file, output_file, n_processors, class_id, all_classes, webserver)
+    run_model(
+        input_file,
+        output_file,
+        n_processors,
+        class_id=class_id,
+        all_classes=all_classes,
+        webserver=webserver,
+        test_mode=test_mode,
+    )
 
 
 """
-run_model() has been separated from run_model_cli() so that it can be imported in 
+run_model() has been separated from run_model_cli() so that it can be imported in
 run_pipeline.py without the commandline argument infrastructure that is associated
 with run_model_cli(). Therefore, run_model_cli() is simply a wrapper around run_model()
 that facilitates the running of the model without the multilevel model postprocessing.
@@ -71,7 +86,8 @@ def run_model(
     class_id=None,
     all_classes=True,
     webserver=False,
-    model_params="1,1",
+    model_params=None,
+    test_mode=False,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -97,8 +113,15 @@ def run_model(
     model_initial_state = ModelState(0, 0, 0, 0, 0)
     click.echo(f"Running on class {class_ids}")
 
+    if not model_params:
+        model_params = DEFAULT_MODEL_PARAMS
+
+    if test_mode:
+        model_params.ticks_per_school_day = 10
+        model_params.ticks_per_home_day = 10
+
     if webserver:
-        canvas_grid = create_canvas_grid(GridParamType(8, 8))
+        canvas_grid = create_canvas_grid(12, 12)
         server = ModularServer(
             SimModel,
             [canvas_grid, sim_element, sim_chart],
@@ -106,7 +129,8 @@ def run_model(
             {
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
-                "output_data": output_data_writer,
+                "output_data_writer": output_data_writer,
+                "model_params": model_params,
                 "canvas_grid": canvas_grid,
                 "instructions": UserSettableParameter(
                     "static_text",
@@ -116,19 +140,10 @@ def run_model(
                     "choice", "Class ID", value=class_ids[0], choices=class_ids
                 ),
                 "teacher_quality": UserSettableParameter(
-                    "slider", "Teaching quality", 5.0, 0.00, 5.0, 1.0
+                    "slider", "Teaching quality", 1.0, 0.00, 5.0, 1.0
                 ),
                 "teacher_control": UserSettableParameter(
-                    "slider", "Teaching control", 5.0, 0.00, 5.0, 1.0
-                ),
-                "pupil_inattentiveness": UserSettableParameter(
-                    "slider", "Use Pupil Inattentiveness ", 1.0, 0.00, 1.0, 1.0
-                ),
-                "pupil_hyper_impulsivity": UserSettableParameter(
-                    "slider", "Use Pupil Hyperactivity ", 1.0, 0.00, 1.0, 1.0
-                ),
-                "pupil_attention_span": UserSettableParameter(
-                    "slider", "Pupil Attention Span Limit", 5.0, 0.00, 5.0, 1.0
+                    "slider", "Teaching control", 2.0, 0.00, 5.0, 1.0
                 ),
             },
         )
@@ -136,10 +151,6 @@ def run_model(
         server.launch()
 
     else:
-        # parse model params
-        p = model_params.split(",")
-        teacher_params = TeacherParamType(p[0], p[1])
-
         print(f"BatchRunnerMP will use {n_processors} processors")
         batch_run = BatchRunnerMP(
             SimModel,
@@ -147,13 +158,12 @@ def run_model(
             fixed_parameters={
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
-                "output_data": output_data_writer,
-                "teacher_params": teacher_params,
-                "pupil_params": PupilParamType(0, 0, 2),
+                "output_data_writer": output_data_writer,
+                "model_params": model_params,
             },
             nr_processes=n_processors,
             iterations=1,
-            max_steps=10000,
+            max_steps=1000000,
             agent_reporters={
                 "student_id": "student_id",
                 "end_maths": "e_math",
