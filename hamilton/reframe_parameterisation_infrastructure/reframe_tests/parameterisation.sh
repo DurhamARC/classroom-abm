@@ -13,6 +13,13 @@ case "$1" in
         ;;
 esac
 
+if [ -n "$PARAMETER_FILE" ]; then
+  echo "Using parameter file specified as $PARAMETER_FILE"
+else
+  export PARAMETER_FILE=../../parameter_input/example_lhs_params.csv
+  echo "Using default parameter file $PARAMETER_FILE"
+fi
+
 source ../environ/env_hamilton.sh
 
 ~/reframe/bin/reframe \

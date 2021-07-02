@@ -7,7 +7,7 @@ import reframe as rfm
 import reframe.utility.sanity as sn
 
 mutex = Lock()
-with open("../../parameter_input/example_lhs_params.csv", "r") as f:
+with open(os.environ["PARAMETER_FILE"], "r") as f:
     csv_reader = csv.reader(f)
     ROWS = []
     TEST_IDS = []
