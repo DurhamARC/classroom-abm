@@ -24,9 +24,6 @@ PARAM_DICT = {
     "ticks_per_school_day": (170, 330, 0),
 }
 
-# On ticks_per_school_day: the values and range are what was proposed for time on maths;
-# worth checking if it really refers to ticks per day
-
 PARAM_DATA = list(PARAM_DICT.values())
 # Position indexes to access tuples in the dict above:
 P_START = 0
