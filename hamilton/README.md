@@ -64,7 +64,7 @@ cd reframe
 From there navigate to the test directory, open a screen session and run:
 
 ```
-cd ../classroom-abm/MesaModel/hamilton/reframe_parameterisation_infrastructure/reframe_tests
+cd ../classroom-abm/hamilton/reframe_parameterisation_infrastructure/reframe_tests
 screen
 ./parameterisation.sh --with-<small/big>-dataset
 ```
