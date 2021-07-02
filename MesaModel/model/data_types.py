@@ -41,7 +41,8 @@ class ModelParamType:
     group_by_ability: bool
 
 
-# Default set of model parameters
+# Default set of model parameters. Note: variable parameters must be added before
+# static parameters!
 DEFAULT_MODEL_PARAMS = ModelParamType(
     teacher_quality_mean=2,
     teacher_control_mean=2,
