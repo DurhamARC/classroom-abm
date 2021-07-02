@@ -159,5 +159,5 @@ Options:
 
 ### Hamilton supercomputer
 
-Steps for running the multilevel model on Hamilton are described [here](https://github.com/DurhamARC/classroom-abm/blob/master/MesaModel/hamilton/README.md)
+Steps for running the multilevel model on Hamilton are described [here](https://github.com/DurhamARC/classroom-abm/blob/master/hamilton/README.md)
 This also documents the ReFrame test infrastructure that we use for parameterisation as well as simple job scripts for running the model on Hamilton.
