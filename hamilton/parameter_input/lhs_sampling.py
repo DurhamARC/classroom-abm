@@ -44,6 +44,10 @@ def check_parameter_dictionary():
     if len(VARIABLE_PARAM_NAMES) != len(PARAM_DICT):
         print("Error! Parameter dictionary is missing values")
         sys.exit(1)
+    for key in PARAM_DICT.keys():
+        if key not in VARIABLE_PARAM_NAMES:
+            print(f"Error! Parameter dictionary contains an outdated key: {key}")
+            sys.exit(1)
 
 
 @click.command()
