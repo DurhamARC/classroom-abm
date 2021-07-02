@@ -1,4 +1,5 @@
 import csv
+import sys
 
 import click
 import numpy as np
@@ -33,6 +34,18 @@ P_END = 1
 P_ROUND = 2
 
 
+def check_parameter_dictionary():
+    for parameter in VARIABLE_PARAM_NAMES:
+        if parameter not in PARAM_DICT:
+            print(
+                f"Error! Parameter dictionary is incomplete: no values for {parameter}"
+            )
+            sys.exit(1)
+    if len(VARIABLE_PARAM_NAMES) != len(PARAM_DICT):
+        print("Error! Parameter dictionary is missing values")
+        sys.exit(1)
+
+
 @click.command()
 @click.option(
     "--num-param-sets",
@@ -47,6 +60,8 @@ P_ROUND = 2
     help="Output file path, relative to current working directory",
 )
 def cli(num_param_sets, output_file):
+    check_parameter_dictionary()
+
     limits = []
     for param_range_data in PARAM_DATA:
         limits.append([param_range_data[P_START], param_range_data[P_END]])
