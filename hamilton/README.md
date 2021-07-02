@@ -41,6 +41,48 @@ one of Hamilton's par7.q nodes.
 
 ### Parameterisation
 
+#### Generating parameters: Latin Hypercube Sampling
+
+If one does not want to generate parameters by Latin Hypercube Sampling (LHS) then skip this step.
+The file `hamilton/parameter_input/lhs_sampling.csv` will be used by default which contains four
+sets of parameter examples that will fuel four ReFrame test cases.
+
+Better, is to use LHS sampling to generate a parameter csv that can then be passed to ReFrame. 
+We offer the facility to calculate parameters using maximum-minimum distance LHS. ReFrame
+will then work through these parameter sets in turn.
+
+To run this, do:
+
+```
+cd hamilton/parameter_input
+python lhs_sampling.py
+```
+
+This will generate 30 sets of parameters in a new file: `lhs_params.csv`. To use this with ReFrame simply
+execute:
+
+```
+export PARAMETER_FILE=<path-to-parameter-file>
+```
+
+Note: the call to `lhs_sampling.py` can be configured with the following options:
+
+```
+  -ns, --num-param-sets INTEGER  How many sets of params to generate (this
+                                 will equal the number of ReFrame tests)
+  -o, --output-file TEXT         Output file path, relative to current working
+                                 directory
+  --help                         Show this message and exit.
+```
+
+The sampling algorithm is fixed with a random seed so if you rerun the tool you will get the same
+output provided `-ns` is set to the same value.
+
+If you want to write your own parameter file then you can do so - remember to set `PARAMETER_FILE` accordingly 
+prior to running ReFrame.
+
+#### Deploying automated parameterisation tests
+
 We use [ReFrame](https://reframe-hpc.readthedocs.io/en/stable/index.html)
 to automate our parameterisation pipeline. The workflow assumes the following
 steps have been taken. To setup ReFrame enter your home directory (we assume ReFrame
