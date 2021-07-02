@@ -1,7 +1,7 @@
 import csv
 
+import click
 import numpy as np
-
 from smt.sampling_methods import LHS
 
 # list of dicts that map a parameter to its minimum value, rounding
@@ -33,7 +33,21 @@ P_START = 0
 P_ROUND = 1
 P_END = 2
 
-if __name__ == "__main__":
+
+@click.command()
+@click.option(
+    "--num-param-sets",
+    "-ns",
+    default=30,
+    help="How many sets of params to generate (this will equal the number of ReFrame tests)",
+)
+@click.option(
+    "--output-file",
+    "-o",
+    default="lhs_params.csv",
+    help="Output file path, relative to current working directory",
+)
+def cli(num_param_sets, output_file):
     limits = []
     for param_range_data in PARAM_DATA:
         limits.append([param_range_data[P_START], param_range_data[P_END]])
@@ -41,11 +55,10 @@ if __name__ == "__main__":
     limits = np.array(limits)
     sampling = LHS(criterion="maximin", xlimits=limits)
 
-    number_of_param_sets = 30
-    raw_samples = sampling(number_of_param_sets)
+    raw_samples = sampling(num_param_sets)
 
-    with open("lhs_params.csv", "w") as output_file:
-        csv_file = csv.writer(output_file)
+    with open(output_file, "w") as out_file:
+        csv_file = csv.writer(out_file)
         csv_file.writerow(
             [
                 "test_id",
@@ -76,3 +89,7 @@ if __name__ == "__main__":
                 ]
             )
             test_id += 1
+
+
+if __name__ == "__main__":
+    cli()
