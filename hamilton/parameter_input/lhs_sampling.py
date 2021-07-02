@@ -4,6 +4,8 @@ import click
 import numpy as np
 from smt.sampling_methods import LHS
 
+from MesaModel.model.data_types import VARIABLE_PARAM_NAMES
+
 # list of dicts that map a parameter to its minimum value, rounding
 # accuracy (number of decimal places), and maximum value. The form is:
 #       {'param': (min,max,round)}
@@ -56,20 +58,7 @@ def cli(num_param_sets, output_file):
 
     with open(output_file, "w") as out_file:
         csv_file = csv.writer(out_file)
-        csv_file.writerow(
-            [
-                "test_id",
-                "teacher_control_mean",
-                "teacher_quality_mean",
-                "random_select",
-                "school_learn_factor",
-                "home_learn_factor",
-                "school_learn_mean_divisor",
-                "school_learn_sd",
-                "school_learn_random_proportion",
-                "ticks_per_school_day",
-            ]
-        )
+        csv_file.writerow(["test_id"] + VARIABLE_PARAM_NAMES)
         test_id = 0
         for param_set in raw_samples:
             param_num = 0
