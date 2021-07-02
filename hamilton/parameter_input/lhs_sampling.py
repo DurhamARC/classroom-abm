@@ -6,22 +6,22 @@ from smt.sampling_methods import LHS
 
 # list of dicts that map a parameter to its minimum value, rounding
 # accuracy (number of decimal places), and maximum value. The form is:
-#       {'param': (min,round,max)}
+#       {'param': (min,max,round)}
 
 PARAM_DICT = {
-    "teacher_control_mean": (0.07, 2, 0.11),
-    "teacher_quality_mean": (3.0, 1, 4.0),
-    "random_select": (0, 1, 4),  # not from Peter; range is a guess
-    "school_learn_factor": (0.07, 2, 0.11),
+    "teacher_control_mean": (0.07, 0.11, 2),
+    "teacher_quality_mean": (3.0, 4.0, 1),
+    "random_select": (0, 4, 1),  # not from Peter; range is a guess
+    "school_learn_factor": (0.07, 0.11, 2),
     "home_learn_factor": (
         0.3,
-        2,
         0.5,
+        2,
     ),  # Peter only gives this a single value of 0.0043
-    "school_learn_mean_divisor": (1000, 0, 2500),
-    "school_learn_sd": (0.03, 2, 0.05),
-    "school_learn_random_proportion": (0.1, 2, 0.4),
-    "ticks_per_school_day": (170, 0, 330),
+    "school_learn_mean_divisor": (1000, 2500, 0),
+    "school_learn_sd": (0.03, 0.05, 2),
+    "school_learn_random_proportion": (0.1, 0.4, 2),
+    "ticks_per_school_day": (170, 330, 0),
 }
 
 # On ticks_per_school_day: the values and range are what was proposed for time on maths;
@@ -30,8 +30,8 @@ PARAM_DICT = {
 PARAM_DATA = list(PARAM_DICT.values())
 # Position indexes to access tuples in the dict above:
 P_START = 0
-P_ROUND = 1
-P_END = 2
+P_END = 1
+P_ROUND = 2
 
 
 @click.command()
