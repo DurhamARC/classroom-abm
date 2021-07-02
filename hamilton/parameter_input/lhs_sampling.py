@@ -53,7 +53,7 @@ def cli(num_param_sets, output_file):
         limits.append([param_range_data[P_START], param_range_data[P_END]])
 
     limits = np.array(limits)
-    sampling = LHS(criterion="maximin", xlimits=limits)
+    sampling = LHS(criterion="maximin", xlimits=limits, random_state=5)
 
     raw_samples = sampling(num_param_sets)
 
