@@ -12,7 +12,7 @@ on:
 
 jobs:
   model-ci:
-    name: Test model code
+    name: Test model code and parameterisation
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -42,6 +42,9 @@ jobs:
       - name: Run unit tests
         run: pytest
         working-directory: MesaModel
+      - name: Check that lhs_sampling works
+        run: python lhs_sampling.py
+        working-directory: hamilton/parameter_input
 
 
   multilevel-analysis:
