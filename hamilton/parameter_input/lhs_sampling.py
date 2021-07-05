@@ -27,32 +27,10 @@ PARAM_DICT = {
     "ticks_per_school_day": (170, 330, 0),
 }
 
-PARAM_DATA = list(PARAM_DICT.values())
-# Position indexes to access tuples in the dict above:
+# Position indices to access tuples in the dict above:
 P_START = 0
 P_END = 1
 P_ROUND = 2
-
-
-def check_parameter_dictionary():
-    for index, parameter in enumerate(VARIABLE_PARAM_NAMES):
-        if parameter not in PARAM_DICT:
-            print(
-                f"Error! Parameter dictionary is incomplete: no values for {parameter}"
-            )
-            sys.exit(1)
-        if parameter != list(PARAM_DICT.keys())[index]:
-            print(
-                f"Error! Parameter dictionary is incorrectly ordered (must match VARIABLE_PARAM_NAMES)"
-            )
-            sys.exit(1)
-    if len(VARIABLE_PARAM_NAMES) != len(PARAM_DICT):
-        print("Error! Parameter dictionary is missing values")
-        sys.exit(1)
-    for key in PARAM_DICT.keys():
-        if key not in VARIABLE_PARAM_NAMES:
-            print(f"Error! Parameter dictionary contains an outdated key: {key}")
-            sys.exit(1)
 
 
 @click.command()
@@ -69,28 +47,30 @@ def check_parameter_dictionary():
     help="Output file path, relative to current working directory",
 )
 def cli(num_param_sets, output_file):
-    check_parameter_dictionary()
-
     limits = []
-    for param_range_data in PARAM_DATA:
-        limits.append([param_range_data[P_START], param_range_data[P_END]])
+    rounding = []
+    for param_name in VARIABLE_PARAM_NAMES:
+        try:
+            param_range_data = PARAM_DICT[param_name]
+        except KeyError:
+            print(f"Parameter {param_name} is not in PARAM_DICT")
+            sys.exit(1)
 
-    limits = np.array(limits)
-    sampling = LHS(criterion="maximin", xlimits=limits, random_state=5)
+        limits.append([param_range_data[P_START], param_range_data[P_END]])
+        rounding.append(param_range_data[P_ROUND])
+
+    sampling = LHS(criterion="maximin", xlimits=np.array(limits), random_state=5)
 
     raw_samples = sampling(num_param_sets)
 
     with open(output_file, "w") as out_file:
         csv_file = csv.writer(out_file)
         csv_file.writerow(["test_id"] + VARIABLE_PARAM_NAMES)
-        test_id = 0
-        for param_set in raw_samples:
-            param_num = 0
+        for test_id, param_set in enumerate(raw_samples):
             rounded_params = []
 
-            for param in param_set:
-                rounded_params.append(round(param, PARAM_DATA[param_num][P_ROUND]))
-                param_num += 1
+            for param_num, param in enumerate(param_set):
+                rounded_params.append(round(param, rounding[param_num]))
 
             csv_file.writerow(
                 [
@@ -98,7 +78,6 @@ def cli(num_param_sets, output_file):
                     *rounded_params,
                 ]
             )
-            test_id += 1
 
 
 if __name__ == "__main__":
