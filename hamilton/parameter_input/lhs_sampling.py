@@ -35,10 +35,15 @@ P_ROUND = 2
 
 
 def check_parameter_dictionary():
-    for parameter in VARIABLE_PARAM_NAMES:
+    for index, parameter in enumerate(VARIABLE_PARAM_NAMES):
         if parameter not in PARAM_DICT:
             print(
                 f"Error! Parameter dictionary is incomplete: no values for {parameter}"
+            )
+            sys.exit(1)
+        if parameter != list(PARAM_DICT.keys())[index]:
+            print(
+                f"Error! Parameter dictionary is incorrectly ordered (must match VARIABLE_PARAM_NAMES)"
             )
             sys.exit(1)
     if len(VARIABLE_PARAM_NAMES) != len(PARAM_DICT):
