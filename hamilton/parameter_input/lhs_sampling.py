@@ -12,8 +12,8 @@ from MesaModel.model.data_types import VARIABLE_PARAM_NAMES
 #       {'param': (min,max,round)}
 
 PARAM_DICT = {
-    "teacher_control_mean": (0.07, 0.11, 2),
     "teacher_quality_mean": (3.0, 4.0, 1),
+    "teacher_control_mean": (0.07, 0.11, 2),
     "random_select": (0, 4, 1),  # not from Peter; range is a guess
     "school_learn_factor": (0.07, 0.11, 2),
     "home_learn_factor": (
