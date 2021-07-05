@@ -122,12 +122,23 @@ class Pupil(Agent):
 
         if self.model.is_school_time:
             if self.learning_state == PupilLearningState.GREEN:
+                # Calculate proportion of increment that is due to cognitive
+                # ability
+                # (1 - params.school_learn_random_proportion) gives the
+                # proportion which is due to ability as opposed to a
+                # random increment.
+                # Use a normal distribution which has a mean equal to
+                # the ability plus 5 (to avoid it being negative, as the ability
+                # values are in range [-2.5, 4.3]
                 ability_increment = (
                     1 - params.school_learn_random_proportion
                 ) * self.random.normalvariate(
                     (5 + self.ability) / params.school_learn_mean_divisor,
                     params.school_learn_sd,
                 )
+                # This is the amount of learning as a random increment to go
+                # alongside the amount related to ability. It follows the same
+                # process as ability_increment but replaces ability with a constant 2.5
                 random_increment = (
                     params.school_learn_random_proportion
                     * self.random.normalvariate(
