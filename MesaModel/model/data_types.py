@@ -45,7 +45,8 @@ class ModelParamType:
     group_by_ability: bool
 
 
-# Default set of model parameters
+# Default set of model parameters. Note: variable parameters must be added before
+# static parameters!
 DEFAULT_MODEL_PARAMS = ModelParamType(
     teacher_quality_mean=2,
     teacher_quality_sd=1.26,
@@ -72,6 +73,10 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
 # by web app users later on
 STATIC_PARAM_COUNT = 5
 STATIC_PARAMS = dataclasses.astuple(DEFAULT_MODEL_PARAMS)[-STATIC_PARAM_COUNT:]
+VARIABLE_PARAM_NAMES = [
+    field.name
+    for field in dataclasses.fields(DEFAULT_MODEL_PARAMS)[0:-STATIC_PARAM_COUNT]
+]
 
 
 @dataclass(unsafe_hash=True)
