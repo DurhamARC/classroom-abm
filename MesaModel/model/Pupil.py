@@ -149,6 +149,15 @@ class Pupil(Agent):
                 self.e_math += params.school_learn_factor * (
                     ability_increment + random_increment
                 )
+
+            # degrade the start_maths measure by a random amount on each tock
+            self.e_math += params.degradation_factor * (
+                self.random.random() - 0.5
+            )  # this did not work alone so now in combination with conformity
+            # try reducing the extremes - pull everyone back to the middle
+            self.e_math = self.model.mean_maths + params.conformity_factor * (
+                self.e_math - self.model.mean_maths
+            )
         else:
             # by getting older maths changes
             self.e_math += (
@@ -159,22 +168,6 @@ class Pupil(Agent):
                     + self.random.normalvariate((5 / 2000), 0.08)
                 )
             )
-
-            # ditto to adjustment
-            # add deprivation to a power to reduce its spread
-            # NB the last two rows of code have been adjusted by extensive trial
-            # and error on one class to give suitable growth overall and correlations between variables
-            # by getting older ability changes
-            # degrade the start_maths measure by a random amount on each tock
-            # FIXME: should this be done at every step rather than just in home learning?
-            self.e_math += 0.08 * (
-                self.random.random() - 0.5
-            )  # this did not work alone so now in combination with conformity
-            # try reducing the extremes - pull everyone back to the middle
-            mean_maths = statistics.mean(
-                [agent.e_math for agent in self.model.schedule.agents]
-            )
-            self.e_math = mean_maths + 0.999993 * (self.e_math - mean_maths)
 
     def get_learning_state(self):
         return self.learning_state

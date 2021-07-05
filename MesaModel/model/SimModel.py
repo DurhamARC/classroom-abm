@@ -142,6 +142,7 @@ class SimModel(Model):
             }
         )
         self.model_datacollector.collect(self)
+        self.mean_maths = compute_ave(self)
 
         self.agent_datacollector = DataCollector(
             agent_reporters={
@@ -231,6 +232,7 @@ class SimModel(Model):
 
         # collect data
         self.model_datacollector.collect(self)
+        self.mean_maths = compute_ave(self)
 
         if self.schedule.steps == self.total_steps or self.running == False:
             self.running = False

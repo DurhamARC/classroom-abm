@@ -31,6 +31,8 @@ class ModelParamType:
     school_learn_mean_divisor: float
     school_learn_sd: float
     school_learn_random_proportion: float
+    conformity_factor: float
+    degradation_factor: float
     ticks_per_school_day: int
 
     # For test purposes
@@ -55,6 +57,8 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     school_learn_mean_divisor=800,
     school_learn_sd=0.04,
     school_learn_random_proportion=0.2,
+    degradation_factor=0.08,
+    conformity_factor=0.999993,
     ticks_per_school_day=100,
     ticks_per_home_day=330,
     number_of_holidays=2,
