@@ -138,11 +138,12 @@ class Pupil(Agent):
                 )
                 # This is the amount of learning as a random increment to go
                 # alongside the amount related to ability. It follows the same
-                # process as ability_increment but replaces ability with a constant 2.5
+                # process as ability_increment but replaces ability with a constant 5
+                # (unmodified by ability)
                 random_increment = (
                     params.school_learn_random_proportion
                     * self.random.normalvariate(
-                        (0.5 * 5) / params.school_learn_mean_divisor,
+                        5 / params.school_learn_mean_divisor,
                         params.school_learn_sd,
                     )
                 )
