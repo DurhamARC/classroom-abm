@@ -64,7 +64,10 @@ class Pupil(Agent):
         self.changeState()
 
         # Update the end maths score
-        self.learn()
+        self.learn_in_school()
+
+        for i in range(self.model.home_learning_steps):
+            self.learn_at_home()
 
     def changeState(self):
         total_count, red_count, yellow_count, green_count = self.getNeighbourCount()
@@ -117,58 +120,60 @@ class Pupil(Agent):
     Calculate the end maths score
     """
 
-    def learn(self):
+    def learn_in_school(self):
         params = self.model.model_params
 
-        if self.model.is_school_time:
-            if self.learning_state == PupilLearningState.GREEN:
-                # Calculate proportion of increment that is due to cognitive
-                # ability
-                # (1 - params.school_learn_random_proportion) gives the
-                # proportion which is due to ability as opposed to a
-                # random increment.
-                # Use a normal distribution which has a mean equal to
-                # the ability plus 5 (to avoid it being negative, as the ability
-                # values are in range [-2.5, 4.3]
-                ability_increment = (
-                    1 - params.school_learn_random_proportion
-                ) * self.random.normalvariate(
-                    (5 + self.ability) / params.school_learn_mean_divisor,
+        # if self.model.is_school_time:
+        if self.learning_state == PupilLearningState.GREEN:
+            # Calculate proportion of increment that is due to cognitive
+            # ability
+            # (1 - params.school_learn_random_proportion) gives the
+            # proportion which is due to ability as opposed to a
+            # random increment.
+            # Use a normal distribution which has a mean equal to
+            # the ability plus 5 (to avoid it being negative, as the ability
+            # values are in range [-2.5, 4.3]
+            ability_increment = (
+                1 - params.school_learn_random_proportion
+            ) * self.random.normalvariate(
+                (5 + self.ability) / params.school_learn_mean_divisor,
+                params.school_learn_sd,
+            )
+            # This is the amount of learning as a random increment to go
+            # alongside the amount related to ability. It follows the same
+            # process as ability_increment but replaces ability with a constant 5
+            # (unmodified by ability)
+            random_increment = (
+                params.school_learn_random_proportion
+                * self.random.normalvariate(
+                    5 / params.school_learn_mean_divisor,
                     params.school_learn_sd,
                 )
-                # This is the amount of learning as a random increment to go
-                # alongside the amount related to ability. It follows the same
-                # process as ability_increment but replaces ability with a constant 5
-                # (unmodified by ability)
-                random_increment = (
-                    params.school_learn_random_proportion
-                    * self.random.normalvariate(
-                        5 / params.school_learn_mean_divisor,
-                        params.school_learn_sd,
-                    )
-                )
-                self.e_math += params.school_learn_factor * (
-                    ability_increment + random_increment
-                )
+            )
+            self.e_math += params.school_learn_factor * (
+                ability_increment + random_increment
+            )
 
-            # degrade the start_maths measure by a random amount on each tock
-            self.e_math += params.degradation_factor * (
-                self.random.random() - 0.5
-            )  # this did not work alone so now in combination with conformity
-            # try reducing the extremes - pull everyone back to the middle
-            self.e_math = self.model.mean_maths + params.conformity_factor * (
-                self.e_math - self.model.mean_maths
+        # degrade the start_maths measure by a random amount on each tock
+        self.e_math += params.degradation_factor * (
+            self.random.random() - 0.5
+        )  # this did not work alone so now in combination with conformity
+        # try reducing the extremes - pull everyone back to the middle
+        self.e_math = self.model.mean_maths + params.conformity_factor * (
+            self.e_math - self.model.mean_maths
+        )
+
+    def learn_at_home(self):
+        params = self.model.model_params
+
+        self.e_math += (
+            params.home_learn_factor
+            * ((6 - self.deprivation) / 3) ** 0.01
+            * (
+                self.random.normalvariate((5 + self.ability) / 2000, 0.08)
+                + self.random.normalvariate((5 / 2000), 0.08)
             )
-        else:
-            # by getting older maths changes
-            self.e_math += (
-                params.home_learn_factor
-                * ((6 - self.deprivation) / 3) ** 0.01
-                * (
-                    self.random.normalvariate((5 + self.ability) / 2000, 0.08)
-                    + self.random.normalvariate((5 / 2000), 0.08)
-                )
-            )
+        )
 
     def get_learning_state(self):
         return self.learning_state

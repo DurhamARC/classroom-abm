@@ -1,9 +1,11 @@
+import datetime
 import math
 
 from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
+import numpy as np
 
 from .data_types import PupilLearningState
 from .Pupil import Pupil
@@ -61,14 +63,13 @@ class SimModel(Model):
         self.schedule = RandomActivation(self)
 
         # Calculate steps per day and holidays
-        self.is_school_time = True
-        # 330 minutes is time awake at home: 5.5 hours * 60 minutes
-        self.ticks_per_day = (
-            self.model_params.ticks_per_school_day
-            + self.model_params.ticks_per_home_day
-        )
-        total_days = 317  # days from 1st September to 16th July
-        self.total_steps = self.ticks_per_day * total_days
+        self.home_learning_steps = 0
+        # Calculate number of days from 1st September to 16th July
+        self.start_date = datetime.date(2021, 9, 1)
+        self.current_date = self.start_date
+        self.end_date = datetime.date(2022, 7, 16)
+        total_days = np.busday_count(self.current_date, self.end_date)
+        self.total_steps = self.model_params.ticks_per_school_day * total_days
 
         self.holiday_week_numbers = self.calculate_holiday_weeks(
             total_days,
@@ -190,35 +191,35 @@ class SimModel(Model):
         return holiday_week_numbers
 
     def update_school_time(self):
-        time_in_day = self.schedule.steps % self.ticks_per_day
+        time_in_day = self.schedule.steps % self.model_params.ticks_per_school_day
 
-        # If currently in school, remain so until time in day is > ticks_per_school_day
-        if self.is_school_time:
-            if time_in_day < self.model_params.ticks_per_school_day:
-                return
-            else:
-                self.is_school_time = False
+        if time_in_day == self.model_params.ticks_per_school_day - 1:
+            # Last tick of school day, so add home learning time
+            home_learning_days = 1
+
+            # If it's Friday add 2 more days' home learning for the weekend
+            if self.current_date.weekday() == 4:
+                home_learning_days += 2
+
+                # Is it a holiday?
+                week_number = math.floor((self.current_date - self.start_date).days / 7)
+                if week_number in self.holiday_week_numbers:
+                    # Add another week
+                    home_learning_days += 7 * self.model_params.weeks_per_holiday
+
+            self.home_learning_steps = (
+                home_learning_days * self.model_params.ticks_per_home_day
+            )
+
+            # Update current date
+            self.current_date += datetime.timedelta(days=home_learning_days)
         else:
-            # Currently pupil is at home
-            if time_in_day == 0:
-                # A new day - is it a weekend or holiday?
-                day_number = math.floor(self.schedule.steps / self.ticks_per_day)
-                day_in_week = day_number % 7
-                if day_in_week > 4:
-                    # It's a weekend so remain at home
-                    return
-                else:
-                    # Is it a holiday?
-                    week_number = math.floor(day_number / 7)
-                    if week_number not in self.holiday_week_numbers:
-                        self.is_school_time = True
-                        if day_in_week == 0:
-                            # New week so reset all pupils to Yellow
-                            for pupil in self.schedule.agents:
-                                pupil.learning_state = PupilLearningState.YELLOW
-            else:
-                # Not a new day so continue in home time
-                return
+            self.home_learning_steps = 0
+
+            if time_in_day == 0 and self.current_date.weekday() == 0:
+                # First tick of the week so reset all pupils to Yellow
+                for pupil in self.schedule.agents:
+                    pupil.learning_state = PupilLearningState.YELLOW
 
     def step(self):
         # Reset counter of learning and disruptive agents
