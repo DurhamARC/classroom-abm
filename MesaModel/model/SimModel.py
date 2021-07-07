@@ -64,15 +64,14 @@ class SimModel(Model):
 
         # Calculate steps per day and holidays
         self.home_learning_steps = 0
-        # Calculate number of days from 1st September to 16th July
+        # Calculate number of days from 1st September to 16th July inclusive
         self.start_date = datetime.date(2021, 9, 1)
         self.current_date = self.start_date
         self.end_date = datetime.date(2022, 7, 16)
-        total_days = np.busday_count(self.current_date, self.end_date)
-        self.total_steps = self.model_params.ticks_per_school_day * total_days
 
         self.holiday_week_numbers = self.calculate_holiday_weeks(
-            total_days,
+            self.start_date,
+            self.end_date,
             self.model_params.number_of_holidays,
             self.model_params.weeks_per_holiday,
         )
@@ -160,16 +159,30 @@ class SimModel(Model):
         self.running = True
 
     @staticmethod
-    def calculate_holiday_weeks(total_days, number_of_holidays, weeks_per_holiday):
+    def calculate_holiday_weeks(
+        start_date, end_date, number_of_holidays, weeks_per_holiday
+    ):
         """Calculate which weeks should be holidays given the total number of
         days from start to end of the school year, and the number and length
         of holidays
 
         Returns an array of week numbers which are holidays
         """
+        # Get start of first week of term
+        # Go back to start of week
+        start_week = start_date - datetime.timedelta(days=start_date.weekday())
+        if start_date.weekday() >= 5:
+            # start_date is weekend so go to following Monday
+            start_week += datetime.timedelta(weeks=1)
+
+        # Get difference from following week after end day
+        total_weeks = math.ceil(
+            (end_date + datetime.timedelta(days=1) - start_week).days / 7
+        )
+
         n_terms = number_of_holidays + 1
         n_holiday_weeks = number_of_holidays * weeks_per_holiday
-        n_school_weeks = math.ceil(total_days / 7) - n_holiday_weeks
+        n_school_weeks = total_weeks - n_holiday_weeks
         min_weeks_per_term = math.floor(n_school_weeks / n_terms)
         remainder_weeks = n_school_weeks % n_terms
 
@@ -204,7 +217,7 @@ class SimModel(Model):
                 # Is it a holiday?
                 week_number = math.floor((self.current_date - self.start_date).days / 7)
                 if week_number in self.holiday_week_numbers:
-                    # Add another week
+                    # Add holiday weeks
                     home_learning_days += 7 * self.model_params.weeks_per_holiday
 
             self.home_learning_steps = (
@@ -235,7 +248,7 @@ class SimModel(Model):
         self.model_datacollector.collect(self)
         self.mean_maths = compute_ave(self)
 
-        if self.schedule.steps == self.total_steps or self.running == False:
+        if self.current_date > self.end_date or self.running == False:
             self.running = False
             self.agent_datacollector.collect(self)
             agent_data = self.agent_datacollector.get_agent_vars_dataframe()
