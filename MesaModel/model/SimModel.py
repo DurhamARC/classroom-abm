@@ -13,6 +13,7 @@ from .utils import (
     get_num_disruptors,
     get_num_learning,
     get_grid_size,
+    get_truncated_normal_value,
 )
 
 
@@ -69,11 +70,13 @@ class SimModel(Model):
         self.end_date = datetime.date(2022, 7, 16)
 
         self.ticks_per_school_day = round(
-            self.random.normalvariate(
-                self.model_params.maths_ticks_mean, self.model_params.maths_ticks_sd
+            get_truncated_normal_value(
+                self.model_params.maths_ticks_mean,
+                self.model_params.maths_ticks_sd,
+                10,
+                300,
             )
         )
-        print(f"{self.ticks_per_school_day} ticks per school day")
 
         self.holiday_week_numbers = self.calculate_holiday_weeks(
             self.start_date,

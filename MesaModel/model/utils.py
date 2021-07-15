@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import stats
 from statistics import stdev
 import statistics
 import math
@@ -65,3 +66,13 @@ def min_neighbour_count_to_modify_state(n_neighbours, group_size):
     # otherwise we use the same proportion but round down so e.g. only 1 in a
     # pair will change behaviour
     return math.floor(group_size * 6 / 8)
+
+
+def get_truncated_normal_value(mean, sd, lower, upper):
+    # Return a random number using a truncated normal distribution with the
+    # given mean  and standard deviation, and capped by the given lower and
+    # upper limits
+    generator = stats.truncnorm(
+        (lower - mean) / sd, (upper - mean) / sd, loc=mean, scale=sd
+    )
+    return generator.rvs(1)[0]

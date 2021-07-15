@@ -73,3 +73,16 @@ def test_min_neighbour_count_to_modify_state():
     assert utils.min_neighbour_count_to_modify_state(5, 6) == 4
     assert utils.min_neighbour_count_to_modify_state(6, 7) == 5
     assert utils.min_neighbour_count_to_modify_state(7, 8) == 6
+
+
+def test_get_truncated_normal_value():
+    for i in range(1000):
+        val = utils.get_truncated_normal_value(5, 10, 1, 8)
+        print(val)
+        assert val >= 1
+        assert val <= 8
+
+    for i in range(1000):
+        val = utils.get_truncated_normal_value(3, 2, 0, 5)
+        assert val >= 0
+        assert val <= 5
