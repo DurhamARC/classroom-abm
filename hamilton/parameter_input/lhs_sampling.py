@@ -30,7 +30,8 @@ PARAM_DICT = {
     "school_learn_random_proportion": (0.1, 0.4, 2),
     "degradation_factor": (0.05, 0.1, 2),
     "conformity_factor": (0.999990, 0.999995, 6),
-    "ticks_per_school_day": (170, 330, 0),
+    "maths_ticks_mean": (10, 330, 0),
+    "maths_ticks_sd": (10, 50, 0),
 }
 
 # Position indices to access tuples in the dict above:

@@ -117,7 +117,8 @@ def run_model(
         model_params = DEFAULT_MODEL_PARAMS
 
     if test_mode:
-        model_params.ticks_per_school_day = 10
+        model_params.maths_ticks_mean = 10
+        model_params.maths_ticks_sd = 0.1
         model_params.ticks_per_home_day = 10
 
     if webserver:

@@ -68,6 +68,13 @@ class SimModel(Model):
         self.current_date = self.start_date
         self.end_date = datetime.date(2022, 7, 16)
 
+        self.ticks_per_school_day = round(
+            self.random.normalvariate(
+                self.model_params.maths_ticks_mean, self.model_params.maths_ticks_sd
+            )
+        )
+        print(f"{self.ticks_per_school_day} ticks per school day")
+
         self.holiday_week_numbers = self.calculate_holiday_weeks(
             self.start_date,
             self.end_date,
@@ -203,9 +210,9 @@ class SimModel(Model):
         return holiday_week_numbers
 
     def update_school_time(self):
-        time_in_day = self.schedule.steps % self.model_params.ticks_per_school_day
+        time_in_day = self.schedule.steps % self.ticks_per_school_day
 
-        if time_in_day == self.model_params.ticks_per_school_day - 1:
+        if time_in_day == self.ticks_per_school_day - 1:
             # Last tick of school day, so add home learning time
             home_learning_days = 1
 
