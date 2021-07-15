@@ -1,4 +1,5 @@
 import csv
+import os
 import sys
 
 import click
@@ -68,8 +69,8 @@ def cli(num_param_sets, output_file):
 
     raw_samples = sampling(num_param_sets)
 
-    with open(output_file, "w") as out_file:
-        csv_file = csv.writer(out_file)
+    with open(output_file, "w", newline="") as out_file:
+        csv_file = csv.writer(out_file, lineterminator=os.linesep)
         csv_file.writerow(["test_id"] + VARIABLE_PARAM_NAMES)
         for test_id, param_set in enumerate(raw_samples):
             rounded_params = []
