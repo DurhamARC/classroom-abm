@@ -6,6 +6,7 @@ import click
 from mesa.batchrunner import BatchRunnerMP
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
+import numpy as np
 
 from model.data_types import ModelState, DEFAULT_MODEL_PARAMS
 from model.input_data import InputData
@@ -121,6 +122,25 @@ def run_model(
         model_params.maths_ticks_sd = 0.1
         model_params.ticks_per_home_day = 10
 
+    # See https://albertcthomas.github.io/good-practices-random-number-generators/
+    # for where the pattern below comes from: this gives us reproducible randomness, but
+    # provides a different rng for each instance of SimModel, as they run on parallel
+    # processors in batch mode, and we need to ensure they don't all produce the same
+    # numbers
+    # TODO: should this actually be non-reproducible and genuinely random?
+    # Do we want to ensure we get different rngs for each job run on hamilton, or is it
+    # helpful to use the same values?
+
+    # This method for getting a SeedSequence will give reproducible results
+    # random_number_generator = np.random.default_rng(2021)
+    # ss = random_number_generator.bit_generator._seed_seq
+
+    # This method gives different results each time
+    ss = np.random.SeedSequence()
+
+    # Create a rng for each class
+    rngs = [np.random.default_rng(s) for s in ss.spawn(len(class_ids))]
+
     if webserver:
         canvas_grid = create_canvas_grid(12, 12)
         server = ModularServer(
@@ -141,10 +161,10 @@ def run_model(
                     "choice", "Class ID", value=class_ids[0], choices=class_ids
                 ),
                 "teacher_quality": UserSettableParameter(
-                    "slider", "Teaching quality", 1.0, 0.00, 5.0, 1.0
+                    "slider", "Teaching quality mean", 1.0, 0.00, 5.0, 0.1
                 ),
                 "teacher_control": UserSettableParameter(
-                    "slider", "Teaching control", 2.0, 0.00, 5.0, 1.0
+                    "slider", "Teaching control mean", 2.0, 0.00, 5.0, 0.1
                 ),
             },
         )
@@ -155,7 +175,9 @@ def run_model(
         print(f"BatchRunnerMP will use {n_processors} processors")
         batch_run = BatchRunnerMP(
             SimModel,
-            variable_parameters={"class_id": class_ids},
+            variable_parameters={
+                "class_id_and_rng": list(zip(class_ids, rngs)),
+            },
             fixed_parameters={
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,

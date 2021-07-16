@@ -83,6 +83,6 @@ def test_get_truncated_normal_value():
         assert val <= 8
 
     for i in range(1000):
-        val = utils.get_truncated_normal_value(3, 2, 0, 5)
-        assert val >= 0
-        assert val <= 5
+        val = utils.get_truncated_normal_value(10, 2)
+        assert val >= 4
+        assert val <= 16

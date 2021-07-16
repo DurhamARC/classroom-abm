@@ -14,6 +14,7 @@ from .utils import (
     get_num_learning,
     get_grid_size,
     get_truncated_normal_value,
+    get_truncated_normal_generator,
 )
 
 
@@ -24,13 +25,21 @@ class SimModel(Model):
         model_initial_state,
         output_data_writer,
         model_params,
+        class_id_and_rng=None,
         class_id=None,
         **kwargs,
     ):
         self.data = all_data
         self.model_state = model_initial_state
         self.output_data_writer = output_data_writer
-        self.class_id = class_id
+
+        if class_id_and_rng:
+            (self.class_id, self.rng) = class_id_and_rng
+        else:
+            self.rng = np.random.default_rng()
+            if class_id:
+                self.class_id = class_id
+
         self.model_params = model_params
         self.write_file = False
 
@@ -51,13 +60,20 @@ class SimModel(Model):
         self.class_data = self.data.get_class_data(self.class_id)
         self.class_size = len(self.class_data)
 
-        self.teacher_control = self.random.normalvariate(
+        self.teacher_control = get_truncated_normal_value(
             self.model_params.teacher_control_mean,
             self.model_params.teacher_control_sd,
+            lower=0,
+            rng=self.rng,
         )
-        self.teacher_quality = self.random.normalvariate(
+        self.teacher_quality = get_truncated_normal_value(
             self.model_params.teacher_quality_mean,
             self.model_params.teacher_quality_sd,
+            lower=0,
+            rng=self.rng,
+        )
+        print(
+            f"class {self.class_id}, control {self.teacher_control}, quality {self.teacher_quality}"
         )
 
         self.schedule = RandomActivation(self)
@@ -83,6 +99,16 @@ class SimModel(Model):
             self.end_date,
             self.model_params.number_of_holidays,
             self.model_params.weeks_per_holiday,
+        )
+
+        # Create truncnorm generators for school and home learning random increments
+        self.school_learning_random_gen = get_truncated_normal_generator(
+            5 / self.model_params.school_learn_mean_divisor,
+            self.model_params.school_learn_sd,
+            lower=0,
+        )
+        self.home_learning_random_gen = get_truncated_normal_generator(
+            5 / 2000, 0.08, lower=0
         )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
