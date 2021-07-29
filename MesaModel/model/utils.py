@@ -90,7 +90,10 @@ def get_truncated_normal_value(mean, sd, lower=None, upper=None, rng=None):
     # Return a random number using a truncated normal distribution with the
     # given mean  and standard deviation, and capped by the given lower and
     # upper limits, if given, or by the mean +/- 3 times the standard
-    # deviation if the limits are not specified
+    # deviation if the limits are not specified.
+    # This can be used instead of a normal distribution in cases where e.g. you
+    # want to avoid using a negative value, or you need be sure the value will
+    # be in a particular range.
     # Note that if getting multiple values using the same params it is better
     # to use get_truncated_normal_generator once then
     # get_truncated_normal_value_from_generator to get the values
