@@ -12,7 +12,7 @@ on:
 
 jobs:
   model-ci:
-    name: Test model code
+    name: Test model code and parameterisation
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -42,6 +42,11 @@ jobs:
       - name: Run unit tests
         run: pytest
         working-directory: MesaModel
+      - name: Check that lhs_sampling works (and output header matches the example)
+        run: |
+          python lhs_sampling.py
+          diff <(head -n 1 lhs_params.csv) <(head -n 1 example_lhs_params.csv)
+        working-directory: hamilton/parameter_input
 
 
   multilevel-analysis:

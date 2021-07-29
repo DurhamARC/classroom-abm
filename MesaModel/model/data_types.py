@@ -22,13 +22,17 @@ class GridParamType:
 class ModelParamType:
     # For parameterisation
     teacher_quality_mean: float
+    teacher_quality_sd: float
     teacher_control_mean: float
+    teacher_control_sd: float
     random_select: float
     school_learn_factor: float
     home_learn_factor: float
     school_learn_mean_divisor: float
     school_learn_sd: float
     school_learn_random_proportion: float
+    conformity_factor: float
+    degradation_factor: float
     ticks_per_school_day: int
 
     # For test purposes
@@ -45,13 +49,17 @@ class ModelParamType:
 # static parameters!
 DEFAULT_MODEL_PARAMS = ModelParamType(
     teacher_quality_mean=2,
+    teacher_quality_sd=1.26,
     teacher_control_mean=2,
+    teacher_control_sd=1.08,
     random_select=2,
     school_learn_factor=0.12,
     home_learn_factor=0.0043,
     school_learn_mean_divisor=800,
     school_learn_sd=0.04,
     school_learn_random_proportion=0.2,
+    conformity_factor=0.999993,
+    degradation_factor=0.08,
     ticks_per_school_day=100,
     ticks_per_home_day=330,
     number_of_holidays=2,

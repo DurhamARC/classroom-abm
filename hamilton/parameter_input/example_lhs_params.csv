@@ -1,5 +1,5 @@
-test_id,teacher_control_mean,teacher_quality_mean,random_select,school_learn_factor,home_learn_factor,school_learn_mean_divisor,school_learn_sd,school_learn_random_proportion,ticks_per_school_day
-1,1,1,2,0.12,0.0043,800,0.04,0.2,100
-2,1,0,2,0.12,0.0043,800,0.04,0.2,100
-3,0,1,2,0.12,0.0043,800,0.04,0.2,100
-4,0,0,2,0.12,0.0043,800,0.04,0.2,100
+test_id,teacher_quality_mean,teacher_quality_sd,teacher_control_mean,teacher_control_sd,random_select,school_learn_factor,home_learn_factor,school_learn_mean_divisor,school_learn_sd,school_learn_random_proportion,conformity_factor,degradation_factor,ticks_per_school_day
+1,1,1.26,1,1.08,2,0.12,0.0043,800,0.04,0.2,0.999993,0.08,100
+2,1,1.26,0,1.08,2,0.12,0.0043,800,0.04,0.2,0.999993,0.08,100
+3,0,1.26,1,1.08,2,0.12,0.0043,800,0.04,0.2,0.999993,0.08,100
+4,0,1.26,0,1.08,2,0.12,0.0043,800,0.04,0.2,0.999993,0.08,100

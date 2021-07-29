@@ -54,3 +54,14 @@ def get_grid_size(n_agents, max_group_size):
         group_width=group_width,
         group_height=group_height,
     )
+
+
+def min_neighbour_count_to_modify_state(n_neighbours, group_size):
+    # if 8 or more neighbours, state should change if 6 or more neighbours are
+    # red/green
+    if n_neighbours >= 8:
+        return 6
+
+    # otherwise we use the same proportion but round down so e.g. only 1 in a
+    # pair will change behaviour
+    return math.floor(group_size * 6 / 8)

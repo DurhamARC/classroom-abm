@@ -50,10 +50,12 @@ class SimModel(Model):
         self.class_size = len(self.class_data)
 
         self.teacher_control = self.random.normalvariate(
-            self.model_params.teacher_control_mean, 1.26
+            self.model_params.teacher_control_mean,
+            self.model_params.teacher_control_sd,
         )
         self.teacher_quality = self.random.normalvariate(
-            self.model_params.teacher_quality_mean, 1.08
+            self.model_params.teacher_quality_mean,
+            self.model_params.teacher_quality_sd,
         )
 
         self.schedule = RandomActivation(self)
@@ -123,6 +125,7 @@ class SimModel(Model):
                     pupil_data.Deprivation,
                     pupil_data.start_maths,
                     pupil_data.Ability,
+                    group_size,
                 )
                 # Place Agents on grid
                 self.grid.position_agent(agent, x, y)
@@ -139,6 +142,7 @@ class SimModel(Model):
             }
         )
         self.model_datacollector.collect(self)
+        self.mean_maths = compute_ave(self)
 
         self.agent_datacollector = DataCollector(
             agent_reporters={
@@ -228,6 +232,7 @@ class SimModel(Model):
 
         # collect data
         self.model_datacollector.collect(self)
+        self.mean_maths = compute_ave(self)
 
         if self.schedule.steps == self.total_steps or self.running == False:
             self.running = False

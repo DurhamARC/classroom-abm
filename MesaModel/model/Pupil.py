@@ -3,6 +3,7 @@ import statistics
 from mesa import Agent
 
 from .data_types import PupilLearningState
+from .utils import min_neighbour_count_to_modify_state
 
 
 class Pupil(Agent):
@@ -18,6 +19,7 @@ class Pupil(Agent):
         deprivation,
         math,
         ability,
+        group_size,
     ):
         super().__init__(pos, model)
         self.pos = pos
@@ -30,6 +32,11 @@ class Pupil(Agent):
         self.s_math = math
         self.e_math = math
         self.randomised_agent_attribute = 0
+
+        neighbour_count = self.getNeighbourCount()[0]
+        self.min_neighbour_count_to_modify_state = min_neighbour_count_to_modify_state(
+            neighbour_count, group_size
+        )
 
     def getNeighbourCount(self):
         neighbourCount = 0
@@ -68,30 +75,32 @@ class Pupil(Agent):
             # at random but more likely if the teaching quality is low
             if (
                 red_count > 2
-                or self.randomised_agent_attribute > self.model.teacher_quality
+                and self.randomised_agent_attribute > self.model.teacher_quality
             ):
                 self.learning_state = PupilLearningState.YELLOW
 
         elif self.learning_state == PupilLearningState.YELLOW:
             # change to disruptive (red) at random if already passive (yellow)
-            # more likely if control is low or hyper-impulsive is high
+            # more likely if control is low and hyper-impulsive is high
             if (
                 self.randomised_agent_attribute > self.model.teacher_control
-                or self.randomised_agent_attribute < self.hyper_impulsive
+                and self.randomised_agent_attribute < self.hyper_impulsive
             ):
                 self.learning_state = PupilLearningState.RED
             # start teaching and passive students switch to learning mode (green)
-            # if teaching is good or they are not too inattentive
+            # if teaching is good and they are not too inattentive
             elif (
                 self.randomised_agent_attribute < self.model.teacher_quality
-                or self.randomised_agent_attribute > self.inattentiveness
+                and self.randomised_agent_attribute > self.inattentiveness
             ):
                 self.learning_state = PupilLearningState.GREEN
-            # if patch is yellow change to red if 6 neighbours or more are red
-            elif red_count > 5:
+            # if patch is yellow change to red if min_neighbour_count_to_modify_state
+            # (e.g. 6) neighbours or more are red
+            elif red_count >= self.min_neighbour_count_to_modify_state:
                 self.learning_state = PupilLearningState.RED
-            # if patch is yellow change to green if 6 neighbours or more are red
-            elif green_count > 5:
+            # if patch is yellow change to green if min_neighbour_count_to_modify_state
+            # (e.g. 6) neighbours or more are green
+            elif green_count >= self.min_neighbour_count_to_modify_state:
                 self.learning_state = PupilLearningState.GREEN
 
         elif self.learning_state == PupilLearningState.RED:
@@ -100,7 +109,7 @@ class Pupil(Agent):
             # - 3 or more neighbours are green
             if (
                 green_count > 2
-                or self.randomised_agent_attribute < self.model.teacher_control
+                and self.randomised_agent_attribute < self.model.teacher_control
             ):
                 self.learning_state = PupilLearningState.YELLOW
 
@@ -113,22 +122,43 @@ class Pupil(Agent):
 
         if self.model.is_school_time:
             if self.learning_state == PupilLearningState.GREEN:
+                # Calculate proportion of increment that is due to cognitive
+                # ability
+                # (1 - params.school_learn_random_proportion) gives the
+                # proportion which is due to ability as opposed to a
+                # random increment.
+                # Use a normal distribution which has a mean equal to
+                # the ability plus 5 (to avoid it being negative, as the ability
+                # values are in range [-2.5, 4.3]
                 ability_increment = (
                     1 - params.school_learn_random_proportion
                 ) * self.random.normalvariate(
                     (5 + self.ability) / params.school_learn_mean_divisor,
                     params.school_learn_sd,
                 )
+                # This is the amount of learning as a random increment to go
+                # alongside the amount related to ability. It follows the same
+                # process as ability_increment but replaces ability with a constant 5
+                # (unmodified by ability)
                 random_increment = (
                     params.school_learn_random_proportion
                     * self.random.normalvariate(
-                        (0.5 * 5) / params.school_learn_mean_divisor,
+                        5 / params.school_learn_mean_divisor,
                         params.school_learn_sd,
                     )
                 )
                 self.e_math += params.school_learn_factor * (
                     ability_increment + random_increment
                 )
+
+            # degrade the start_maths measure by a random amount on each tock
+            self.e_math += params.degradation_factor * (
+                self.random.random() - 0.5
+            )  # this did not work alone so now in combination with conformity
+            # try reducing the extremes - pull everyone back to the middle
+            self.e_math = self.model.mean_maths + params.conformity_factor * (
+                self.e_math - self.model.mean_maths
+            )
         else:
             # by getting older maths changes
             self.e_math += (
@@ -139,22 +169,6 @@ class Pupil(Agent):
                     + self.random.normalvariate((5 / 2000), 0.08)
                 )
             )
-
-            # ditto to adjustment
-            # add deprivation to a power to reduce its spread
-            # NB the last two rows of code have been adjusted by extensive trial
-            # and error on one class to give suitable growth overall and correlations between variables
-            # by getting older ability changes
-            # degrade the start_maths measure by a random amount on each tock
-            # FIXME: should this be done at every step rather than just in home learning?
-            self.e_math += 0.08 * (
-                self.random.random() - 0.5
-            )  # this did not work alone so now in combination with conformity
-            # try reducing the extremes - pull everyone back to the middle
-            mean_maths = statistics.mean(
-                [agent.e_math for agent in self.model.schedule.agents]
-            )
-            self.e_math = mean_maths + 0.999993 * (self.e_math - mean_maths)
 
     def get_learning_state(self):
         return self.learning_state

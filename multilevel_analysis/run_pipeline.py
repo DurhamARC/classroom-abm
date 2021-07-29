@@ -43,6 +43,10 @@ from model.data_types import (
         float,
         float,
         float,
+        float,
+        float,
+        float,
+        float,
         int,
         float,
         float,
@@ -61,6 +65,8 @@ Full parameter list (defined in data_type.ModelParamType) is:
     school_learn_mean_divisor: float
     school_learn_sd: float
     school_learn_random_proportion: float
+    conformity_factor: float
+    degradation_factor: float
     ticks_per_school_day: int
     ticks_per_home_day: int
     number_of_holidays: int

@@ -1,11 +1,13 @@
 import csv
+import os
 import sys
 
 import click
 import numpy as np
 from smt.sampling_methods import LHS
 
-from MesaModel.model.data_types import VARIABLE_PARAM_NAMES
+sys.path.append("../../MesaModel")
+from model.data_types import VARIABLE_PARAM_NAMES
 
 # list of dicts that map a parameter to its minimum value, rounding
 # accuracy (number of decimal places), and maximum value. The form is:
@@ -13,7 +15,9 @@ from MesaModel.model.data_types import VARIABLE_PARAM_NAMES
 
 PARAM_DICT = {
     "teacher_quality_mean": (3.0, 4.0, 1),
+    "teacher_quality_sd": (1.0, 2.0, 1),
     "teacher_control_mean": (0.07, 0.11, 2),
+    "teacher_control_sd": (1.0, 2.0, 1),
     "random_select": (0, 4, 1),  # not from Peter; range is a guess
     "school_learn_factor": (0.07, 0.11, 2),
     "home_learn_factor": (
@@ -24,6 +28,8 @@ PARAM_DICT = {
     "school_learn_mean_divisor": (1000, 2500, 0),
     "school_learn_sd": (0.03, 0.05, 2),
     "school_learn_random_proportion": (0.1, 0.4, 2),
+    "degradation_factor": (0.05, 0.1, 2),
+    "conformity_factor": (0.999990, 0.999995, 6),
     "ticks_per_school_day": (170, 330, 0),
 }
 
@@ -63,8 +69,8 @@ def cli(num_param_sets, output_file):
 
     raw_samples = sampling(num_param_sets)
 
-    with open(output_file, "w") as out_file:
-        csv_file = csv.writer(out_file)
+    with open(output_file, "w", newline="") as out_file:
+        csv_file = csv.writer(out_file, lineterminator=os.linesep)
         csv_file.writerow(["test_id"] + VARIABLE_PARAM_NAMES)
         for test_id, param_set in enumerate(raw_samples):
             rounded_params = []
