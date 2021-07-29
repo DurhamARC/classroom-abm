@@ -145,7 +145,7 @@ def run_model(
         canvas_grid = create_canvas_grid(12, 12)
         server = ModularServer(
             SimModel,
-            [canvas_grid, sim_element, sim_chart],
+            [sim_element, canvas_grid, sim_chart],
             "Classroom ABM",
             {
                 "all_data": all_data,

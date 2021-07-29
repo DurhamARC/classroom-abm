@@ -76,9 +76,6 @@ class SimModel(Model):
             lower=0,
             rng=self.rng,
         )
-        print(
-            f"class {self.class_id}, control {self.teacher_control}, quality {self.teacher_quality}"
-        )
 
         self.schedule = RandomActivation(self)
 
