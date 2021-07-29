@@ -18,7 +18,14 @@ def simclass_draw(agent):
     if agent is None:
         return None
 
-    portrayal = {"Shape": "circle", "r": 0.8, "Filled": "true", "Layer": 0}
+    portrayal = {
+        "Shape": "circle",
+        "r": 0.8,
+        "Filled": "true",
+        "Layer": 0,
+        "text": round(agent.e_math, 1),
+        "text_color": "#000000",
+    }
     learning_state = agent.get_learning_state()
 
     if learning_state == PupilLearningState.RED:
