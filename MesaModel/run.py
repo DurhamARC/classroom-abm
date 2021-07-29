@@ -166,6 +166,14 @@ def run_model(
                 "teacher_control": UserSettableParameter(
                     "slider", "Teaching control mean", 2.0, 0.00, 5.0, 0.1
                 ),
+                "random_select": UserSettableParameter(
+                    "slider",
+                    "Mean for random number used at each step",
+                    6.0,
+                    0.00,
+                    10.0,
+                    1.0,
+                ),
             },
         )
 

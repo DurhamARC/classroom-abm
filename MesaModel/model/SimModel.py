@@ -50,6 +50,9 @@ class SimModel(Model):
         if "teacher_control" in kwargs:
             self.model_params.teacher_control_mean = kwargs["teacher_control"]
 
+        if "random_select" in kwargs:
+            self.model_params.random_select = kwargs["random_select"]
+
         if "class_id" in kwargs:
             self.class_id = kwargs["class_id"]
         elif not self.class_id:
