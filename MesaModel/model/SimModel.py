@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import math
 
@@ -7,7 +8,7 @@ from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 
-from .data_types import PupilLearningState
+from .data_types import PupilLearningState, ModelParamType
 from .Pupil import Pupil
 from .utils import (
     compute_ave,
@@ -44,14 +45,16 @@ class SimModel(Model):
         self.model_params = model_params
         self.write_file = False
 
-        if "teacher_quality" in kwargs:
-            self.model_params.teacher_quality_mean = kwargs["teacher_quality"]
+        # Update any parameters passed as kwargs
+        param_dict = dataclasses.asdict(self.model_params)
+        update_params = False
+        for kw in kwargs:
+            if kw in param_dict:
+                param_dict[kw] = kwargs[kw]
+                update_params = True
 
-        if "teacher_control" in kwargs:
-            self.model_params.teacher_control_mean = kwargs["teacher_control"]
-
-        if "random_select" in kwargs:
-            self.model_params.random_select = kwargs["random_select"]
+        if update_params:
+            self.model_params = ModelParamType(**param_dict)
 
         if "class_id" in kwargs:
             self.class_id = kwargs["class_id"]
