@@ -122,23 +122,23 @@ def run_model(
         model_params.maths_ticks_sd = 0.1
         model_params.ticks_per_home_day = 10
 
-    # See https://albertcthomas.github.io/good-practices-random-number-generators/
-    # for where the pattern below comes from: this gives us reproducible randomness, but
-    # provides a different rng for each instance of SimModel, as they run on parallel
-    # processors in batch mode, and we need to ensure they don't all produce the same
-    # numbers
-    # TODO: should this actually be non-reproducible and genuinely random?
-    # Do we want to ensure we get different rngs for each job run on hamilton, or is it
-    # helpful to use the same values?
+    # To ensure each thread in the BatchProcessor gets a different random
+    # number generator, we use a seed sequence to generate a new seed for
+    # each instance of SimModel (one per class), as they run on parallel
+    # processors in batch mode, and we need to ensure they don't all produce
+    # the same numbers
 
-    # This method for getting a SeedSequence will give reproducible results
+    # We use a non-reproducible seed sequence to ensure changes to parameters
+    # are not masked by the random numbers generated
+    ss = np.random.SeedSequence()
+
+    # If we want the rngs to be reproducible in batch mode, we can use the
+    # following to get a SeedSequence (see
+    # https://albertcthomas.github.io/good-practices-random-number-generators/)
     # random_number_generator = np.random.default_rng(2021)
     # ss = random_number_generator.bit_generator._seed_seq
 
-    # This method gives different results each time
-    ss = np.random.SeedSequence()
-
-    # Create a rng for each class
+    # Create an rng for each class
     rngs = [np.random.default_rng(s) for s in ss.spawn(len(class_ids))]
 
     if webserver:
