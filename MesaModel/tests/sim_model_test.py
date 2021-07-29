@@ -8,7 +8,7 @@ def test_calculate_holiday_weeks():
     d2 = datetime.date(2021, 4, 11)  # Sunday 11th April, 10 weeks later
 
     # No holidays should give an empty list
-    # assert SimModel.calculate_holiday_weeks(d1, d2, 0, 1) == []
+    assert SimModel.calculate_holiday_weeks(d1, d2, 0, 1) == []
     # 70 day period = 10 weeks
     # 1 holiday should be around week 5
     # 1 week holiday, terms would be weeks 0-4 and 6-9

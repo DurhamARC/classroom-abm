@@ -5,7 +5,6 @@ from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
-import numpy as np
 
 from .data_types import PupilLearningState
 from .Pupil import Pupil

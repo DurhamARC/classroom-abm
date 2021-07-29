@@ -123,7 +123,6 @@ class Pupil(Agent):
     def learn_in_school(self):
         params = self.model.model_params
 
-        # if self.model.is_school_time:
         if self.learning_state == PupilLearningState.GREEN:
             # Calculate proportion of increment that is due to cognitive
             # ability
