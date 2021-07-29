@@ -197,7 +197,8 @@ def run_model(
             },
         )
 
-        server.launch()
+        port = int(os.getenv("PORT", 4200))
+        server.launch(port=port, open_browser=False)
 
     else:
         print(f"BatchRunnerMP will use {n_processors} processors")
