@@ -118,3 +118,47 @@ at the moment this will just run the pipeline with three different numbers of pr
 
 Tests will run independently over as many nodes as SLURM allows adding an extra layer of
 'parallelism' to what was achieved with Mesa's BatchRunnerMP.
+
+#### Hamilton issues
+
+Hamilton login nodes automatically kill your processes when you log out, even if they are nohup'd. This is
+something that will be changed for Hamilton 8. It is problematic when using ReFrame because at
+a high level ReFrame's work flow is as follows:
+
+ 1) Setup a test
+ 2) Issue jobs to SLURM
+ 3) Wait until SLURM jobs complete
+ 4) Evaluate Sanity checks, perform postrun commands etc.
+
+Step (4) is important for us, we use it to collate results and check tests have executed 
+successfully. It can only take place if the ReFrame process is not cancelled during step 3.
+Further, terminating ReFrame during step 3 has the consequence of cancelling the SLURM jobs that
+are submitted under that  process. Given that our runs are long we need a strategy to ensure the
+ReFrame process is not killed during our runs, else we would have to ensure our live terminal
+session is sustained throughout the duration of our runs (impractical).
+
+The easiest solution to the problem of having an always open connection to hamilton is to use 
+the NCC cluster in Comp Sci. We run a tmux session on NCC's headnode, and in there have an 
+ssh session to hamilton. We have the following workflow:
+
+Access NCC through ssh (use Durham's VPN), begin a tmux session called abm-session 
+and tunnel into Hamilton:
+
+```
+ssh <user>@ncc1.clients.dur.ac.uk
+tmux new -s abm-session
+ssh <user>@hamilton.dur.ac.uk
+```
+
+Start ReFrame as described above and operate the tmux session with the following commands:
+
+```
+Ctrl-b + [									to scroll
+ctrl-b + d									to detach
+tmux attach-session -t abm-session   		to reattach
+```
+
+To kill the session once done:
+```
+tmux kill-session -t 0
+```
