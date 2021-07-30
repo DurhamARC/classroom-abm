@@ -47,7 +47,7 @@ from model.data_types import (
         float,
         float,
         float,
-        int,
+        float,
         float,
         float,
         float,
