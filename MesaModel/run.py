@@ -145,7 +145,7 @@ def run_model(
         canvas_grid = create_canvas_grid(12, 12)
         server = ModularServer(
             SimModel,
-            [canvas_grid, sim_element, sim_chart],
+            [sim_element, canvas_grid, sim_chart],
             "Classroom ABM",
             {
                 "all_data": all_data,
@@ -160,11 +160,25 @@ def run_model(
                 "class_id": UserSettableParameter(
                     "choice", "Class ID", value=class_ids[0], choices=class_ids
                 ),
-                "teacher_quality": UserSettableParameter(
+                "teacher_quality_mean": UserSettableParameter(
                     "slider", "Teaching quality mean", 1.0, 0.00, 5.0, 0.1
                 ),
-                "teacher_control": UserSettableParameter(
+                "teacher_quality_sd": UserSettableParameter(
+                    "slider", "Teaching quality standard deviation", 1.0, 0.00, 5.0, 0.1
+                ),
+                "teacher_control_mean": UserSettableParameter(
                     "slider", "Teaching control mean", 2.0, 0.00, 5.0, 0.1
+                ),
+                "teacher_control_sd": UserSettableParameter(
+                    "slider", "Teaching control standard_deviation", 2.0, 0.00, 5.0, 0.1
+                ),
+                "random_select": UserSettableParameter(
+                    "slider",
+                    "Mean for random number used at each step",
+                    6.0,
+                    0.00,
+                    10.0,
+                    1.0,
                 ),
             },
         )
