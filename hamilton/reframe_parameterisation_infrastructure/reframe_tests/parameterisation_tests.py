@@ -36,13 +36,11 @@ with open(OUTPUT_FILE, "w") as output:
 class Parameterisation(rfm.RunOnlyRegressionTest):
     def __init__(self, n_processors, test_id):
         if n_processors == 8:
-            self.time_limit = "1h45m"
+            self.time_limit = "1h45m" if "short" in os.environ["DATASET"] else "10h"
         elif n_processors == 16:
-            self.time_limit = "1h30m"
+            self.time_limit = "1h30m" if "short" in os.environ["DATASET"] else "9h"
         else:
-            # big dataset has taken 62 mins
-            # in testing with 24 cores
-            self.time_limit = "1h15m"
+            self.time_limit = "1h15m" if "short" in os.environ["DATASET"] else "8h15m"
 
         self.num_tasks = 1
         self.num_cpus_per_task = n_processors
