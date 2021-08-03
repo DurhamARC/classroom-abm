@@ -56,7 +56,11 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
 
         self.keep_files = [f"{execution_dir}/pupil_data_output_{test_id}.csv"]
 
-        self.prerun_cmds = [f"pushd {execution_dir}", "source activate classroom_abm"]
+        self.prerun_cmds = [
+            f"pushd {execution_dir}",
+            "rm -rf pupil_data_output_*.csv",  # prevent appending to previous data
+            "source activate classroom_abm",
+        ]
 
         self.executable = "python run_pipeline.py"
 
