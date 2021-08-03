@@ -33,7 +33,8 @@ class ModelParamType:
     school_learn_random_proportion: float
     conformity_factor: float
     degradation_factor: float
-    ticks_per_school_day: int
+    maths_ticks_mean: float
+    maths_ticks_sd: float
 
     # For test purposes
     ticks_per_home_day: int
@@ -52,7 +53,7 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     teacher_quality_sd=1.26,
     teacher_control_mean=2,
     teacher_control_sd=1.08,
-    random_select=2,
+    random_select=6,
     school_learn_factor=0.12,
     home_learn_factor=0.0043,
     school_learn_mean_divisor=800,
@@ -60,7 +61,8 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     school_learn_random_proportion=0.2,
     conformity_factor=0.999993,
     degradation_factor=0.08,
-    ticks_per_school_day=100,
+    maths_ticks_mean=150,
+    maths_ticks_sd=50,
     ticks_per_home_day=330,
     number_of_holidays=2,
     weeks_per_holiday=2,

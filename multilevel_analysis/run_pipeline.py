@@ -50,15 +50,18 @@ from model.data_types import (
         int,
         float,
         float,
-        int,
+        float,
+        float,
     ),
     default=dataclasses.astuple(DEFAULT_MODEL_PARAMS)[:-STATIC_PARAM_COUNT],
     help="""Space separated model params, e.g. 2 2 0.12 0.0043 800 ...
 
 Full parameter list (defined in data_type.ModelParamType) is:
 
-    teacher_quality: float
-    teacher_control: float
+    teacher_quality_mean: float
+    teacher_quality_sd: float
+    teacher_control_mean: float
+    teacher_control_sd: float
     random_select: float
     school_learn_factor: float
     home_learn_factor: float
@@ -67,12 +70,8 @@ Full parameter list (defined in data_type.ModelParamType) is:
     school_learn_random_proportion: float
     conformity_factor: float
     degradation_factor: float
-    ticks_per_school_day: int
-    ticks_per_home_day: int
-    number_of_holidays: int
-    weeks_per_holiday: int
-    group_size: int
-    group_by_ability: bool
+    maths_ticks_mean: float
+    maths_ticks_sd: float
 """,
 )
 @click.option(
