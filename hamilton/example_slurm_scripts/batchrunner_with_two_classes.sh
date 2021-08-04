@@ -1,14 +1,13 @@
 #!/bin/bash
 #SBATCH --nodes=1
 #SBATCH --ntasks 1
-#SBATCH --cpus-per-task 6
-#SBATCH --time=3:0:0
+#SBATCH --cpus-per-task 2
+#SBATCH --time=0:15:0
 #SBATCH -J run_mesa_with_batchrunner
 #SBATCH -o run_mesa_with_batchrunner.out
 #SBATCH -e run_mesa_with_batchrunner.err
-#SBATCH --exclusive
-# Run on Hamilton7's queue for distributed work
-#SBATCH -p par7.q
+# Run on test queue for distributed work
+#SBATCH -p test.q
 
 module purge
 module load miniconda2/4.1.11
@@ -26,4 +25,4 @@ pushd /ddn/home/$USER/classroom-abm/multilevel_analysis
 # the full dataset add -i ../classes_input/test_input.csv
 # If you do this set -p to 24 to exploit all of the cores
 # one of Hamilton's nodes.
-python run.py --all_classes --n-processors 6
+python run.py -a -i ../classes_input/test_input_2_classes.csv
