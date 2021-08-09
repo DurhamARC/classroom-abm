@@ -38,8 +38,11 @@ class Pupil(Agent):
         self.randomised_agent_attribute = 0
 
         neighbour_count = self.getNeighbourCount()[0]
-        self.min_neighbour_count_to_modify_state = min_neighbour_count_to_modify_state(
-            neighbour_count, group_size
+        self.yellow_state_change_threshold = min_neighbour_count_to_modify_state(
+            neighbour_count, 6, group_size
+        )
+        self.red_green_state_change_threshold = min_neighbour_count_to_modify_state(
+            neighbour_count, 2, group_size
         )
 
         # Create truncnorm generators for learning increments based on pupil's ability
@@ -92,7 +95,7 @@ class Pupil(Agent):
             # 3 neighbours or more are red
             # at random but more likely if the teaching quality is low
             if (
-                red_count > 2
+                red_count > self.red_green_state_change_threshold
                 and self.randomised_agent_attribute > self.model.teacher_quality
             ):
                 self.learning_state = PupilLearningState.YELLOW
@@ -114,11 +117,11 @@ class Pupil(Agent):
                 self.learning_state = PupilLearningState.GREEN
             # if patch is yellow change to red if min_neighbour_count_to_modify_state
             # (e.g. 6) neighbours or more are red
-            elif red_count >= self.min_neighbour_count_to_modify_state:
+            elif red_count >= self.yellow_state_change_threshold:
                 self.learning_state = PupilLearningState.RED
             # if patch is yellow change to green if min_neighbour_count_to_modify_state
             # (e.g. 6) neighbours or more are green
-            elif green_count >= self.min_neighbour_count_to_modify_state:
+            elif green_count >= self.yellow_state_change_threshold:
                 self.learning_state = PupilLearningState.GREEN
 
         elif self.learning_state == PupilLearningState.RED:
@@ -126,7 +129,7 @@ class Pupil(Agent):
             # - control is good at random
             # - 3 or more neighbours are green
             if (
-                green_count > 2
+                green_count > self.red_green_state_change_threshold
                 and self.randomised_agent_attribute < self.model.teacher_control
             ):
                 self.learning_state = PupilLearningState.YELLOW
