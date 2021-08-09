@@ -67,18 +67,25 @@ class SimModel(Model):
         self.class_data = self.data.get_class_data(self.class_id)
         self.class_size = len(self.class_data)
 
-        self.teacher_control = get_truncated_normal_value(
-            self.model_params.teacher_control_mean,
-            self.model_params.teacher_control_sd,
-            lower=0,
-            rng=self.rng,
-        )
-        self.teacher_quality = get_truncated_normal_value(
-            self.model_params.teacher_quality_mean,
-            self.model_params.teacher_quality_sd,
-            lower=0,
-            rng=self.rng,
-        )
+        if self.model_params.teacher_control_sd > 0:
+            self.teacher_control = get_truncated_normal_value(
+                self.model_params.teacher_control_mean,
+                self.model_params.teacher_control_sd,
+                lower=0,
+                rng=self.rng,
+            )
+        else:
+            self.teacher_control = self.model_params.teacher_control_mean
+
+        if self.model_params.teacher_quality_sd > 0:
+            self.teacher_quality = get_truncated_normal_value(
+                self.model_params.teacher_quality_mean,
+                self.model_params.teacher_quality_sd,
+                lower=0,
+                rng=self.rng,
+            )
+        else:
+            self.teacher_quality = self.model_params.teacher_quality_mean
 
         self.schedule = RandomActivation(self)
 
