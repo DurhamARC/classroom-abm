@@ -17,8 +17,9 @@ source activate classroom_abm
 
 pushd /ddn/home/$USER/classroom-abm/multilevel_analysis
 
-export LD_LIBRARY_PATH=/ddn/home/$USER/usr/lib64
-export MLNSCRIPT_PATH=/ddn/home/$USER/usr/bin/mlnscript
+# Change these paths to /ddn/home if that's where you installed mlwin
+export LD_LIBRARY_PATH=/ddn/data/$USER/usr/lib64
+export MLNSCRIPT_PATH=/ddn/data/$USER/usr/bin/mlnscript
 
 # prepend 'time' to the following command if doing
 # benchmarking work. Note: this runs all 6 classes in
