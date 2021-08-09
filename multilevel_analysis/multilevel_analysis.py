@@ -49,7 +49,9 @@ def run_rscript(script=None, scriptname=None, args=None):
     help="Output file path, relative to current working directory",
 )
 def run_mlm(real_data_file, simulated_data_file):
-    run_multilevel_analysis(real_data_file, simulated_data_file)
+    mse = run_multilevel_analysis(real_data_file, simulated_data_file)
+    if mse is not None:
+        click.echo(f"Mean squared error: {mse}")
 
 
 def run_multilevel_analysis(real_data_file, simulated_data_file):
@@ -75,5 +77,4 @@ def run_multilevel_analysis(real_data_file, simulated_data_file):
 
 
 if __name__ == "__main__":
-    mse = run_mlm()
-    print(f"Mean squared error: {mse}")
+    run_mlm()

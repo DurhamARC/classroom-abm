@@ -1,14 +1,26 @@
-from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
+from mesa.visualization.modules import CanvasGrid, ChartModule
+from mesa.visualization.ModularVisualization import VisualizationElement
 
 from model.data_types import PupilLearningState
 
 
-class simElement(TextElement):
+class RightPanelElement(VisualizationElement):
+    local_includes = ["model/RightPanelModule.js"]
+    js_code = "elements.push(new RightPanelModule());"
+
+
+class MonitorElemeent(RightPanelElement):
     def __init__(self):
         pass
 
     def render(self, model):
-        return
+        return f"""
+<h4 style="margin-top:0">Variable monitoring</h4>
+<table>
+    <tr><td style="padding: 5px;">Teacher quality</td><td style="padding: 5px;">{model.teacher_quality:.2f}</td></tr>
+    <tr><td style="padding: 5px;">Teacher control</td><td style="padding: 5px;">{model.teacher_control:.2f}</td></tr>
+</table>
+"""
 
 
 def simclass_draw(agent):
@@ -18,7 +30,14 @@ def simclass_draw(agent):
     if agent is None:
         return None
 
-    portrayal = {"Shape": "circle", "r": 0.8, "Filled": "true", "Layer": 0}
+    portrayal = {
+        "Shape": "circle",
+        "r": 0.8,
+        "Filled": "true",
+        "Layer": 0,
+        "text": round(agent.e_math, 1),
+        "text_color": "#000000",
+    }
     learning_state = agent.get_learning_state()
 
     if learning_state == PupilLearningState.RED:
@@ -44,7 +63,7 @@ def hist(model):
     Average.plot()
 
 
-sim_element = simElement()
+sim_element = MonitorElemeent()
 sim_chart = ChartModule(
     [
         {"Label": "Learning Students", "Color": "green"},
