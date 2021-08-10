@@ -59,17 +59,35 @@ def test_grid_size():
 
 
 def test_min_neighbour_count_to_modify_state():
+    # Threshold of 6
     # if 8 or more neighbours, group size does not matter
-    assert utils.min_neighbour_count_to_modify_state(8, 1) == 6
-    assert utils.min_neighbour_count_to_modify_state(8, 100) == 6
-    assert utils.min_neighbour_count_to_modify_state(80, 1) == 6
-    assert utils.min_neighbour_count_to_modify_state(80, 100) == 6
+    assert utils.min_neighbour_count_to_modify_state(8, 6, 1) == 6
+    assert utils.min_neighbour_count_to_modify_state(8, 6, 100) == 6
+    assert utils.min_neighbour_count_to_modify_state(80, 6, 1) == 6
+    assert utils.min_neighbour_count_to_modify_state(80, 6, 100) == 6
 
     # otherwise it depends on group size
-    assert utils.min_neighbour_count_to_modify_state(1, 2) == 1
-    assert utils.min_neighbour_count_to_modify_state(2, 3) == 2
-    assert utils.min_neighbour_count_to_modify_state(3, 4) == 3
-    assert utils.min_neighbour_count_to_modify_state(4, 5) == 3
-    assert utils.min_neighbour_count_to_modify_state(5, 6) == 4
-    assert utils.min_neighbour_count_to_modify_state(6, 7) == 5
-    assert utils.min_neighbour_count_to_modify_state(7, 8) == 6
+    assert utils.min_neighbour_count_to_modify_state(1, 6, 2) == 1
+    assert utils.min_neighbour_count_to_modify_state(2, 6, 3) == 2
+    assert utils.min_neighbour_count_to_modify_state(3, 6, 4) == 3
+    assert utils.min_neighbour_count_to_modify_state(4, 6, 5) == 3
+    assert utils.min_neighbour_count_to_modify_state(5, 6, 6) == 4
+    assert utils.min_neighbour_count_to_modify_state(6, 6, 7) == 5
+    assert utils.min_neighbour_count_to_modify_state(7, 6, 8) == 6
+
+    # Threshold of 2
+    # if 8 or more neighbours, group size does not matter
+    assert utils.min_neighbour_count_to_modify_state(8, 2, 1) == 2
+    assert utils.min_neighbour_count_to_modify_state(8, 2, 100) == 2
+    assert utils.min_neighbour_count_to_modify_state(80, 2, 1) == 2
+    assert utils.min_neighbour_count_to_modify_state(80, 2, 100) == 2
+
+    # otherwise it depends on group size - for a low threshold we
+    # should only reach the threshold with groups of 8
+    assert utils.min_neighbour_count_to_modify_state(1, 2, 2) == 1
+    assert utils.min_neighbour_count_to_modify_state(2, 2, 3) == 1
+    assert utils.min_neighbour_count_to_modify_state(3, 2, 4) == 1
+    assert utils.min_neighbour_count_to_modify_state(4, 2, 5) == 1
+    assert utils.min_neighbour_count_to_modify_state(5, 2, 6) == 1
+    assert utils.min_neighbour_count_to_modify_state(6, 2, 7) == 1
+    assert utils.min_neighbour_count_to_modify_state(7, 2, 8) == 2
