@@ -10,14 +10,8 @@ from mesa.time import RandomActivation
 
 from .data_types import PupilLearningState, ModelParamType
 from .Pupil import Pupil
-from .utils import (
-    compute_ave,
-    get_num_disruptors,
-    get_num_learning,
-    get_grid_size,
-    get_truncated_normal_value,
-    get_truncated_normal_generator,
-)
+from .truncated_normal_generator import TruncatedNormalGenerator
+from .utils import compute_ave, get_num_disruptors, get_num_learning, get_grid_size
 
 
 class SimModel(Model):
@@ -68,7 +62,7 @@ class SimModel(Model):
         self.class_size = len(self.class_data)
 
         if self.model_params.teacher_control_sd > 0:
-            self.teacher_control = get_truncated_normal_value(
+            self.teacher_control = TruncatedNormalGenerator.get_single_value(
                 self.model_params.teacher_control_mean,
                 self.model_params.teacher_control_sd,
                 lower=0,
@@ -78,7 +72,7 @@ class SimModel(Model):
             self.teacher_control = self.model_params.teacher_control_mean
 
         if self.model_params.teacher_quality_sd > 0:
-            self.teacher_quality = get_truncated_normal_value(
+            self.teacher_quality = TruncatedNormalGenerator.get_single_value(
                 self.model_params.teacher_quality_mean,
                 self.model_params.teacher_quality_sd,
                 lower=0,
@@ -95,9 +89,10 @@ class SimModel(Model):
         self.start_date = datetime.date(2021, 9, 1)
         self.current_date = self.start_date
         self.end_date = datetime.date(2022, 7, 16)
+        self.total_days = (self.end_date - self.start_date).days
 
         self.ticks_per_school_day = round(
-            get_truncated_normal_value(
+            TruncatedNormalGenerator.get_single_value(
                 self.model_params.maths_ticks_mean,
                 self.model_params.maths_ticks_sd,
                 10,
@@ -112,14 +107,22 @@ class SimModel(Model):
             self.model_params.weeks_per_holiday,
         )
 
-        # Create truncnorm generators for school and home learning random increments
-        self.school_learning_random_gen = get_truncated_normal_generator(
+        # Create truncnorm generators for school and home learning random
+        # increments
+        # Use batch sizes as total days * class_size * ticks per day
+        # (overestimate to ensure we only generate values once)
+        batch_multiplier = self.total_days * self.class_size
+        self.school_learning_random_gen = TruncatedNormalGenerator(
             5 / self.model_params.school_learn_mean_divisor,
             self.model_params.school_learn_sd,
             lower=0,
+            batch_size=self.ticks_per_school_day * batch_multiplier,
         )
-        self.home_learning_random_gen = get_truncated_normal_generator(
-            5 / 2000, 0.08, lower=0
+        self.home_learning_random_gen = TruncatedNormalGenerator(
+            5 / 2000,
+            0.08,
+            lower=0,
+            batch_size=self.model_params.ticks_per_home_day * batch_multiplier,
         )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
@@ -301,3 +304,5 @@ class SimModel(Model):
             self.output_data_writer.write_data(
                 agent_data, self.class_id, self.class_size
             )
+            self.home_learning_random_gen = None
+            self.school_learning_random_gen = None
