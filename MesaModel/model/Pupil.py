@@ -1,13 +1,8 @@
-import statistics
-
 from mesa import Agent
 
 from .data_types import PupilLearningState
-from .utils import (
-    min_neighbour_count_to_modify_state,
-    get_truncated_normal_generator,
-    get_truncated_normal_value_from_generator,
-)
+from .truncated_normal_generator import TruncatedNormalGenerator
+from .utils import min_neighbour_count_to_modify_state
 
 
 class Pupil(Agent):
@@ -46,13 +41,18 @@ class Pupil(Agent):
         )
 
         # Create truncnorm generators for learning increments based on pupil's ability
-        self.school_learning_ability_gen = get_truncated_normal_generator(
+        self.school_learning_ability_random_gen = TruncatedNormalGenerator(
             (5 + self.ability) / self.model.model_params.school_learn_mean_divisor,
             self.model.model_params.school_learn_sd,
             lower=0,
+            batch_size=self.model.total_days * self.model.ticks_per_school_day,
         )
-        self.home_learning_ability_gen = get_truncated_normal_generator(
-            (5 + self.ability) / 2000, 0.08, lower=0
+        self.home_learning_ability_random_gen = TruncatedNormalGenerator(
+            (5 + self.ability) / 2000,
+            0.08,
+            lower=0,
+            batch_size=self.model.total_days
+            * self.model.model_params.ticks_per_home_day,
         )
 
     def getNeighbourCount(self):
@@ -152,18 +152,15 @@ class Pupil(Agent):
             # values are in range [-2.5, 4.3]
             ability_increment = (
                 1 - params.school_learn_random_proportion
-            ) * get_truncated_normal_value_from_generator(
-                self.school_learning_ability_gen, self.model.rng
-            )
+            ) * self.school_learning_ability_random_gen.get_value()
+
             # This is the amount of learning as a random increment to go
             # alongside the amount related to ability. It follows the same
             # process as ability_increment but replaces ability with a constant 5
             # (unmodified by ability)
             random_increment = (
                 params.school_learn_random_proportion
-                * get_truncated_normal_value_from_generator(
-                    self.model.school_learning_random_gen, self.model.rng
-                )
+                * self.model.school_learning_random_gen.get_value()
             )
             self.e_math += params.school_learn_factor * (
                 ability_increment + random_increment
@@ -185,12 +182,8 @@ class Pupil(Agent):
             params.home_learn_factor
             * ((6 - self.deprivation) / 3) ** 0.01
             * (
-                get_truncated_normal_value_from_generator(
-                    self.home_learning_ability_gen, self.model.rng
-                )
-                + get_truncated_normal_value_from_generator(
-                    self.model.home_learning_random_gen, self.model.rng
-                )
+                self.home_learning_ability_random_gen.get_value()
+                + self.model.home_learning_random_gen.get_value()
             )
         )
 

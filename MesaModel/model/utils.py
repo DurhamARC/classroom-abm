@@ -66,36 +66,3 @@ def min_neighbour_count_to_modify_state(n_neighbours, default_threshold, group_s
     # otherwise we use the same proportion but round down so e.g. only 1 in a
     # pair will change behaviour
     return max(1, math.floor(group_size * default_threshold / 8))
-
-
-def get_truncated_normal_generator(mean, sd, lower=None, upper=None):
-    # Return a numpy.random.Generator for a truncated normal distribution with
-    # the given mean  and standard deviation, and capped by the given lower and
-    # upper limits, if given, or by the mean +/- 3 times the standard
-    # deviation if the limits are not specified
-    if lower is None:
-        lower = mean - 3 * sd
-    if upper is None:
-        upper = mean + 3 * sd
-
-    return stats.truncnorm((lower - mean) / sd, (upper - mean) / sd, loc=mean, scale=sd)
-
-
-def get_truncated_normal_value_from_generator(tn_gen, rng=None):
-    # Return a single value from the given generator
-    return tn_gen.rvs(1, random_state=rng)[0]
-
-
-def get_truncated_normal_value(mean, sd, lower=None, upper=None, rng=None):
-    # Return a random number using a truncated normal distribution with the
-    # given mean  and standard deviation, and capped by the given lower and
-    # upper limits, if given, or by the mean +/- 3 times the standard
-    # deviation if the limits are not specified.
-    # This can be used instead of a normal distribution in cases where e.g. you
-    # want to avoid using a negative value, or you need be sure the value will
-    # be in a particular range.
-    # Note that if getting multiple values using the same params it is better
-    # to use get_truncated_normal_generator once then
-    # get_truncated_normal_value_from_generator to get the values
-    generator = get_truncated_normal_generator(mean, sd, lower, upper)
-    return get_truncated_normal_value_from_generator(generator, rng)
