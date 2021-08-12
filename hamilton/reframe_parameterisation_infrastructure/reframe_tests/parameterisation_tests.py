@@ -58,7 +58,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
 
         self.prerun_cmds = [
             f"pushd {execution_dir}",
-            "rm -rf pupil_data_output_*.csv",  # prevent appending to previous data
+            f"rm -rf pupil_data_output_{test_id}.csv",  # prevent appending to previous data
             "source activate classroom_abm",
         ]
 
