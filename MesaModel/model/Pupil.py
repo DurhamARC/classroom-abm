@@ -96,7 +96,7 @@ class Pupil(Agent):
             # at random but more likely if the teaching quality is low
             if (
                 red_count > self.red_green_state_change_threshold
-                and self.randomised_agent_attribute > self.model.teacher_quality
+                or self.randomised_agent_attribute > self.model.teacher_quality
             ):
                 self.learning_state = PupilLearningState.YELLOW
 
@@ -130,7 +130,7 @@ class Pupil(Agent):
             # - 3 or more neighbours are green
             if (
                 green_count > self.red_green_state_change_threshold
-                and self.randomised_agent_attribute < self.model.teacher_control
+                or self.randomised_agent_attribute < self.model.teacher_control
             ):
                 self.learning_state = PupilLearningState.YELLOW
 
