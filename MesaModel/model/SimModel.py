@@ -319,6 +319,8 @@ class SimModel(Model):
                 agent_data, self.class_id, self.class_size
             )
             logger.debug("Written to output file")
+            self.agent_datacollector = None
+            self.model_datacollector = None
             self.home_learning_random_gen = None
             self.school_learning_random_gen = None
             logger.info("Completed run for class %s", self.class_id)
