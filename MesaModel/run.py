@@ -214,15 +214,6 @@ def run_model(
             nr_processes=n_processors,
             iterations=1,
             max_steps=1000000,
-            agent_reporters={
-                "student_id": "student_id",
-                "end_maths": "e_math",
-                "start_maths": "s_math",
-                "Ability": "ability",
-                "Inattentiveness": "inattentiveness",
-                "hyper_impulsive": "hyper_impulsive",
-                "Deprivation": "deprivation",
-            },
         )
 
         batch_run.run_all()
