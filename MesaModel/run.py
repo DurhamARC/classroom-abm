@@ -161,13 +161,13 @@ def run_model(
                     "choice", "Class ID", value=class_ids[0], choices=class_ids
                 ),
                 "teacher_quality_mean": UserSettableParameter(
-                    "slider", "Teaching quality mean", 1.0, 0.00, 5.0, 0.1
+                    "slider", "Teaching quality mean", 1.0, 1.00, 5.0, 0.1
                 ),
                 "teacher_quality_sd": UserSettableParameter(
                     "slider", "Teaching quality standard deviation", 1.0, 0.00, 5.0, 0.1
                 ),
                 "teacher_control_mean": UserSettableParameter(
-                    "slider", "Teaching control mean", 2.0, 0.00, 5.0, 0.1
+                    "slider", "Teaching control mean", 2.0, 1.00, 5.0, 0.1
                 ),
                 "teacher_control_sd": UserSettableParameter(
                     "slider", "Teaching control standard_deviation", 2.0, 0.00, 5.0, 0.1
