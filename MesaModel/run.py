@@ -155,7 +155,8 @@ def run_model(
                 "canvas_grid": canvas_grid,
                 "instructions": UserSettableParameter(
                     "static_text",
-                    value="Modify the parameters below then click Reset to update the model.",
+                    value="Modify the parameters below then click Reset to update the model."
+                    " Setting 'Frames Per Second' to 0 runs the model at maximum speed",
                 ),
                 "class_id": UserSettableParameter(
                     "choice", "Class ID", value=class_ids[0], choices=class_ids
