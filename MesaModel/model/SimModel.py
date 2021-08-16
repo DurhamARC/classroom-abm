@@ -312,6 +312,14 @@ class SimModel(Model):
         if self.current_date > self.end_date or self.running == False:
             logger.debug("Finished run; collecting data")
             self.running = False
+
+            # Remove tngs
+            self.school_learning_random_gen = None
+            self.home_learning_random_gen = None
+            for pupil in self.schedule.agents:
+                pupil.school_learning_ability_random_gen = None
+                pupil.home_learning_ability_random_gen = None
+
             self.agent_datacollector.collect(self)
             agent_data = self.agent_datacollector.get_agent_vars_dataframe()
             logger.debug("Got agent data")
