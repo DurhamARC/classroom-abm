@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import logging
 import math
 
 import numpy as np
@@ -12,6 +13,8 @@ from .data_types import PupilLearningState, ModelParamType
 from .Pupil import Pupil
 from .truncated_normal_generator import TruncatedNormalGenerator
 from .utils import compute_ave, get_num_disruptors, get_num_learning, get_grid_size
+
+logger = logging.getLogger(__name__)
 
 
 class SimModel(Model):
@@ -35,6 +38,8 @@ class SimModel(Model):
             self.rng = np.random.default_rng()
             if class_id:
                 self.class_id = class_id
+
+        logger.info("Modelling class %s", self.class_id)
 
         self.model_params = model_params
         self.write_file = False
@@ -81,6 +86,12 @@ class SimModel(Model):
         else:
             self.teacher_quality = self.model_params.teacher_quality_mean
 
+        logger.debug(
+            "Teacher control: %s, teacher quality %s",
+            self.teacher_control,
+            self.teacher_quality,
+        )
+
         self.schedule = RandomActivation(self)
 
         # Calculate steps per day and holidays
@@ -99,6 +110,7 @@ class SimModel(Model):
                 300,
             )
         )
+        logger.debug("%s ticks per school day", self.ticks_per_school_day)
 
         self.holiday_week_numbers = self.calculate_holiday_weeks(
             self.start_date,
@@ -298,11 +310,15 @@ class SimModel(Model):
         self.mean_maths = compute_ave(self)
 
         if self.current_date > self.end_date or self.running == False:
+            logger.debug("Finished run; collecting data")
             self.running = False
             self.agent_datacollector.collect(self)
             agent_data = self.agent_datacollector.get_agent_vars_dataframe()
+            logger.debug("Got agent data")
             self.output_data_writer.write_data(
                 agent_data, self.class_id, self.class_size
             )
+            logger.debug("Written to output file")
             self.home_learning_random_gen = None
             self.school_learning_random_gen = None
+            logger.info("Completed run for class %s", self.class_id)

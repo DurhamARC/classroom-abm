@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import sys
 
@@ -13,6 +14,18 @@ from model.input_data import InputData
 from model.output_data import OutputDataWriter
 from model.SimModel import SimModel
 from server import create_canvas_grid, sim_element, sim_chart
+
+# Set up logging
+loglevel = os.getenv("CLASSROOM_ABM_LOG_LEVEL", "INFO")
+numeric_level = getattr(logging, loglevel.upper(), None)
+if not isinstance(numeric_level, int):
+    raise ValueError("Invalid log level: %s" % loglevel)
+logfile = os.getenv("CLASSROOM_ABM_LOG_FILE")
+logging.basicConfig(
+    format="[%(asctime)s: %(levelname)s/%(processName)s %(name)s] %(message)s",
+    level=numeric_level,
+    filename=logfile,
+)
 
 
 @click.command()
@@ -112,7 +125,7 @@ def run_model(
 
     # Get data first to determine grid size
     model_initial_state = ModelState(0, 0, 0, 0, 0)
-    click.echo(f"Running on class {class_ids}")
+    logging.info("Running on classes: %s", ", ".join([str(i) for i in class_ids]))
 
     if not model_params:
         model_params = DEFAULT_MODEL_PARAMS

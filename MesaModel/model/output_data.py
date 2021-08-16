@@ -1,7 +1,10 @@
+import logging
 import os
 
 import pandas as pd
 from multiprocessing import Lock
+
+logger = logging.getLogger(__name__)
 
 mutex = Lock()
 
@@ -22,6 +25,7 @@ class OutputDataWriter:
                 "end_maths",
             ]
         )
+        logger.debug("Finished init, output_filepath: %s", self.output_filepath)
 
     def write_data(self, agent_df, class_id, class_size):
         # Add class id and size into each row of data frame
@@ -35,10 +39,14 @@ class OutputDataWriter:
         self.data = self.data.append(agent_df)
 
         # Mutex is for parallel batchrunner
+        logger.debug("Getting mutex")
         with mutex:
+            logger.debug("Got mutex")
             if not os.path.exists(self.output_filepath):
+                logger.debug("Creating new file")
                 self.data.to_csv(self.output_filepath, index=False, mode="a")
             else:
+                logger.debug("Appending to existing file")
                 self.data.to_csv(
                     self.output_filepath, index=False, mode="a", header=False
                 )
