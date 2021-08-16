@@ -12,19 +12,17 @@ mutex = Lock()
 class OutputDataWriter:
     def __init__(self, output_filepath):
         self.output_filepath = output_filepath
-        self.data = pd.DataFrame(
-            columns=[
-                "start_maths",
-                "student_id",
-                "class_id",
-                "N_in_class",
-                "Ability",
-                "Inattentiveness",
-                "hyper_impulsive",
-                "Deprivation",
-                "end_maths",
-            ]
-        )
+        self.columns = [
+            "start_maths",
+            "student_id",
+            "class_id",
+            "N_in_class",
+            "Ability",
+            "Inattentiveness",
+            "hyper_impulsive",
+            "Deprivation",
+            "end_maths",
+        ]
         logger.debug("Finished init, output_filepath: %s", self.output_filepath)
 
     def write_data(self, agent_df, class_id, class_size):
@@ -33,10 +31,7 @@ class OutputDataWriter:
         agent_df["N_in_class"] = class_size
 
         # Reorder columns to match our data
-        agent_df = agent_df[self.data.columns]
-
-        # Append to data frame
-        self.data = self.data.append(agent_df)
+        agent_df = agent_df[self.columns]
 
         # Mutex is for parallel batchrunner
         logger.debug("Getting mutex")
@@ -44,9 +39,9 @@ class OutputDataWriter:
             logger.debug("Got mutex")
             if not os.path.exists(self.output_filepath):
                 logger.debug("Creating new file")
-                self.data.to_csv(self.output_filepath, index=False, mode="a")
+                agent_df.to_csv(self.output_filepath, index=False, mode="a")
             else:
                 logger.debug("Appending to existing file")
-                self.data.to_csv(
+                agent_df.to_csv(
                     self.output_filepath, index=False, mode="a", header=False
                 )
