@@ -59,6 +59,8 @@ Options:
   --help                        Show this message and exit.
 ```
 
+A note on webserver mode: when using the webserver mode, a slider is visible that allows users to specify the speed of the model in frames per second. This can be set to a maximum value of 20. Mesa does not offer the facility to increase this range. However, to run the model at maximum speed, users can set the value of frames per second to 0. Mesa interprets this as an instruction to run the model as fast as possible.
+
 To run the model with the full pipeline (inlcuding multilevel analysis) see [below](###Running-the-full-pipeline).
 
 ### Contributing to the mesa model:
