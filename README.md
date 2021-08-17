@@ -59,9 +59,24 @@ Options:
   --help                        Show this message and exit.
 ```
 
+Logging can be configured by two environment variables, `CLASSROOM_ABM_LOG_LEVEL` and `CLASSROOM_ABM_LOG_FILE`. By
+default, logging is set to level `INFO` and is output to `stderr`.
+
+To change the log level (e.g. to `DEBUG` for more information):
+
+```bash
+export CLASSROOM_ABM_LOG_LEVEL=DEBUG
+```
+
+To output the logs to a file (useful because the threads spawned by `BatchRunner` won't write to `stderr`):
+
+```bash
+export CLASSROOM_ABM_LOG_FILE='mylogfile.log'
+```
+
 A note on webserver mode: when using the webserver mode, a slider is visible that allows users to specify the speed of the model in frames per second. This can be set to a maximum value of 20. Mesa does not offer the facility to increase this range. However, to run the model at maximum speed, users can set the value of frames per second to 0. Mesa interprets this as an instruction to run the model as fast as possible.
 
-To run the model with the full pipeline (inlcuding multilevel analysis) see [below](###Running-the-full-pipeline).
+To run the model with the full pipeline (including multilevel analysis) see [below](###Running-the-full-pipeline).
 
 ### Contributing to the mesa model:
 

@@ -1,5 +1,9 @@
+import logging
+
 import numpy as np
 from scipy import stats
+
+logger = logging.getLogger(__name__)
 
 
 class TruncatedNormalGenerator:
@@ -27,6 +31,7 @@ class TruncatedNormalGenerator:
         self._generate_values()
 
     def _generate_values(self):
+        logger.debug("Generating new values, batch size: %s", self.batch_size)
         self.values = self.tn_gen.rvs(self.batch_size, random_state=self.rng)
         self.iterator = np.nditer(self.values)
 
