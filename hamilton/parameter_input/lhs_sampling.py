@@ -81,7 +81,7 @@ def cli(num_param_sets, output_file):
 
             csv_file.writerow(
                 [
-                    test_id,
+                    test_id + 1,
                     *rounded_params,
                 ]
             )
