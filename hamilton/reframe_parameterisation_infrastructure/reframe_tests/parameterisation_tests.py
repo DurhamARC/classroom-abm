@@ -28,13 +28,14 @@ with open(OUTPUT_FILE, "w") as output:
 
 @rfm.parameterized_test(
     *(
-        [n_processors, test_id]
+        [n_processors, test_id, iteration]
         for n_processors in [24]  # 24 only relevant for par7.q
         for test_id in range(1, len(ROWS))
+        for iteration in [1, 2]  # set to [1] for just one iterations
     )
 )
 class Parameterisation(rfm.RunOnlyRegressionTest):
-    def __init__(self, n_processors, test_id):
+    def __init__(self, n_processors, test_id, iteration):
         if n_processors == 8:
             self.time_limit = "1h45m" if "short" in os.environ["DATASET"] else "3h"
         elif n_processors == 16:
@@ -54,11 +55,13 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "/ddn/home/" + os.environ["USER"] + "/classroom-abm/multilevel_analysis"
         )
 
-        self.keep_files = [f"{execution_dir}/pupil_data_output_{test_id}.csv"]
+        self.keep_files = [
+            f"{execution_dir}/pupil_data_output_{test_id}_{iteration}.csv"
+        ]
 
         self.prerun_cmds = [
             f"pushd {execution_dir}",
-            f"rm -rf pupil_data_output_{test_id}.csv",  # prevent appending to previous data
+            f"rm -rf pupil_data_output_{test_id}_{iteration}.csv",  # prevent appending to previous data
             "source activate classroom_abm",
         ]
 
@@ -71,7 +74,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "--input-file",
             os.environ["DATASET"],
             "--output-file",
-            f"pupil_data_output_{test_id}.csv",
+            f"pupil_data_output_{test_id}_{iteration}.csv",
             "--n-processors",
             f"{n_processors}",
             "--model-params",
