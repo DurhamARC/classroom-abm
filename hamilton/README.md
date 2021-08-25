@@ -119,6 +119,13 @@ at the moment this will just run the pipeline with three different numbers of pr
 Tests will run independently over as many nodes as SLURM allows adding an extra layer of
 'parallelism' to what was achieved with Mesa's BatchRunnerMP.
 
+By default, ReFrame only runs one repeat of each parameter set. To change this export the following 
+environment variable prior to calling ReFrame:
+
+```
+export NUM_REPEATS=<n>
+```
+
 #### Postprocessing
 
 We currently have a very simple postprocessing script that allows users to merge the MSE csvs produced
