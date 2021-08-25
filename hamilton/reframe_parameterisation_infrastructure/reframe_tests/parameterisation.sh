@@ -20,6 +20,13 @@ else
   echo "Using default parameter file $PARAMETER_FILE"
 fi
 
+if [ -n "$NUM_REPEATS" ]; then
+  echo "Each parameter set will be repeated $NUM_REPEATS times"
+else
+  export NUM_REPEATS=1
+  echo "Using default number of repeats: $NUM_REPEATS"
+fi
+
 source ../environ/env_hamilton.sh
 
 ~/reframe/bin/reframe \
