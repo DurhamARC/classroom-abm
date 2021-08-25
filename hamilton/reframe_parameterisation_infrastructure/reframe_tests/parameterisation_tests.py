@@ -32,7 +32,7 @@ with open(OUTPUT_FILE, "w") as output:
         for n_processors in [24]  # 24 only relevant for par7.q
         for test_id in range(1, len(ROWS))
         for iteration in [
-            i + 1 for i in range(os.environ["NUM_REPEATS"])
+            i + 1 for i in range(int(os.environ["NUM_REPEATS"]))
         ]  # set to [1] for just one iterations
     )
 )
