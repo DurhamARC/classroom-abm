@@ -119,6 +119,19 @@ at the moment this will just run the pipeline with three different numbers of pr
 Tests will run independently over as many nodes as SLURM allows adding an extra layer of
 'parallelism' to what was achieved with Mesa's BatchRunnerMP.
 
+#### Postprocessing
+
+We currently have a very simple postprocessing script that allows users to merge the MSE csvs produced
+by ReFrame's postrun command. Each time we trigger a ReFrame run over all our parameter sets we get
+one csv that maps parameter sets to MSEs so we offer the functionality to merge them and sort them in
+`mse_results_from_reframe/merge_repeats.py`. The outputs will be called `lowest_to_highest_mses.csv` and
+`merged_mses.csv` repectively and can be called on an arbitrary number of input csvs as follows:
+
+```
+python merge_repeats.py <csv1> <csv2> <csvN>
+```
+
+
 #### Hamilton issues
 
 Hamilton login nodes automatically kill your processes when you log out, even if they are nohup'd. This is
