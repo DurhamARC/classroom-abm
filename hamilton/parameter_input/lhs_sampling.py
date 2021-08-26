@@ -20,11 +20,7 @@ PARAM_DICT = {
     "teacher_control_sd": (1.0, 2.0, 1),
     "random_select": (0, 4, 1),  # not from Peter; range is a guess
     "school_learn_factor": (0.07, 0.11, 2),
-    "home_learn_factor": (
-        0.3,
-        0.5,
-        2,
-    ),  # Peter only gives this a single value of 0.0043
+    "home_learn_factor": (0.03, 0.05, 2),
     "school_learn_mean_divisor": (1000, 2500, 0),
     "school_learn_sd": (0.03, 0.05, 2),
     "school_learn_random_proportion": (0.1, 0.4, 2),
