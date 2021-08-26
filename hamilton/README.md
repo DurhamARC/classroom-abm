@@ -126,6 +126,9 @@ environment variable prior to calling ReFrame:
 export NUM_REPEATS=<n>
 ```
 
+Note: Hamilton accepts a maximum of 50 jobs from a single user at any time. So if 2 repeats are run for
+30 parameter sets, 10 will automatically fail.
+
 #### Postprocessing
 
 We currently have a very simple postprocessing script that allows users to merge the MSE csvs produced
