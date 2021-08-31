@@ -50,7 +50,7 @@ from model.data_types import (
         float,
         float,
         float,
-        int,
+        float,
         float,
     ),
     default=dataclasses.astuple(DEFAULT_MODEL_PARAMS)[:-STATIC_PARAM_COUNT],

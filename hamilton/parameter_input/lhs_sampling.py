@@ -16,21 +16,17 @@ from model.data_types import VARIABLE_PARAM_NAMES
 PARAM_DICT = {
     "teacher_quality_mean": (3.0, 4.0, 1),
     "teacher_quality_sd": (1.0, 2.0, 1),
-    "teacher_control_mean": (0.07, 0.11, 2),
+    "teacher_control_mean": (3.0, 4.0, 2),
     "teacher_control_sd": (1.0, 2.0, 1),
     "random_select": (0, 4, 1),  # not from Peter; range is a guess
     "school_learn_factor": (0.07, 0.11, 2),
-    "home_learn_factor": (
-        0.3,
-        0.5,
-        2,
-    ),  # Peter only gives this a single value of 0.0043
+    "home_learn_factor": (0.001, 0.03, 3),
     "school_learn_mean_divisor": (1000, 2500, 0),
     "school_learn_sd": (0.03, 0.05, 2),
     "school_learn_random_proportion": (0.1, 0.4, 2),
     "degradation_factor": (0.05, 0.1, 2),
     "conformity_factor": (0.999990, 0.999995, 6),
-    "maths_ticks_mean": (10, 330, 0),
+    "maths_ticks_mean": (150, 330, 0),
     "maths_ticks_sd": (10, 50, 0),
 }
 
@@ -81,7 +77,7 @@ def cli(num_param_sets, output_file):
 
             csv_file.writerow(
                 [
-                    test_id,
+                    test_id + 1,
                     *rounded_params,
                 ]
             )
