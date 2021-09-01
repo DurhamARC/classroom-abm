@@ -141,6 +141,15 @@ one csv that maps parameter sets to MSEs so we offer the functionality to merge 
 python merge_repeats.py <csv1> <csv2> <csvN>
 ```
 
+Additional scripts have been added to the `parameter_analysis` directory. These assume that the shared
+folder containing parameterisation results has been symlinked to the classroom_abm directory.
+
+`plot_correlations.py` runs a basic script over the results which creates scatter plots of each parameter
+against the mean squared error.
+
+`fetch_files.sh` copies the output files from Hamilton into the `parameter_analysis` directory and runs
+`merge_repeats.py` and `plot_correlations.py` on them. **NB it has not been thoroughly tested and may override
+files if you have multiple runs per day.**
 
 #### Hamilton issues
 
