@@ -22,7 +22,7 @@ PARAM_DICT = {
     "school_learn_factor": (0.02, 0.04, 3),
     "home_learn_factor": (0.0005, 0.0018, 5),
     "school_learn_mean_divisor": (500, 1000, 0),
-    "school_learn_sd": (75, 75, 0),
+    "school_learn_sd": (0.04, 0.04, 2),
     "school_learn_random_proportion": (0.1, 0.4, 2),
     "degradation_factor": (0.05, 0.1, 2),
     "conformity_factor": (0.999990, 0.999995, 6),
