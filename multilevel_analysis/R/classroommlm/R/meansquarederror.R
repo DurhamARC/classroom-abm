@@ -14,12 +14,14 @@
 #' @param mlwinpath the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')
 #' @return the mean squared error score
 #' @export
-classroom_mse <- function(real_data, simulated_data, mlwinpath) {
+classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix) {
   # Run models on real and simulated data
   real_null_model <- classroommlm::null_model(real_data, mlwinpath)
   real_full_model <- classroommlm::full_model(real_data, mlwinpath)
   sim_null_model <- classroommlm::null_model(simulated_data, mlwinpath)
+  write.csv(sim_null_model, paste(output_file_prefix, "_null_model.csv", sep=""), row.names = TRUE)
   sim_full_model <- classroommlm::full_model(simulated_data, mlwinpath)
+  write.csv(sim_full_model, paste(output_file_prefix, "_full_model.csv", sep=""), row.names = TRUE)
 
   # Get SDs from data
   real_sds <- c(sd(real_data$start_maths), sd(real_data$Inattentiveness),
