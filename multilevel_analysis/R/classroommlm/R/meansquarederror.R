@@ -12,6 +12,10 @@
 #' @param simulated_data a Data Frame containing the simulated data with headings:
 #'        start_maths,student_id,class_id,N_in_class,Ability,Inattentiveness,hyper_impulsive,Deprivation,end_maths)
 #' @param mlwinpath the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')
+#' @param output_file_prefix the path and file prefix to output the full and null models.
+#'        e.g. if passed '~/classroom_abm/classes_output/2021-09-06_output', will create files:
+#'        '~/classroom_abm/classes_output/2021-09-06_output_null_model.csv' and
+#'        '~/classroom_abm/classes_output/2021-09-06_output_full_model.csv'
 #' @return the mean squared error score
 #' @export
 classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix) {

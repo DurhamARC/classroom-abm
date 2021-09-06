@@ -4,7 +4,7 @@
 \alias{classroom_mse}
 \title{Calculate the mean squared error}
 \usage{
-classroom_mse(real_data, simulated_data, mlwinpath)
+classroom_mse(real_data, simulated_data, mlwinpath, output_file_prefix)
 }
 \arguments{
 \item{real_data}{a Data Frame containing the actual (real) data with headings:
@@ -14,6 +14,11 @@ start_maths,student_id,class_id,N_in_class,Ability,Inattentiveness,hyper_impulsi
 start_maths,student_id,class_id,N_in_class,Ability,Inattentiveness,hyper_impulsive,Deprivation,end_maths)}
 
 \item{mlwinpath}{the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')}
+
+\item{output_file_prefix}{the path and file prefix to output the full and null models.
+e.g. if passed '~/classroom_abm/classes_output/2021-09-06_output', will create files:
+'~/classroom_abm/classes_output/2021-09-06_output_null_model.csv' and
+'~/classroom_abm/classes_output/2021-09-06_output_full_model.csv'}
 }
 \value{
 the mean squared error score

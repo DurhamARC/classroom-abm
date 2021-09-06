@@ -1,14 +1,27 @@
 test_that("mse works", {
+  output_prefix <- file.path(getwd(),"test")
+  null_path <- paste(output_prefix, "_null_model.csv", sep="")
+  full_path <- paste(output_prefix, "_full_model.csv", sep="")
+  expect_false(file.exists(null_path))
+  expect_false(file.exists(full_path))
   # Mean squared error between real data and  itself should be 0
-  expect_equal(classroom_mse(pupil_data, pupil_data, mlnscript_path), 0)
+  expect_equal(classroom_mse(pupil_data, pupil_data, mlnscript_path, output_prefix), 0)
+
+  # Model outputs should be created
+  browser()
+  expect_true(file.exists(null_path))
+  expect_true(file.exists(full_path))
 
   # If we add 1 to each Maths score the mean squared error will increase
   pupil_data_amended <- transform(pupil_data, end_maths=end_maths+1)
-  expect_equal(classroom_mse(pupil_data, pupil_data_amended, mlnscript_path), 0.2)
+  expect_equal(classroom_mse(pupil_data, pupil_data_amended, mlnscript_path, output_prefix), 0.2)
 
   # If we add 10 to each Maths score the mean squared error will increase further
   pupil_data_amended <- transform(pupil_data, end_maths=end_maths+10)
-  expect_equal(classroom_mse(pupil_data, pupil_data_amended, mlnscript_path), 20)
+  expect_equal(classroom_mse(pupil_data, pupil_data_amended, mlnscript_path, output_prefix), 20)
+
+  file.remove(null_path)
+  file.remove(full_path)
 })
 
 test_that("scaling works as expected", {
