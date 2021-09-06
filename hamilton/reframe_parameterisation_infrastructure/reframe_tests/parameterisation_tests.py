@@ -57,7 +57,9 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "/ddn/home/" + os.environ["USER"] + "/classroom-abm/multilevel_analysis"
         )
 
-        self.keep_files = [f"{execution_dir}/pupil_data_output_{test_id}_{iteration}.*"]
+        self.keep_files = [
+            f"{execution_dir}/pupil_data_output_{test_id}_{iteration}*.csv"
+        ]
 
         self.prerun_cmds = [
             f"pushd {execution_dir}",
