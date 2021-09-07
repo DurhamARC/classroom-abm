@@ -95,6 +95,6 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
     def add_mse_to_csv(self):
         with mutex:
             with open(OUTPUT_FILE, "a") as output:
-                output.write(",".join(ROWS[self.test_id]) + ",")
+                output.write(self.test_id + "," + ",".join(ROWS[self.test_id]) + ",")
                 output.write(self.extract_mse().strip("\n"))
                 output.write("\n")
