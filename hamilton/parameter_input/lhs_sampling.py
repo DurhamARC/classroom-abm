@@ -49,9 +49,19 @@ P_ROUND = 2
     default="lhs_params.csv",
     help="Output file path, relative to current working directory",
 )
-def cli(num_param_sets, output_file):
+@click.option(
+    "--max-options-per-param",
+    "-m",
+    default=None,
+    type=click.IntRange(
+        1,
+    ),
+    help="Generate no more than m different values per param.",
+)
+def cli(num_param_sets, output_file, max_options_per_param):
     limits = []
     rounding = []
+    value_list = []
     for param_name in VARIABLE_PARAM_NAMES:
         try:
             param_range_data = PARAM_DICT[param_name]
@@ -61,6 +71,15 @@ def cli(num_param_sets, output_file):
 
         limits.append([param_range_data[P_START], param_range_data[P_END]])
         rounding.append(param_range_data[P_ROUND])
+
+        if max_options_per_param:
+            step = (param_range_data[P_END] - param_range_data[P_START]) / (
+                max_options_per_param - 1
+            )
+            values = []
+            for i in list(range(max_options_per_param)):
+                values.append(param_range_data[P_START] + i * step)
+            value_list.append(values)
 
     sampling = LHS(criterion="maximin", xlimits=np.array(limits), random_state=5)
 
@@ -73,7 +92,13 @@ def cli(num_param_sets, output_file):
             rounded_params = []
 
             for param_num, param in enumerate(param_set):
-                rounded_params.append(round(param, rounding[param_num]))
+                if max_options_per_param:
+                    # Find the value in the list closest to the suggested param
+                    value = min(value_list[param_num], key=lambda x: abs(x - param))
+                else:
+                    value = param
+
+                rounded_params.append(round(value, rounding[param_num]))
 
             csv_file.writerow(
                 [
