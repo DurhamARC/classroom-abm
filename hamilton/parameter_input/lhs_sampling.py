@@ -15,19 +15,19 @@ from model.data_types import VARIABLE_PARAM_NAMES
 
 PARAM_DICT = {
     "teacher_quality_mean": (3.0, 4.0, 1),
-    "teacher_quality_sd": (0.0, 0.4, 1),
-    "teacher_control_mean": (3.0, 4.0, 2),
-    "teacher_control_sd": (0.0, 0.4, 1),
+    "teacher_quality_sd": (0.0, 0.4, 2),
+    "teacher_control_mean": (3.0, 3.5, 2),
+    "teacher_control_sd": (0.0, 0.4, 2),
     "random_select": (0, 4, 1),  # not from Peter; range is a guess
     "school_learn_factor": (0.02, 0.038, 3),
-    "home_learn_factor": (0.0005, 0.0018, 5),
+    "home_learn_factor": (0.0005, 0.0012, 5),
     "school_learn_mean_divisor": (500, 1000, 0),
-    "school_learn_sd": (0.00, 0.04, 2),
+    "school_learn_sd": (0.00, 0.03, 3),
     "school_learn_random_proportion": (0.1, 0.4, 2),
-    "degradation_factor": (0.05, 0.1, 2),
+    "degradation_factor": (0.05, 0.1, 3),
     "conformity_factor": (0.999990, 0.999995, 6),
     "maths_ticks_mean": (150, 330, 0),
-    "maths_ticks_sd": (0, 9, 0),
+    "maths_ticks_sd": (0, 12, 0),
 }
 
 # Position indices to access tuples in the dict above:
