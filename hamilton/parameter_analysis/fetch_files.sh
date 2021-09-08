@@ -6,9 +6,9 @@ TIME_TO_FETCH=${TIME_TO_FETCH:-"*"}
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 pushd $SCRIPT_DIR/../../parameterisation_results > /dev/null
 
-# FIXME: avoid overwriting directory!
 DIR_PREFIX="${DATE_TO_FETCH}_part_"
-LAST_DIR=$((find $DIR_PREFIX* || echo "${DIR_PREFIX}0") | tail -1)
+LAST_DIR=$((find * -type d -regex ".*${DIR_PREFIX}[0-9][0-9][0-9]" || echo "${DIR_PREFIX}0") | tail -1)
+echo $LAST_DIR
 n=$((1+${LAST_DIR##$DIR_PREFIX}))
 NEW_DIR=$DIR_PREFIX$(printf "%03d" $n)
 mkdir $NEW_DIR
