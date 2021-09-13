@@ -7,8 +7,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 pushd $SCRIPT_DIR/../../parameterisation_results > /dev/null
 
 DIR_PREFIX="${DATE_TO_FETCH}_part_"
-LAST_DIR=$((find * -type d -regex ".*${DIR_PREFIX}[0-9][0-9][0-9]" || echo "${DIR_PREFIX}0") | tail -1)
-echo $LAST_DIR
+LAST_DIR=$((find * -type d -regex ".*${DIR_PREFIX}[0-9][0-9][0-9]") | tail -1)
+LAST_DIR=${LAST_DIR:-${DIR_PREFIX}0}
 n=$((1+${LAST_DIR##$DIR_PREFIX}))
 NEW_DIR=$DIR_PREFIX$(printf "%03d" $n)
 mkdir $NEW_DIR
