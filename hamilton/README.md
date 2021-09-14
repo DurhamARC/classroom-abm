@@ -163,12 +163,12 @@ e.g.
 To run (from its own directory):
 
 ```
-DATE=2021-09-13 TIME=141114 ./fetch_files.sh
+DATE_TO_FETCH=2021-09-13 TIME_TO_FETCH=141114 ./fetch_files.sh
 ```
 
-Note that you only need to set `DATE` to fetch a previous day's resuls, and `TIME` if you have done multiple
+Note that you only need to set `DATE_TO_FETCH` to fetch a previous day's resuls, and `TIME_TO_FETCH` if you have done multiple
 runs in one day (to avoid fetching multiple results from `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe`).
-If set, `TIME` should match the time in the filename inside that folder on Hamilton, e.g. if the file is `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe/mse_output_2021-09-07_144734.csv` then use `TIME=144734`.
+If set, `TIME_TO_FETCH` should match the time in the filename inside that folder on Hamilton, e.g. if the file is `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe/mse_output_2021-09-07_144734.csv` then use `TIME_TO_FETCH=144734`.
 
 **NB `fetch_files.sh` assumes only a single reframe run rather than multiple parts.**
 

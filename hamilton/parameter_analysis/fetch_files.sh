@@ -20,7 +20,7 @@ scp -r $USER@hamilton.dur.ac.uk:/ddn/data/${USER}/reframe_output/hamilton/multi_
 scp $USER@hamilton.dur.ac.uk:classroom-abm/hamilton/parameter_input/lhs_params.csv .
 
 DATA_DIR=`pwd`
-MSE_OUTPUT_FILE=`ls mse_output_${DATE_TO_FETCH}_${TIME_TO_FETCH}*.csv`
+MSE_OUTPUT_FILE=`ls mse_output_${DATE_TO_FETCH}_${TIME_TO_FETCH}.csv`
 
 python $SCRIPT_DIR/../mse_results_from_reframe/merge_repeats.py $DATA_DIR/$MSE_OUTPUT_FILE
 python $SCRIPT_DIR/plot_correlations.py $DATA_DIR "lowest_to_highest_mses.csv"
