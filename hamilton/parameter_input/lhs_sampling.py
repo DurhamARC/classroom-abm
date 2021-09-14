@@ -14,20 +14,20 @@ from model.data_types import VARIABLE_PARAM_NAMES
 #       {'param': (min,max,round)}
 
 PARAM_DICT = {
-    "teacher_quality_mean": (3.0, 4.0, 1),
-    "teacher_quality_sd": (0.0, 0.4, 2),
-    "teacher_control_mean": (3.15, 3.55, 2),
-    "teacher_control_sd": (0.0, 0.4, 2),
-    "random_select": (1, 4, 0),
-    "school_learn_factor": (0.021, 0.027, 4),
-    "home_learn_factor": (0.0005, 0.0012, 5),
-    "school_learn_mean_divisor": (500, 1000, 0),
-    "school_learn_sd": (0.00, 0.018, 3),
-    "school_learn_random_proportion": (0.1, 0.4, 2),
-    "degradation_factor": (0.055, 0.07, 3),
-    "conformity_factor": (0.999990, 0.999995, 6),
-    "maths_ticks_mean": (150, 330, 0),
-    "maths_ticks_sd": (0, 12, 0),
+    "teacher_quality_mean": (3.5, 4.0, 2),
+    "teacher_quality_sd": (0.0, 0.2, 2),
+    "teacher_control_mean": (2.9, 3.3, 2),
+    "teacher_control_sd": (0.2, 0.4, 2),
+    "random_select": (0.5, 2, 1),
+    "school_learn_factor": (0.027, 0.0309, 4),
+    "home_learn_factor": (0.0005, 0.00085, 5),
+    "school_learn_mean_divisor": (875, 1125, 0),
+    "school_learn_sd": (0.004, 0.009, 4),
+    "school_learn_random_proportion": (0.25, 0.4, 2),
+    "degradation_factor": (0.075, 0.1, 3),
+    "conformity_factor": (0.999990, 0.999993, 7),
+    "maths_ticks_mean": (240, 330, 0),
+    "maths_ticks_sd": (1, 6, 1),
 }
 
 # Position indices to access tuples in the dict above:
