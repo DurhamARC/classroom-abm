@@ -14,10 +14,8 @@ NEW_DIR=$DIR_PREFIX$(printf "%03d" $n)
 mkdir $NEW_DIR
 
 pushd $NEW_DIR > /dev/null
-scp $USER@hamilton.dur.ac.uk:classroom-abm/hamilton/mse_results_from_reframe/mse_output_${DATE_TO_FETCH}_${TIME_TO_FETCH}.csv .
-# FIXME: see if we can compress these files
-scp -r $USER@hamilton.dur.ac.uk:/ddn/data/${USER}/reframe_output/hamilton/multi_cpu_single_node/intel/Parameterisation_24_*_1 .
-scp $USER@hamilton.dur.ac.uk:classroom-abm/hamilton/parameter_input/lhs_params.csv .
+scp $USER@hamilton.dur.ac.uk:classroom-abm/hamilton/mse_results_from_reframe/mse_output_${DATE_TO_FETCH}_${TIME_TO_FETCH}.zip .
+unzip mse_output_${DATE_TO_FETCH}_${TIME_TO_FETCH}.zip
 
 DATA_DIR=`pwd`
 MSE_OUTPUT_FILE=`ls mse_output_${DATE_TO_FETCH}_${TIME_TO_FETCH}.csv`
