@@ -17,5 +17,5 @@ if __name__ == "__main__":
     else:
         x_vars = list(df.columns.values)[1:-1]
 
-    pp = sns.pairplot(data=df, kind="reg", y_vars=y_vars, x_vars=x_vars)
+    pp = sns.pairplot(data=df, kind="reg", y_vars=y_vars, x_vars=x_vars, diag_kind=None)
     pp.savefig(os.path.join(dir, "correlations.png"))
