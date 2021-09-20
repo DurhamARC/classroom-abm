@@ -1,22 +1,65 @@
 # Running on Hamilton
 
-## Running the multilevel analysis on the Hamilton supercomputer
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-Issue the following commands:
+- [Running on Hamilton](#running-on-hamilton)
+	- [Installation](#installation)
+		- [Code checkout](#code-checkout)
+		- [Set up the conda environment](#set-up-the-conda-environment)
+		- [Multilevel analysis](#multilevel-analysis)
+		- [Reframe](#reframe)
+	- [Single runs](#single-runs)
+	- [Parameterisation](#parameterisation)
+		- [Generating parameters: Latin Hypercube Sampling](#generating-parameters-latin-hypercube-sampling)
+		- [Deploying automated parameterisation tests via Reframe](#deploying-automated-parameterisation-tests-via-reframe)
+		- [Quick setup](#quick-setup)
+		- [Postprocessing](#postprocessing)
+			- [fetch_files.sh](#fetchfilessh)
+			- [merge_repeats.py](#mergerepeatspy)
+			- [plot_correlations.py](#plotcorrelationspy)
+			- [merge_best_results.py](#mergebestresultspy)
+		- [Hamilton issues](#hamilton-issues)
+
+<!-- /TOC -->
+
+## Installation
+
+### Code checkout
+
+```
+git clone https://github.com/DurhamARC/classroom-abm.git
+```
+
+If you are modifying parameters on a branch, check out the branch using:
+
+```
+git checkout <branch_name>
+```
+
+### Set up the conda environment
 
 ```
 module purge
 module load miniconda2/4.1.11
-module load r/4.0.3
+conda create --name classroom_abm --file conda_locks/conda-linux-64.lock
 ```
 
-Activating the conda environment is slightly different:
+To activate the conda environment, use:
 
 ```
 source activate classroom_abm
 ```
 
-Then download MLwiN and mlnscript as described above, but be sure to download it for Centos 7. Use scp and put it in /ddn/data/<usr>. Then issue the following commands:
+
+### Multilevel analysis
+
+Issue the following commands:
+
+```
+module load r/4.0.3
+```
+
+Download MLwiN and mlnscript as described in the main [README](https://github.com/DurhamARC/classroom-abm/blob/master/README.md), but be sure to download it for Centos 7. Use scp from your own machine to put the file in `/ddn/data/<usr>`. Then issue the following commands:
 
 ```
 cd /ddn/data/$USER
@@ -26,6 +69,28 @@ export LD_LIBRARY_PATH=/ddn/data/$USER/usr/lib64
 ```
 
 Then build the classroommlm R package and run as described [here](https://github.com/DurhamARC/classroom-abm/blob/master/README.md)
+
+### Reframe
+
+We use [ReFrame](https://reframe-hpc.readthedocs.io/en/stable/index.html)
+to automate our parameterisation pipeline. The workflow assumes the following
+steps have been taken. To setup ReFrame enter your home directory and
+load python:
+
+```
+cd ~/
+module purge
+module load python/3.6.8
+```
+
+Then clone and install ReFrame:
+
+```
+git clone https://github.com/eth-cscs/reframe.git
+cd reframe
+./bootstrap.sh
+./bin/reframe -V
+```
 
 ## Single runs
 
@@ -40,6 +105,8 @@ If you do this set `-p` to 24 to exploit all of the cores
 one of Hamilton's par7.q nodes.
 
 ## Parameterisation
+
+See [Quick Setup](#quick-setup) for a quick way to set off a new run.
 
 ### Generating parameters: Latin Hypercube Sampling
 
@@ -81,32 +148,12 @@ output provided `-ns` is set to the same value.
 If you want to write your own parameter file then you can do so - remember to set `PARAMETER_FILE` accordingly
 prior to running ReFrame.
 
-### Deploying automated parameterisation tests
+### Deploying automated parameterisation tests via Reframe
 
-We use [ReFrame](https://reframe-hpc.readthedocs.io/en/stable/index.html)
-to automate our parameterisation pipeline. The workflow assumes the following
-steps have been taken. To setup ReFrame enter your home directory (we assume ReFrame
-is in the home directory) and load python:
+Navigate to the test directory, open a screen session and run:
 
 ```
-cd ~/
-module purge
-module load python/3.6.8
-```
-
-Then clone and install ReFrame:
-
-```
-git clone https://github.com/eth-cscs/reframe.git
-cd reframe
-./bootstrap.sh
-./bin/reframe -V
-```
-
-From there navigate to the test directory, open a screen session and run:
-
-```
-cd ../classroom-abm/hamilton/reframe_parameterisation_infrastructure/reframe_tests
+cd ~/classroom-abm/hamilton/reframe_parameterisation_infrastructure/reframe_tests
 screen
 ./parameterisation.sh --with-<small/big>-dataset
 ```
@@ -128,6 +175,15 @@ export NUM_REPEATS=<n>
 
 Note: Hamilton accepts a maximum of 50 jobs from a single user at any time. So if 2 repeats are run for
 30 parameter sets, 10 will automatically fail.
+
+
+### Quick setup
+
+The script `setup_new_run.sh` in the `hamilton` directory will generate and display the parameter files, and show you the commands to run to set off reframe.
+
+```
+./hamilton/setup_new_run.sh
+```
 
 ### Postprocessing
 
