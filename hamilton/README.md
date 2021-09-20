@@ -131,7 +131,29 @@ Note: Hamilton accepts a maximum of 50 jobs from a single user at any time. So i
 
 ### Postprocessing
 
-We currently have a very simple postprocessing script that allows users to merge the MSE csvs produced
+We currently have various postprocessing scripts that allow users to get results
+from Hamilton and do some sorting and very basic analysis.
+
+#### fetch_files.sh
+
+`fetch_files.sh` copies the output files from Hamilton into the `parameter_analysis` directory and runs
+`merge_repeats.py` and `plot_correlations.py` on them.
+
+To run (from its own directory):
+
+```
+DATE_TO_FETCH=2021-09-13 TIME_TO_FETCH=141114 ./fetch_files.sh
+```
+
+Note that you only need to set `DATE_TO_FETCH` to fetch a previous day's results, and `TIME_TO_FETCH` if you have done multiple
+runs in one day (to avoid fetching multiple results from `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe`).
+If set, `TIME_TO_FETCH` should match the time in the filenames inside that folder on Hamilton, e.g. if the file is `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe/mse_output_2021-09-07_144734.zip` then use `TIME_TO_FETCH=144734`.
+
+**NB `fetch_files.sh` assumes only a single reframe run rather than multiple parts.**
+
+#### merge_repeats.py
+
+`merge_repeats.py` merges the MSE csvs produced
 by ReFrame's postrun command. Each time we trigger a ReFrame run over all our parameter sets we get
 one csv that maps parameter sets to MSEs so we offer the functionality to merge them and sort them in
 `mse_results_from_reframe/merge_repeats.py`. The outputs will be called `lowest_to_highest_mses.csv` and
@@ -153,29 +175,19 @@ against the mean squared error. It accepts a directory and CSV filename as param
 e.g.
 
 ```
+python plot_correlations.py ../../parameterisation_results best_mses.csv
 ```
-
-#### fetch_files.sh
-
-`fetch_files.sh` copies the output files from Hamilton into the `parameter_analysis` directory and runs
-`merge_repeats.py` and `plot_correlations.py` on them.
-
-To run (from its own directory):
-
-```
-DATE_TO_FETCH=2021-09-13 TIME_TO_FETCH=141114 ./fetch_files.sh
-```
-
-Note that you only need to set `DATE_TO_FETCH` to fetch a previous day's resuls, and `TIME_TO_FETCH` if you have done multiple
-runs in one day (to avoid fetching multiple results from `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe`).
-If set, `TIME_TO_FETCH` should match the time in the filename inside that folder on Hamilton, e.g. if the file is `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe/mse_output_2021-09-07_144734.csv` then use `TIME_TO_FETCH=144734`.
-
-**NB `fetch_files.sh` assumes only a single reframe run rather than multiple parts.**
 
 #### merge_best_results.py
 
 `merge_best_results.py` gets the best results from the `parameter_analysis` folder and creates a CSV `best_mses.csv`
-containing all the parameter sets which gave MSE scores < 10.
+containing all the parameter sets which gave MSE scores < 3.5.
+
+To run (from its own directory):
+
+```
+python merge_best_results.py ../../parameterisation_results
+```
 
 ### Hamilton issues
 
