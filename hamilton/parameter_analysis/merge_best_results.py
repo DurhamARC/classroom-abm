@@ -12,7 +12,7 @@ if __name__ == "__main__":
             f = os.path.join(full_path, "lowest_to_highest_mses.csv")
             if os.path.isfile(f):
                 df = pd.read_csv(f, sep=",")
-                df = df.loc[(df["mean_squared_error"] < 10)]
+                df = df.loc[(df["mean_squared_error"] < 3.5)]
                 df["directory"] = d
                 dataframes.append(df)
             else:
