@@ -14,20 +14,20 @@ from model.data_types import VARIABLE_PARAM_NAMES
 #       {'param': (min,max,round)}
 
 PARAM_DICT = {
-    "teacher_quality_mean": (3.0, 4.0, 1),
-    "teacher_quality_sd": (1.0, 2.0, 1),
-    "teacher_control_mean": (3.0, 4.0, 2),
-    "teacher_control_sd": (1.0, 2.0, 1),
-    "random_select": (0, 4, 1),  # not from Peter; range is a guess
-    "school_learn_factor": (0.07, 0.11, 2),
-    "home_learn_factor": (0.001, 0.03, 3),
-    "school_learn_mean_divisor": (1000, 2500, 0),
-    "school_learn_sd": (0.03, 0.05, 2),
-    "school_learn_random_proportion": (0.1, 0.4, 2),
-    "degradation_factor": (0.05, 0.1, 2),
-    "conformity_factor": (0.999990, 0.999995, 6),
-    "maths_ticks_mean": (150, 330, 0),
-    "maths_ticks_sd": (10, 50, 0),
+    "teacher_quality_mean": (3.76, 3.84, 3),
+    "teacher_quality_sd": (0.065, 0.11, 3),
+    "teacher_control_mean": (2.95, 3.06, 2),
+    "teacher_control_sd": (0.28, 0.32, 3),
+    "random_select": (0.4, 0.95, 2),
+    "school_learn_factor": (0.0275, 0.0285, 5),
+    "home_learn_factor": (0.000675, 0.000685, 7),
+    "school_learn_mean_divisor": (975, 1025, 0),
+    "school_learn_sd": (0.0065, 0.0075, 5),
+    "school_learn_random_proportion": (0.31, 0.335, 4),
+    "degradation_factor": (0.0865, 0.0895, 3),
+    "conformity_factor": (0.9999909, 0.9999911, 9),
+    "maths_ticks_mean": (285, 300, 0),
+    "maths_ticks_sd": (2.25, 2.75, 2),
 }
 
 # Position indices to access tuples in the dict above:
@@ -49,9 +49,21 @@ P_ROUND = 2
     default="lhs_params.csv",
     help="Output file path, relative to current working directory",
 )
-def cli(num_param_sets, output_file):
+@click.option(
+    "--max-options-per-param",
+    "-m",
+    default=None,
+    type=click.IntRange(
+        1,
+    ),
+    help="""Generate no more than m different values per param. Creates a set of m distinct values within the range for
+each parameter, then rounds the values found by the maximin LHS sampler to the nearest value. Note that this means the
+output will not give a true maximin LHS sample.""",
+)
+def cli(num_param_sets, output_file, max_options_per_param):
     limits = []
     rounding = []
+    value_list = []
     for param_name in VARIABLE_PARAM_NAMES:
         try:
             param_range_data = PARAM_DICT[param_name]
@@ -61,6 +73,15 @@ def cli(num_param_sets, output_file):
 
         limits.append([param_range_data[P_START], param_range_data[P_END]])
         rounding.append(param_range_data[P_ROUND])
+
+        if max_options_per_param:
+            step = (param_range_data[P_END] - param_range_data[P_START]) / (
+                max_options_per_param - 1
+            )
+            values = []
+            for i in list(range(max_options_per_param)):
+                values.append(param_range_data[P_START] + i * step)
+            value_list.append(values)
 
     sampling = LHS(criterion="maximin", xlimits=np.array(limits), random_state=5)
 
@@ -73,7 +94,13 @@ def cli(num_param_sets, output_file):
             rounded_params = []
 
             for param_num, param in enumerate(param_set):
-                rounded_params.append(round(param, rounding[param_num]))
+                if max_options_per_param:
+                    # Find the value in the list closest to the suggested param
+                    value = min(value_list[param_num], key=lambda x: abs(x - param))
+                else:
+                    value = param
+
+                rounded_params.append(round(value, rounding[param_num]))
 
             csv_file.writerow(
                 [

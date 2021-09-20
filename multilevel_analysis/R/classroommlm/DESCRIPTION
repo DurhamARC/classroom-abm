@@ -1,7 +1,7 @@
 Package: classroommlm
 Type: Package
 Title: Classroom MultiLevel Modelling
-Version: 0.1.1
+Version: 0.1.2
 Author: Alison Clarke <alison.r.clarke@durham.ac.uk>
 Maintainer: Alison Clarke <alison.r.clarke@durham.ac.uk>
 Description: Creates a null and full model from a set of classroom data, and calculates and error score.
@@ -13,5 +13,6 @@ Imports:
     R2MLwiN (>= 0.8-7)
 RoxygenNote: 7.1.1
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    withr
 Config/testthat/edition: 3

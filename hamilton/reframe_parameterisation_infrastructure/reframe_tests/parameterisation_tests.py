@@ -23,7 +23,7 @@ with open(os.environ["PARAMETER_FILE"], "r") as f:
 
 OUTPUT_FILE = f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv"
 with open(OUTPUT_FILE, "w") as output:
-    output.write(",".join(ROWS[0]) + ",mean_squared_error\n")
+    output.write("test_id," + ",".join(ROWS[0]) + ",mean_squared_error\n")
 
 
 @rfm.parameterized_test(
@@ -58,7 +58,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         )
 
         self.keep_files = [
-            f"{execution_dir}/pupil_data_output_{test_id}_{iteration}.csv"
+            f"{execution_dir}/pupil_data_output_{test_id}_{iteration}*.csv"
         ]
 
         self.prerun_cmds = [
@@ -95,6 +95,6 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
     def add_mse_to_csv(self):
         with mutex:
             with open(OUTPUT_FILE, "a") as output:
-                output.write(",".join(ROWS[self.test_id]) + ",")
+                output.write(f"{self.test_id}," + ",".join(ROWS[self.test_id]) + ",")
                 output.write(self.extract_mse().strip("\n"))
                 output.write("\n")

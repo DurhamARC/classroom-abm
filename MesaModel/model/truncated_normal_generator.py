@@ -18,6 +18,10 @@ class TruncatedNormalGenerator:
     """
 
     def __init__(self, mean, sd, lower=None, upper=None, rng=None, batch_size=1000):
+        # Quick fix for 0 SD - just use a very small value
+        if sd == 0:
+            sd = 0.000001
+
         if lower is None:
             lower = mean - 3 * sd
         if upper is None:
