@@ -56,7 +56,9 @@ P_ROUND = 2
     type=click.IntRange(
         1,
     ),
-    help="Generate no more than m different values per param.",
+    help="""Generate no more than m different values per param. Creates a set of m distinct values within the range for
+each parameter, then rounds the values found by the maximin LHS sampler to the nearest value. Note that this means the
+output will not give a true maximin LHS sample.""",
 )
 def cli(num_param_sets, output_file, max_options_per_param):
     limits = []
