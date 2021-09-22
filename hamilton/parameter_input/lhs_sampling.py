@@ -14,20 +14,20 @@ from model.data_types import VARIABLE_PARAM_NAMES
 #       {'param': (min,max,round)}
 
 PARAM_DICT = {
-    "teacher_quality_mean": (3.79, 3.85, 3),
-    "teacher_quality_sd": (0.07, 0.105, 3),
-    "teacher_control_mean": (2.975, 3.025, 3),
-    "teacher_control_sd": (0.3, 0.313, 4),
-    "random_select": (0.35, 0.5, 3),
-    "school_learn_factor": (0.0271, 0.0285, 5),
+    "teacher_quality_mean": (3.8, 3.85, 3),
+    "teacher_quality_sd": (0.07, 0.096, 4),
+    "teacher_control_mean": (2.98, 3.02, 3),
+    "teacher_control_sd": (0.3, 0.312, 4),
+    "random_select": (0.4, 0.48, 3),
+    "school_learn_factor": (0.0272, 0.0281, 5),
     "home_learn_factor": (0.000677, 0.000685, 7),
-    "school_learn_mean_divisor": (975, 995, 1),
+    "school_learn_mean_divisor": (975, 992, 1),
     "school_learn_sd": (0.0068, 0.0072, 5),
     "school_learn_random_proportion": (0.31, 0.32, 4),
-    "degradation_factor": (0.0885, 0.091, 4),
-    "conformity_factor": (0.999991, 0.999991105, 9),
-    "maths_ticks_mean": (288, 293, 0),
-    "maths_ticks_sd": (2.35, 2.65, 2),
+    "degradation_factor": (0.0885, 0.091, 5),
+    "conformity_factor": (0.99999104, 0.9999911, 9),
+    "maths_ticks_mean": (287, 292, 0),
+    "maths_ticks_sd": (2.4, 2.65, 3),
 }
 
 # Position indices to access tuples in the dict above:
