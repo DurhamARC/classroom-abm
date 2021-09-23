@@ -20,7 +20,7 @@ PARAM_DICT = {
     "teacher_control_sd": (0.3, 0.312, 4),
     "random_select": (0.4, 0.48, 3),
     "school_learn_factor": (0.0272, 0.0281, 5),
-    "home_learn_factor": (0.000677, 0.000685, 7),
+    "home_learn_factor": (0.00068, 0.000686, 7),
     "school_learn_mean_divisor": (975, 992, 1),
     "school_learn_sd": (0.0068, 0.0072, 5),
     "school_learn_random_proportion": (0.31, 0.32, 4),
