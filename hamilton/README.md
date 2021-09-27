@@ -18,6 +18,7 @@
 			- [merge_repeats.py](#mergerepeatspy)
 			- [plot_correlations.py](#plotcorrelationspy)
 			- [merge_best_results.py](#mergebestresultspy)
+			- [run_webserver_with_params.py](#runwebserverwithparamspy)
 		- [Hamilton issues](#hamilton-issues)
 
 <!-- /TOC -->
@@ -243,6 +244,16 @@ To run (from its own directory):
 
 ```
 python merge_best_results.py ../../parameterisation_results
+```
+
+#### run_webserver_with_params.py
+
+`run_webserver_with_params.py` runs the web version of the model with a set of params taken from a CSV.
+
+e.g. to run the 1st row in the `lowest_to_highest_mses.csv` from the result on 2021-09-24:
+
+```
+python run_webserver_with_params.py ../../parameterisation_results/2021-09-24_part_001/lowest_to_highest_mses.csv 1
 ```
 
 ### Hamilton issues
