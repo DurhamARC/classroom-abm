@@ -4,7 +4,13 @@
 \alias{classroom_mse}
 \title{Calculate the mean squared error}
 \usage{
-classroom_mse(real_data, simulated_data, mlwinpath, output_file_prefix)
+classroom_mse(
+  real_data,
+  simulated_data,
+  mlwinpath,
+  output_file_prefix,
+  simplified = FALSE
+)
 }
 \arguments{
 \item{real_data}{a Data Frame containing the actual (real) data with headings:

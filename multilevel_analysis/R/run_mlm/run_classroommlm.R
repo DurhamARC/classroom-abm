@@ -23,7 +23,7 @@ main <- function() {
   pupil_data <- read.table(real_filename, header=TRUE, sep=",")
   altered_data <- read.table(simulated_filename, header=TRUE, sep=",")
   output_path_prefix <- file_path_sans_ext(simulated_filename)
-  mse <- classroommlm::classroom_mse(pupil_data, altered_data, mlnscript_path, output_path_prefix)
+  mse <- classroommlm::classroom_mse(pupil_data, altered_data, mlnscript_path, output_path_prefix, TRUE)
   cat(mse)
 }
 
