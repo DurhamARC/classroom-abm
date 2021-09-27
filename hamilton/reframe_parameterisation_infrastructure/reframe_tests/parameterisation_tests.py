@@ -21,7 +21,10 @@ with open(os.environ["PARAMETER_FILE"], "r") as f:
             exit(1)
         id += 1
 
-OUTPUT_FILE = f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv"
+OUTPUT_FILE = os.environ.get(
+    "OUTPUT_FILE",
+    f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv",
+)
 with open(OUTPUT_FILE, "w") as output:
     output.write("test_id," + ",".join(ROWS[0]) + ",mean_squared_error\n")
 

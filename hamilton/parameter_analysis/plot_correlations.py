@@ -5,9 +5,7 @@ import pandas as pd
 import seaborn as sns
 
 
-if __name__ == "__main__":
-    dir = sys.argv[1]
-    filename = sys.argv[2]
+def plot_correlations(dir, filename):
     file_path = os.path.join(dir, filename)
     df = pd.read_csv(file_path)
     y_vars = ["mean_squared_error"]
@@ -24,3 +22,9 @@ if __name__ == "__main__":
 
     pp = sns.pairplot(data=df, kind="reg", y_vars=y_vars, x_vars=x_vars, diag_kind=None)
     pp.savefig(os.path.join(dir, "correlations.png"))
+
+
+if __name__ == "__main__":
+    dir = sys.argv[1]
+    filename = sys.argv[2]
+    plot_correlations(dir, filename)
