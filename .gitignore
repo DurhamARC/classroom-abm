@@ -4,6 +4,7 @@ classes_output/*
 !classes_output/.gitkeep
 NetLogo/classes_output/*
 !NetLogo/classes_output/.gitkeep
+parameterisation_results
 __pycache__
 
 ###### R standard .gitignore ########
