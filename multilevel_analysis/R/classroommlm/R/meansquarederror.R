@@ -16,6 +16,7 @@
 #'        e.g. if passed '~/classroom_abm/classes_output/2021-09-06_output', will create files:
 #'        '~/classroom_abm/classes_output/2021-09-06_output_null_model.csv' and
 #'        '~/classroom_abm/classes_output/2021-09-06_output_full_model.csv'
+#' @param simplified if TRUE (default), runs \code{\link{simple_full_model}}; otherwise runs \code{\link{full_model}}
 #' @return the mean squared error score
 #' @export
 classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix, simplified = FALSE) {
