@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 case "$1" in
     "--with-big-dataset")
         export DATASET=../classes_input/test_input.csv
