@@ -69,11 +69,11 @@ for i in $(seq $NUM_ITERATIONS); do
   python ../../parameter_analysis/generate_next_params.py $START_DATETIME $OUTPUT_FILE $OUTPUT_DIR $PARAMETERISATION_RESULTS_DIR
 
   pushd $PARAMETERISATION_RESULTS_DIR/$START_DATETIME > /dev/null
+  cp $PARAMETER_FILE .
 
   ZIPFILE=$PARAMETERISATION_RESULTS_DIR/$START_DATETIME.zip
   echo "Creating zip $ZIPFILE"
-  zip $ZIPFILE $OUTPUT_FILE
-  zip -j $ZIPFILE $PARAMETER_FILE
+  zip $ZIPFILE *
 
   pushd $OUTPUT_DIR > /dev/null
 
