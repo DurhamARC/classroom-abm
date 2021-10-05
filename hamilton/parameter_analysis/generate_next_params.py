@@ -19,9 +19,9 @@ CUSTOM_ROUNDING = {
     "maths_ticks_mean": 0,
 }
 
-CUSTOM_LIMITS = {"random_select": (1, None)}
+CUSTOM_LIMITS = {"random_select": (1, None), "conformity_factor": (None, 1)}
 
-CUSTOM_PERCENTAGE_CHANGE = {"random_select": 50}
+CUSTOM_PERCENTAGE_CHANGE = {"random_select": 50, "conformity_factor": 0.001}
 
 if __name__ == "__main__":
     timestamp = sys.argv[1]
@@ -43,6 +43,7 @@ if __name__ == "__main__":
 
     best_params = merged_dataframe.iloc[0]
 
+    print("Determining next parameter ranges:")
     param_dict = {}
     valid_keys = dataclasses.asdict(DEFAULT_MODEL_PARAMS).keys()
     for k in best_params.keys():
@@ -56,9 +57,11 @@ if __name__ == "__main__":
 
             upper_bound = best_params[k] * (1 + percentage_change / 100)
             if max_val is not None:
-                upper_bound = min(max_val, lower_bound)
+                upper_bound = min(max_val, upper_bound)
 
             param_dict[k] = (lower_bound, upper_bound, CUSTOM_ROUNDING.get(k, 5))
+
+            print(f"{k}: {param_dict[k]}")
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
     lhs_sampling.generate_lhs_params(
