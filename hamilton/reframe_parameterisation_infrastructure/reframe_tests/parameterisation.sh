@@ -78,13 +78,13 @@ for i in $(seq $NUM_ITERATIONS); do
   module load python/3.6.8
 
   pushd $PARAMETERISATION_RESULTS_DIR/$START_DATETIME > /dev/null
-  cp $PARAMETER_FILE .
+  cp $PARAMETER_FILE parameters.csv
 
   ZIPFILE=$PARAMETERISATION_RESULTS_DIR/$START_DATETIME.zip
   echo "Creating zip $ZIPFILE"
   zip $ZIPFILE *
 
-  pushd $OUTPUT_DIR > /dev/null
+  pushd $OUTPUT_DIR/hamilton/multi_cpu_single_node/intel/ > /dev/null
 
   zip -r $ZIPFILE Parameterisation_24_*
 
