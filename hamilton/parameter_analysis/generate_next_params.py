@@ -28,6 +28,7 @@ if __name__ == "__main__":
     output_csv = sys.argv[2]
     reframe_data_dir = sys.argv[3]
     parameterisation_data_dir = sys.argv[4]
+    iteration_number = int(sys.argv[5]) - 1
     current_data_dir = os.path.join(parameterisation_data_dir, timestamp)
     if os.path.exists(current_data_dir):
         print(f"Directory {current_data_dir} already exists. Exiting.")
@@ -48,7 +49,9 @@ if __name__ == "__main__":
     valid_keys = dataclasses.asdict(DEFAULT_MODEL_PARAMS).keys()
     for k in best_params.keys():
         if k in valid_keys:
-            percentage_change = CUSTOM_PERCENTAGE_CHANGE.get(k, 1)
+            percentage_change = (
+                CUSTOM_PERCENTAGE_CHANGE.get(k, 1) / 2 ** iteration_number
+            )
             min_val, max_val = CUSTOM_LIMITS.get(k, (None, None))
 
             lower_bound = best_params[k] * (1 - percentage_change / 100)

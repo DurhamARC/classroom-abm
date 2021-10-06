@@ -72,7 +72,7 @@ for i in $(seq $NUM_ITERATIONS); do
   module purge
   module load miniconda2/4.1.11
   source activate classroom_abm
-  python ../../parameter_analysis/generate_next_params.py $START_DATETIME $OUTPUT_FILE $OUTPUT_DIR $PARAMETERISATION_RESULTS_DIR
+  python ../../parameter_analysis/generate_next_params.py $START_DATETIME $OUTPUT_FILE $OUTPUT_DIR $PARAMETERISATION_RESULTS_DIR $i
 
   # Reset modules for reframe
   module purge
