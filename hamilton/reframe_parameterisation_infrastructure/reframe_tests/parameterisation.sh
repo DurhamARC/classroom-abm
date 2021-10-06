@@ -66,7 +66,16 @@ for i in $(seq $NUM_ITERATIONS); do
 
   # Work out what next parameters should be
   mkdir -p $PARAMETERISATION_RESULTS_DIR
+
+  # Set up conda env to run generate_next_params
+  module purge
+  module load miniconda2/4.1.11
+  source activate classroom_abm
   python ../../parameter_analysis/generate_next_params.py $START_DATETIME $OUTPUT_FILE $OUTPUT_DIR $PARAMETERISATION_RESULTS_DIR
+
+  # Reset modules for reframe
+  module purge
+  module load python/3.6.8
 
   pushd $PARAMETERISATION_RESULTS_DIR/$START_DATETIME > /dev/null
   cp $PARAMETER_FILE .
