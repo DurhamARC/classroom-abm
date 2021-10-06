@@ -32,12 +32,6 @@ else
   echo "Using default number of repeats: $NUM_REPEATS"
 fi
 
-START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
-if [ -n $OUTPUT_FILE ]; then
-  export OUTPUT_FILE="../../mse_results_from_reframe/mse_output_${START_DATETIME}.csv"
-fi
-echo "Outputing CSV to $OUTPUT_FILE"
-
 if [ -n "$NUM_ITERATIONS" ]; then
   echo "Will generate new parameters and run $NUM_ITERATIONS times"
 else
@@ -49,6 +43,13 @@ fi
 source ../environ/env_hamilton.sh
 
 for i in $(seq $NUM_ITERATIONS); do
+  START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
+  if [ -n $OUTPUT_FILE ]; then
+    export OUTPUT_FILE="../../mse_results_from_reframe/mse_output_${START_DATETIME}.csv"
+  fi
+  echo "Outputting CSV to $OUTPUT_FILE"
+
+
   ~/reframe/bin/reframe \
       --max-retries=0 \
       --exec-policy async \
