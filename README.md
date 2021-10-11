@@ -9,9 +9,11 @@
 	- [Installation](#installation)
 	- [Running the multilevel analysis](#running-the-multilevel-analysis)
 	- [Running the full pipeline](#running-the-full-pipeline)
-	- [Running the multilevel analysis on the Hamilton supercomputer](#running-the-multilevel-analysis-on-the-hamilton-supercomputer)
+	- [Hamilton supercomputer](#hamilton-supercomputer)
+- [Heroku build](#heroku-build)
 
 <!-- /TOC -->
+
 
 ## Overview
 This repository uses Agent Based Modelling to model how much students learn according to how good the teacher is at classroom control and teaching.
@@ -93,6 +95,8 @@ To add new dependencies from an updated lock file rerun:
 ```
 conda create --name classroom_abm --file conda_locks/conda-<operating-sys>-64.lock
 ```
+
+If you add or update any dependencies needed by the Mesa model (rather than test or parameterisation dependencies), please also update `requirements.txt` used by [Heroku](#heroku-build).
 
 ## Multilevel analysis
 
@@ -178,3 +182,7 @@ Options:
 
 Steps for running the multilevel model on Hamilton are described [here](https://github.com/DurhamARC/classroom-abm/blob/master/hamilton/README.md)
 This also documents the ReFrame test infrastructure that we use for parameterisation as well as simple job scripts for running the model on Hamilton.
+
+## Heroku build
+
+The `master` branch is automatically deployed to Heroku, which uses `Procfile`, `requirements.txt` and `runtime.txt` to specify dependencies and how to run. (Contact Alison for info on the Heroku build.)
