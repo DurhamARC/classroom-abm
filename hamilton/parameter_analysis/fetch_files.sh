@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 DATE_TO_FETCH=${DATE_TO_FETCH:-`date +"%Y-%m-%d"`}
-START_TIME='095825'
-END_TIME='105048'
 TIME_TO_FETCH=${TIME_TO_FETCH:-"*"}
 
 if [ -n "$START_TIME" ] && [ -n "$END_TIME" ]; then
