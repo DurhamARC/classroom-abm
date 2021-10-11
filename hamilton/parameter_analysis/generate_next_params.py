@@ -74,4 +74,4 @@ if __name__ == "__main__":
     best_params = merged_dataframe.iloc[0]
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
-    generate_new_param_file(best_params, next_param_file)
+    generate_new_param_file(best_params, next_param_file, iteration_number)
