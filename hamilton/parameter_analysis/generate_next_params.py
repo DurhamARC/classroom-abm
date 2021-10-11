@@ -23,27 +23,8 @@ CUSTOM_LIMITS = {"random_select": (1, None), "conformity_factor": (None, 1)}
 
 CUSTOM_PERCENTAGE_CHANGE = {"random_select": 50, "conformity_factor": 0.001}
 
-if __name__ == "__main__":
-    timestamp = sys.argv[1]
-    output_csv = sys.argv[2]
-    reframe_data_dir = sys.argv[3]
-    parameterisation_data_dir = sys.argv[4]
-    iteration_number = int(sys.argv[5]) - 1
-    current_data_dir = os.path.join(parameterisation_data_dir, timestamp)
-    if os.path.exists(current_data_dir):
-        print(f"Directory {current_data_dir} already exists. Exiting.")
-        sys.exit(1)
 
-    os.mkdir(current_data_dir)
-    shutil.copy(output_csv, current_data_dir)
-
-    merged_dataframe = merge_repeats.merge_repeats(
-        output_csv, output_dir=current_data_dir
-    )
-    plot_correlations.plot_correlations(current_data_dir, "lowest_to_highest_mses.csv")
-
-    best_params = merged_dataframe.iloc[0]
-
+def generate_new_param_file(best_params, output_filename, iteration_number):
     print("Determining next parameter ranges:")
     param_dict = {}
     valid_keys = dataclasses.asdict(DEFAULT_MODEL_PARAMS).keys()
@@ -66,7 +47,31 @@ if __name__ == "__main__":
 
             print(f"{k}: {param_dict[k]}")
 
-    next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
     lhs_sampling.generate_lhs_params(
-        output_file=next_param_file, param_limits=param_dict
+        output_file=output_filename, param_limits=param_dict
     )
+
+
+if __name__ == "__main__":
+    timestamp = sys.argv[1]
+    output_csv = sys.argv[2]
+    reframe_data_dir = sys.argv[3]
+    parameterisation_data_dir = sys.argv[4]
+    iteration_number = int(sys.argv[5]) - 1
+    current_data_dir = os.path.join(parameterisation_data_dir, timestamp)
+    if os.path.exists(current_data_dir):
+        print(f"Directory {current_data_dir} already exists. Exiting.")
+        sys.exit(1)
+
+    os.mkdir(current_data_dir)
+    shutil.copy(output_csv, current_data_dir)
+
+    merged_dataframe = merge_repeats.merge_repeats(
+        output_csv, output_dir=current_data_dir
+    )
+    plot_correlations.plot_correlations(current_data_dir, "lowest_to_highest_mses.csv")
+
+    best_params = merged_dataframe.iloc[0]
+
+    next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
+    generate_new_param_file(best_params, next_param_file)
