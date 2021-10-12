@@ -10,7 +10,7 @@ sys.path.append(os.path.join(this_dir, "../parameter_input"))
 
 from model.data_types import ModelParamType, DEFAULT_MODEL_PARAMS, VARIABLE_PARAM_NAMES
 import lhs_sampling
-import merge_repeats
+import merge_results
 import plot_correlations
 
 CUSTOM_ROUNDING = {
@@ -25,6 +25,10 @@ CUSTOM_PERCENTAGE_CHANGE = {"random_select": 500, "conformity_factor": 0.001}
 
 
 def generate_new_param_file(best_params, output_filename, iteration_number):
+    """Generates a new set of parameters based on a range around `best_params`,
+    using LHS sampling.
+    The range is determined by iteration_number and decreases as iteration_number increases.
+    """
     print("Determining next parameter ranges:")
     param_dict = {}
     valid_keys = dataclasses.asdict(DEFAULT_MODEL_PARAMS).keys()
@@ -52,12 +56,16 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     )
 
 
-if __name__ == "__main__":
-    timestamp = sys.argv[1]
-    output_csv = sys.argv[2]
-    reframe_data_dir = sys.argv[3]
-    parameterisation_data_dir = sys.argv[4]
-    iteration_number = int(sys.argv[5]) - 1
+def prepare_next_run(
+    timestamp, output_csv, reframe_data_dir, parameterisation_data_dir, iteration_number
+):
+    """Prepares for the next run by:
+    * Creating a subdirectory of `parameterisation_data_dir` using `timestamp`
+    * Copying `output_csv` to the directory
+    * Creating an ordered CSV and a correlations plot
+    * Generating a new set of parameters based on the previous best results, saving to file
+      `next_lhs_params_<timestamp>.csv`
+    """
     current_data_dir = os.path.join(parameterisation_data_dir, timestamp)
     if os.path.exists(current_data_dir):
         print(f"Directory {current_data_dir} already exists. Exiting.")
@@ -66,10 +74,12 @@ if __name__ == "__main__":
     os.mkdir(current_data_dir)
     shutil.copy(output_csv, current_data_dir)
 
-    merged_dataframe = merge_repeats.merge_repeats(
+    merged_dataframe = merge_results.merge_repeats(
         output_csv, output_dir=current_data_dir
     )
-    plot_correlations.plot_correlations(current_data_dir, "lowest_to_highest_mses.csv")
+    plot_correlations.plot_correlations(
+        os.path.join(current_data_dir, "lowest_to_highest_mses.csv")
+    )
 
     best_params = merged_dataframe.iloc[0]
 

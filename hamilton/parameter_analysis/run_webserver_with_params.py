@@ -9,18 +9,13 @@ sys.path.append("../../MesaModel")
 from run import run_model
 from model.data_types import ModelParamType, DEFAULT_MODEL_PARAMS, VARIABLE_PARAM_NAMES
 
-if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Please provide a CSV file and row number")
-        sys.exit(1)
 
-    parameter_csv = sys.argv[1]
+def run_webserver_with_params(parameter_csv, row_number):
     if not os.path.isfile(parameter_csv):
-        print(f"No such file {sys.argv[1]}")
-        sys.exit(1)
+        print(f"No such file {parameter_csv}")
+        return
 
-    df = pd.read_csv(sys.argv[1], sep=",")
-    row_number = int(sys.argv[2])
+    df = pd.read_csv(parameter_csv, sep=",")
     row = df.iloc[row_number]
 
     model_param_dict = dataclasses.asdict(DEFAULT_MODEL_PARAMS)

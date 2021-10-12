@@ -31,8 +31,8 @@ for f in *; do
   popd
 done
 
-python $SCRIPT_DIR/merge_best_results.py `pwd`
-python $SCRIPT_DIR/plot_correlations.py `pwd` "best_mses.csv"
+python $SCRIPT_DIR/cli.py merge-best-results `pwd`
+python $SCRIPT_DIR/cli.py plot-correlations -i `pwd`/"best_mses.csv"
 
 popd > /dev/null
 popd > /dev/null
