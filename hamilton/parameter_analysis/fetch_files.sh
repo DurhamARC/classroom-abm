@@ -6,10 +6,15 @@ if [ -n "$START_TIME" ] && [ -n "$END_TIME" ]; then
   TIME_TO_FETCH="{$START_TIME..$END_TIME}"
 fi
 
+DATE_DIR=$DATE_TO_FETCH
+if [ -n "$START_DAY" ] && [ -n "$END_DAY" ]; then
+  DATE_TO_FETCH="${DATE_TO_FETCH::8}{$START_DAY..$END_DAY}"
+fi
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 pushd $SCRIPT_DIR/../../parameterisation_results > /dev/null
 
-DIR_PREFIX="${DATE_TO_FETCH}_part_"
+DIR_PREFIX="${DATE_DIR}_part_"
 LAST_DIR=$((find * -type d -regex ".*${DIR_PREFIX}[0-9][0-9][0-9]") | tail -1)
 LAST_DIR=${LAST_DIR:-${DIR_PREFIX}0}
 n=$((1+${LAST_DIR##$DIR_PREFIX}))
@@ -31,7 +36,7 @@ for f in *; do
   popd
 done
 
-python $SCRIPT_DIR/cli.py merge-best-results `pwd`
+python $SCRIPT_DIR/cli.py merge-best-results -d `pwd`
 python $SCRIPT_DIR/cli.py plot-correlations -i `pwd`/"best_mses.csv"
 
 popd > /dev/null
