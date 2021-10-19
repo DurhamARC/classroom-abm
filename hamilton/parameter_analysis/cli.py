@@ -1,9 +1,11 @@
+import os
 import click
 import pandas as pd
 
 import automation
 import create_sample as cs
 import merge_results
+import mlm_analysis
 import plot_correlations as pc
 import run_webserver_with_params as rwwp
 
@@ -65,6 +67,24 @@ def merge_repeats(files, output_dir):
 def merge_best_results(directory, limit):
     """Combines the best results from each set in the given directory into a single dataframe, and plots the correlations"""
     merge_results.merge_best_results(directory, limit)
+
+
+@cli.command()
+@click.option(
+    "--directory",
+    "-d",
+    type=str,
+    default="../../parameterisation_results",
+    help="Parameterisation results directory (defaults to ../../parameterisation_results)",
+)
+def analyse_mlms(directory):
+    full_models, simple_models = mlm_analysis.get_mlms(directory)
+    mlm_analysis.plot_mlm_correlations(
+        full_models, os.path.join(directory, "full_model_correlations.png")
+    )
+    mlm_analysis.plot_mlm_correlations(
+        simple_models, os.path.join(directory, "simple_model_correlations.png")
+    )
 
 
 @cli.command()
