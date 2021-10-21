@@ -18,3 +18,14 @@ test_that("full model works", {
   )
   expect_equal(full_model(pupil_data, mlnscript_path), expected_full_model, tolerance=0.01)
 })
+
+test_that("simple full model works", {
+  expected_simple_full_model = data.frame(
+    "Actual"=c(22.54, 0.899, -0.18, 19.0, 35.1, 35.0),
+    "StdErr"=c(0.338, 0.009, 0.059, 1.36, 0.537, NA),
+    row.names=c("Constant (mean)", "Start maths",
+                "Deprivation", "Class variance", "Pupil variance",
+                "% of variance at class level")
+  )
+  expect_equal(simple_full_model(sampled_pupil_data, mlnscript_path), expected_simple_full_model, tolerance=0.01)
+})

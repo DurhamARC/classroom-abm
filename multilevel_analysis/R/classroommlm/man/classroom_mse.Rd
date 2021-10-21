@@ -4,7 +4,13 @@
 \alias{classroom_mse}
 \title{Calculate the mean squared error}
 \usage{
-classroom_mse(real_data, simulated_data, mlwinpath, output_file_prefix)
+classroom_mse(
+  real_data,
+  simulated_data,
+  mlwinpath,
+  output_file_prefix,
+  simplified = FALSE
+)
 }
 \arguments{
 \item{real_data}{a Data Frame containing the actual (real) data with headings:
@@ -19,6 +25,8 @@ start_maths,student_id,class_id,N_in_class,Ability,Inattentiveness,hyper_impulsi
 e.g. if passed '~/classroom_abm/classes_output/2021-09-06_output', will create files:
 '~/classroom_abm/classes_output/2021-09-06_output_null_model.csv' and
 '~/classroom_abm/classes_output/2021-09-06_output_full_model.csv'}
+
+\item{simplified}{if TRUE (default), runs \code{\link{simple_full_model}}; otherwise runs \code{\link{full_model}}}
 }
 \value{
 the mean squared error score

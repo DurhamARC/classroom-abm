@@ -3,3 +3,4 @@
 export(classroom_mse)
 export(full_model)
 export(null_model)
+export(simple_full_model)

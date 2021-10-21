@@ -61,14 +61,23 @@ each parameter, then rounds the values found by the maximin LHS sampler to the n
 output will not give a true maximin LHS sample.""",
 )
 def cli(num_param_sets, output_file, max_options_per_param):
+    generate_lhs_params(num_param_sets, output_file, max_options_per_param)
+
+
+def generate_lhs_params(
+    num_param_sets=30,
+    output_file="lhs_params.csv",
+    max_options_per_param=None,
+    param_limits=PARAM_DICT,
+):
     limits = []
     rounding = []
     value_list = []
     for param_name in VARIABLE_PARAM_NAMES:
         try:
-            param_range_data = PARAM_DICT[param_name]
+            param_range_data = param_limits[param_name]
         except KeyError:
-            print(f"Parameter {param_name} is not in PARAM_DICT")
+            print(f"Parameter {param_name} is not in param_limits")
             sys.exit(1)
 
         limits.append([param_range_data[P_START], param_range_data[P_END]])

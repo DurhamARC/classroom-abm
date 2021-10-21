@@ -69,3 +69,40 @@ full_model <- function(pupil_data, mlwinpath){
   full_model.summary_table
 }
 
+#' Create a simplified full model
+#'
+#' This function creates a simplified full model for the given pupil data, not including
+#' Ability or Inattentiveness
+#' @param pupil_data a Data Frame with headings:
+#'        start_maths,student_id,class_id,N_in_class,Ability,Inattentiveness,hyper_impulsive,Deprivation,end_maths)
+#' @param mlwinpath the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')
+#' @return a Data Frame containing the summary data for the full model
+#' @export
+simple_full_model <- function(pupil_data, mlwinpath){
+  sorted_pupil_data <- pupil_data[order(pupil_data$class_id),]
+  simple_full_formula <- end_maths ~ 1 + (1 | class_id) + (1 | student_id) + start_maths + Deprivation
+  simple_full_model <- R2MLwiN::runMLwiN(simple_full_formula, data=sorted_pupil_data, MLwiNPath = mlwinpath)
+  simple_full_model.percentage_variance_class_level = simple_full_model@RP[["RP2_var_Intercept"]] * 100 /
+    (simple_full_model@RP[["RP1_var_Intercept"]] + simple_full_model@RP[["RP2_var_Intercept"]])
+
+
+  simple_full_model.summary_table <- data.frame(
+    coef(simple_full_model),
+    sqrt(diag(vcov(simple_full_model)))
+  )
+  names(simple_full_model.summary_table) <- c("Actual", "StdErr")
+  rownames(simple_full_model.summary_table) <- c(
+    'Constant (mean)',
+    'Start maths',
+    'Deprivation',
+    'Class variance',
+    'Pupil variance'
+  )
+  simple_full_model.summary_table <- rbind(simple_full_model.summary_table,
+                                    "% of variance at class level" = c(
+                                      simple_full_model.percentage_variance_class_level,
+                                      NA
+                                    ))
+  simple_full_model.summary_table
+}
+

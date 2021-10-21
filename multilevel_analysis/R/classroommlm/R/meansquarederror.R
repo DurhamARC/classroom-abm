@@ -16,15 +16,25 @@
 #'        e.g. if passed '~/classroom_abm/classes_output/2021-09-06_output', will create files:
 #'        '~/classroom_abm/classes_output/2021-09-06_output_null_model.csv' and
 #'        '~/classroom_abm/classes_output/2021-09-06_output_full_model.csv'
+#' @param simplified if TRUE (default), runs \code{\link{simple_full_model}}; otherwise runs \code{\link{full_model}}
 #' @return the mean squared error score
 #' @export
-classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix) {
+classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix, simplified = FALSE) {
   # Run models on real and simulated data
   real_null_model <- classroommlm::null_model(real_data, mlwinpath)
-  real_full_model <- classroommlm::full_model(real_data, mlwinpath)
   sim_null_model <- classroommlm::null_model(simulated_data, mlwinpath)
+
+  if (simplified) {
+    real_full_model <- classroommlm::simple_full_model(real_data, mlwinpath)
+    sim_full_model <- classroommlm::simple_full_model(simulated_data, mlwinpath)
+    pupil_properties = c('Start maths', 'Deprivation')
+  } else {
+    real_full_model <- classroommlm::full_model(real_data, mlwinpath)
+    sim_full_model <- classroommlm::full_model(simulated_data, mlwinpath)
+    pupil_properties = c('Start maths', 'Inattention', 'Ability', 'Deprivation')
+  }
+
   write.csv(sim_null_model, paste(output_file_prefix, "_null_model.csv", sep=""), row.names = TRUE)
-  sim_full_model <- classroommlm::full_model(simulated_data, mlwinpath)
   write.csv(sim_full_model, paste(output_file_prefix, "_full_model.csv", sep=""), row.names = TRUE)
 
   # Get SDs from data
@@ -37,7 +47,7 @@ classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_pref
     real_null_model['Pupil variance', 'Actual'],
     real_null_model['Class variance', 'Actual'],
     real_full_model['Constant (mean)', 'Actual'],
-    real_full_model[c('Start maths', 'Inattention', 'Ability', 'Deprivation'), 'Actual'],
+    real_full_model[pupil_properties, 'Actual'],
     real_full_model['Pupil variance', 'Actual'],
     real_full_model['Class variance', 'Actual'],
     real_sds
@@ -48,7 +58,7 @@ classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_pref
     sim_null_model['Pupil variance', 'Actual'],
     sim_null_model['Class variance', 'Actual'],
     sim_full_model['Constant (mean)', 'Actual'],
-    sim_full_model[c('Start maths', 'Inattention', 'Ability', 'Deprivation'), 'Actual'],
+    sim_full_model[pupil_properties, 'Actual'],
     sim_full_model['Pupil variance', 'Actual'],
     sim_full_model['Class variance', 'Actual'],
     real_sds

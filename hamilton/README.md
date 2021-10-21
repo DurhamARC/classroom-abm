@@ -15,9 +15,11 @@
 		- [Quick setup](#quick-setup)
 		- [Postprocessing](#postprocessing)
 			- [fetch_files.sh](#fetchfilessh)
-			- [merge_repeats.py](#mergerepeatspy)
-			- [plot_correlations.py](#plotcorrelationspy)
-			- [merge_best_results.py](#mergebestresultspy)
+		- [cli.py](#clipy)
+			- [merge-repeats](#merge-repeats)
+			- [plot-correlations](#plot-correlations)
+			- [merge-best-results](#merge-best-results)
+			- [run-webserver-with-params](#run-webserver-with-params)
 		- [Hamilton issues](#hamilton-issues)
 
 <!-- /TOC -->
@@ -187,13 +189,14 @@ The script `setup_new_run.sh` in the `hamilton` directory will generate and disp
 
 ### Postprocessing
 
-We currently have various postprocessing scripts that allow users to get results
-from Hamilton and do some sorting and very basic analysis.
+We currently have various postprocessing scripts in `hamilton/parameter_analysis` that allow users to get results
+from Hamilton and do some sorting and very basic analysis. These assume that the shared
+folder containing parameterisation results has been symlinked to the classroom_abm directory.
 
 #### fetch_files.sh
 
 `fetch_files.sh` copies the output files from Hamilton into the `parameter_analysis` directory and runs
-`merge_repeats.py` and `plot_correlations.py` on them.
+`merge_repeats` and `plot_correlations` on them.
 
 To run (from its own directory):
 
@@ -207,42 +210,60 @@ If set, `TIME_TO_FETCH` should match the time in the filenames inside that folde
 
 **NB `fetch_files.sh` assumes only a single reframe run rather than multiple parts.**
 
-#### merge_repeats.py
+### cli.py
 
-`merge_repeats.py` merges the MSE csvs produced
+`cli.py` in `hamilton/parameter_analysis` provides various utility tools. To see the full list, run:
+
+
+```bash
+python cli.py --help
+```
+
+The most common commands are documented below; others are used by scripts on Hamilton.
+
+#### merge-repeats
+
+`cli.py merge-repeats` merges the MSE csvs produced
 by ReFrame's postrun command. Each time we trigger a ReFrame run over all our parameter sets we get
-one csv that maps parameter sets to MSEs so we offer the functionality to merge them and sort them in
-`mse_results_from_reframe/merge_repeats.py`. The outputs will be called `lowest_to_highest_mses.csv` and
+one csv that maps parameter sets to MSEs so we offer the functionality to merge them and sort them.
+The outputs will be called `lowest_to_highest_mses.csv` and
 `merged_mses.csv` repectively and can be called on an arbitrary number of input csvs as follows:
 
 ```
-python merge_repeats.py <csv1> <csv2> <csvN>
+python cli.py merge-repeats <csv1> <csv2> <csvN>
 ```
 
-Additional scripts have been added to the `parameter_analysis` directory. These assume that the shared
-folder containing parameterisation results has been symlinked to the classroom_abm directory.
+#### plot-correlations
 
-#### plot_correlations.py
-
-`plot_correlations.py` runs a basic script over the results which creates scatter plots of each parameter
+`cli.py plot-correlations` runs a basic script over the results which creates scatter plots of each parameter
 against the mean squared error. It accepts a directory and CSV filename as parameters, and outputs a file
 `correlations.png` in the directory.
 
 e.g.
 
 ```
-python plot_correlations.py ../../parameterisation_results best_mses.csv
+python cli.py plot-correlations -i ../../parameterisation_results/best_mses.csv
 ```
 
-#### merge_best_results.py
+#### merge-best-results
 
-`merge_best_results.py` gets the best results from the `parameter_analysis` folder and creates a CSV `best_mses.csv`
-containing all the parameter sets which gave MSE scores < 3.5.
+`cli.py merge-best-results` gets the best results from a given folder and creates a CSV `best_mses.csv`
+containing all the parameter sets which gave MSE scores lower than a particular limit (defaults to 3).
 
 To run (from its own directory):
 
 ```
-python merge_best_results.py ../../parameterisation_results
+python cli.py merge-best-results -d ../../parameterisation_results
+```
+
+#### run-webserver-with-params
+
+`cli.py run-webserver-with-params.py` runs the web version of the model with a set of params taken from a CSV.
+
+e.g. to run the 1st row in the `lowest_to_highest_mses.csv` from the result on 2021-09-24:
+
+```
+python cli.py run-webserver-with-params -f ../../parameterisation_results/2021-09-24_part_001/lowest_to_highest_mses.csv -r 0
 ```
 
 ### Hamilton issues
