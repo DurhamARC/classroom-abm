@@ -12,7 +12,13 @@ from mesa.time import RandomActivation
 from .data_types import PupilLearningState, ModelParamType
 from .Pupil import Pupil
 from .truncated_normal_generator import TruncatedNormalGenerator
-from .utils import compute_ave, get_num_disruptors, get_num_learning, get_grid_size
+from .utils import (
+    compute_ave,
+    get_num_disruptors,
+    get_num_learning,
+    get_grid_size,
+    get_pupils_to_watch_data,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -217,6 +223,34 @@ class SimModel(Model):
             }
         )
 
+        # Monitor pupils with highest, median, lowest scores in class
+        self.pupils_to_watch = {
+            "Highest": int(
+                self.class_data[
+                    self.class_data.start_maths == self.class_data.start_maths.max()
+                ]
+                .iloc[0]
+                .student_id
+            ),
+            "Mid": int(
+                self.class_data[
+                    self.class_data.start_maths == self.class_data.start_maths.median()
+                ]
+                .iloc[0]
+                .student_id
+            ),
+            "Lowest": int(
+                self.class_data[
+                    self.class_data.start_maths == self.class_data.start_maths.min()
+                ]
+                .iloc[0]
+                .student_id
+            ),
+        }
+        self.pupil_datacollector = DataCollector(
+            model_reporters={"Pupils": get_pupils_to_watch_data},
+        )
+        self.pupil_datacollector.collect(self)
         self.running = True
 
     @staticmethod
@@ -307,6 +341,7 @@ class SimModel(Model):
 
         # collect data
         self.model_datacollector.collect(self)
+        self.pupil_datacollector.collect(self)
         self.mean_maths = compute_ave(self)
 
         if self.current_date > self.end_date or self.running == False:
@@ -329,6 +364,7 @@ class SimModel(Model):
             logger.debug("Written to output file")
             self.agent_datacollector = None
             self.model_datacollector = None
+            self.pupil_datacollector = None
             self.home_learning_random_gen = None
             self.school_learning_random_gen = None
             logger.info("Completed run for class %s", self.class_id)

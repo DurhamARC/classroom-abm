@@ -1,5 +1,5 @@
 var RightPanelModule = function() {
-	var tag = "<div class='well' style='margin-top:20px;float:right'></p>";
+	var tag = "<div class='well' style='margin-top:20px;float:right;clear:right'></p>";
 	var div = $(tag)[0];
 
 	// Append text tag to #elements:

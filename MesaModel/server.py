@@ -9,18 +9,41 @@ class RightPanelElement(VisualizationElement):
     js_code = "elements.push(new RightPanelModule());"
 
 
-class MonitorElemeent(RightPanelElement):
+class TeacherMonitorElement(RightPanelElement):
     def __init__(self):
         pass
 
     def render(self, model):
         return f"""
-<h4 style="margin-top:0">Variable monitoring</h4>
+<h4 style="margin-top:0">Teacher Variables</h4>
 <table>
     <tr><td style="padding: 5px;">Teacher quality</td><td style="padding: 5px;">{model.teacher_quality:.2f}</td></tr>
     <tr><td style="padding: 5px;">Teacher control</td><td style="padding: 5px;">{model.teacher_control:.2f}</td></tr>
 </table>
 """
+
+
+class PupilMonitorElement(RightPanelElement):
+    def __init__(self):
+        pass
+
+    def render(self, model):
+        pupil_data = model.pupil_datacollector.model_vars["Pupils"][-1]
+        data = """
+<h4 style="margin-top:0">Pupil Maths Scores</h4>
+<table>
+    <tr><th style="padding: 5px;">Pupil</th><th style="padding: 5px;text-align:right;">Score</th><th style="padding: 5px;text-align:right;">Change</th></tr>
+"""
+        for k in ["Highest", "Mid", "Lowest"]:
+            data += f"""        <tr>
+            <td style="padding: 5px;">{k}</td>
+            <td style="padding: 5px;text-align:right;">{pupil_data[model.pupils_to_watch[k]][0]:.2f}</td>
+            <td style="padding: 5px;text-align:right;">{pupil_data[model.pupils_to_watch[k]][1]:.2f}</td>
+        </tr>
+"""
+
+        data += "</table>"
+        return data
 
 
 def simclass_draw(agent):
@@ -63,7 +86,7 @@ def hist(model):
     Average.plot()
 
 
-sim_element = MonitorElemeent()
+sim_element = TeacherMonitorElement()
 sim_chart = ChartModule(
     [
         {"Label": "Learning Students", "Color": "green"},

@@ -13,7 +13,7 @@ from model.data_types import ModelState, DEFAULT_MODEL_PARAMS
 from model.input_data import InputData
 from model.output_data import OutputDataWriter
 from model.SimModel import SimModel
-from server import create_canvas_grid, sim_element, sim_chart
+from server import create_canvas_grid, sim_element, sim_chart, PupilMonitorElement
 
 # Set up logging
 loglevel = os.getenv("CLASSROOM_ABM_LOG_LEVEL", "INFO")
@@ -156,9 +156,10 @@ def run_model(
 
     if webserver:
         canvas_grid = create_canvas_grid(12, 12)
+        pupil_element = PupilMonitorElement()
         server = ModularServer(
             SimModel,
-            [sim_element, canvas_grid, sim_chart],
+            [sim_element, pupil_element, canvas_grid, sim_chart],
             "Classroom ABM",
             {
                 "all_data": all_data,
