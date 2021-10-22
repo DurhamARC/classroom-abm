@@ -234,8 +234,9 @@ class SimModel(Model):
             ),
             "Mid": int(
                 self.class_data[
-                    self.class_data.start_maths == self.class_data.start_maths.median()
+                    self.class_data.start_maths >= self.class_data.start_maths.median()
                 ]
+                .sort_values(["start_maths"])
                 .iloc[0]
                 .student_id
             ),
