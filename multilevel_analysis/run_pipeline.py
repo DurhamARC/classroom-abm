@@ -54,7 +54,7 @@ from model.data_types import (
         float,
     ),
     default=dataclasses.astuple(DEFAULT_MODEL_PARAMS)[:-STATIC_PARAM_COUNT],
-    help="""Space separated model params, e.g. 2 2 0.12 0.0043 800 ...
+    help="""Space separated model params for parameterisation, e.g. 2 2 0.12 0.0043 800 ...
 
 Full parameter list (defined in data_type.ModelParamType) is:
 
@@ -75,19 +75,75 @@ Full parameter list (defined in data_type.ModelParamType) is:
 """,
 )
 @click.option(
+    "--all-params",
+    "-ap",
+    nargs=len(dataclasses.astuple(DEFAULT_MODEL_PARAMS)),
+    type=(
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+    ),
+    default=None,
+    help="""Space separated model params for entire parameter space, e.g. 2 2 0.12 0.0043 800 ...
+
+Overrides model-params if both are set.
+
+Full parameter list (defined in data_type.ModelParamType) is:
+
+    teacher_quality_mean
+    teacher_quality_sd
+    teacher_control_mean
+    teacher_control_sd
+    random_select
+    school_learn_factor
+    home_learn_factor
+    school_learn_mean_divisor
+    school_learn_sd
+    school_learn_random_proportion
+    conformity_factor
+    degradation_factor
+    maths_ticks_mean
+    maths_ticks_sd
+    ticks_per_home_day
+    number_of_holidays
+    weeks_per_holiday
+    group_size
+    group_by_ability
+""",
+)
+@click.option(
     "--test-mode",
     "-t",
     default=False,
     is_flag=True,
     help="Whether to run in test mode (only 10 ticks per day)",
 )
-def run_model_and_mlm(input_file, output_file, n_processors, model_params, test_mode):
-    model_params = model_params + STATIC_PARAMS
+def run_model_and_mlm(
+    input_file, output_file, n_processors, model_params, all_params, test_mode
+):
+    if not all_params:
+        all_params = model_params + STATIC_PARAMS
     run_model(
         input_file,
         output_file,
         n_processors,
-        model_params=ModelParamType(*model_params),
+        model_params=ModelParamType(*all_params),
         test_mode=test_mode,
     )
     mean_squared_error = run_multilevel_analysis(input_file, output_file)

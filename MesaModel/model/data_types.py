@@ -45,6 +45,17 @@ class ModelParamType:
     group_size: int
     group_by_ability: bool
 
+    def __post_init__(self):
+        for field in dataclasses.fields(self):
+            value = getattr(self, field.name)
+            try:
+                setattr(self, field.name, field.type(value))
+            except ValueError as e:
+                raise ValueError(
+                    f"Could not cast {repr(value)} value for {field.name} to be {field.type}",
+                    e,
+                )
+
 
 # Default set of model parameters. Note: variable parameters must be added before
 # static parameters!

@@ -74,6 +74,9 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
 
         self.test_id = test_id
         params = " ".join(ROWS[self.test_id])
+        param_option = (
+            "--all-params" if len(ROWS[self.test_id]) == 19 else "--model-params"
+        )
 
         self.executable_opts = [
             "--input-file",
@@ -82,7 +85,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             f"pupil_data_output_{test_id}_{iteration}.csv",
             "--n-processors",
             f"{n_processors}",
-            "--model-params",
+            param_option,
             params,
         ]
 
