@@ -35,7 +35,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     for k in best_params.keys():
         if k in valid_keys:
             percentage_change = (
-                CUSTOM_PERCENTAGE_CHANGE.get(k, 1) / 2 ** iteration_number
+                CUSTOM_PERCENTAGE_CHANGE.get(k, 1) / 1.5 ** iteration_number
             )
             min_val, max_val = CUSTOM_LIMITS.get(k, (None, None))
 
