@@ -46,6 +46,32 @@ class PupilMonitorElement(RightPanelElement):
         return data
 
 
+class PupilCanvasGrid(CanvasGrid):
+    """
+    Modification of CanvasGrid to allow us to change the font size of the canvas text
+    """
+
+    local_includes = ["model/PupilCanvasGrid.js"]
+
+    def __init__(
+        self,
+        portrayal_method,
+        grid_width,
+        grid_height,
+        canvas_width=500,
+        canvas_height=500,
+    ):
+        super().__init__(
+            portrayal_method, grid_width, grid_height, canvas_width, canvas_height
+        )
+
+        new_element = "new PupilCanvasModule({}, {}, {}, {})".format(
+            self.canvas_width, self.canvas_height, self.grid_width, self.grid_height
+        )
+
+        self.js_code = "elements.push(" + new_element + ");"
+
+
 def simclass_draw(agent):
     """
     Portrayal Method for canvas
@@ -54,9 +80,8 @@ def simclass_draw(agent):
         return None
 
     portrayal = {
-        "Shape": "circle",
-        "r": 0.8,
-        "Filled": "true",
+        "Shape": "model/lc_person_120_yellow.png",
+        "scale": 1.0,
         "Layer": 0,
         "text": round(agent.e_math, 1),
         "text_color": "#000000",
@@ -64,21 +89,15 @@ def simclass_draw(agent):
     learning_state = agent.get_learning_state()
 
     if learning_state == PupilLearningState.RED:
-        portrayal["Color"] = ["red", "red"]
-        portrayal["stroke_color"] = "#00FF00"
-
-    if learning_state == PupilLearningState.YELLOW:
-        portrayal["Color"] = ["yellow", "yellow"]
-        portrayal["stroke_color"] = "#00FF00"
-    if learning_state == PupilLearningState.GREEN:
-        portrayal["Color"] = ["green", "green"]
-        portrayal["stroke_color"] = "#000000"
+        portrayal["Shape"] = "model/lc_person_120_red.png"
+    elif learning_state == PupilLearningState.GREEN:
+        portrayal["Shape"] = "model/lc_person_120_green.png"
 
     return portrayal
 
 
 def create_canvas_grid(width, height):
-    return CanvasGrid(simclass_draw, width, height, 400, 400)
+    return PupilCanvasGrid(simclass_draw, width, height, 400, 400)
 
 
 def hist(model):

@@ -155,7 +155,7 @@ def run_model(
     rngs = [np.random.default_rng(s) for s in ss.spawn(len(class_ids))]
 
     if webserver:
-        canvas_grid = create_canvas_grid(12, 12)
+        canvas_grid = create_canvas_grid(10, 10)
         pupil_element = PupilMonitorElement()
         server = ModularServer(
             SimModel,
