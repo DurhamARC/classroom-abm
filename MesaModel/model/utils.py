@@ -23,6 +23,14 @@ def get_num_learning(model):
     )
 
 
+def get_pupils_to_watch_data(model):
+    pupil_data = {}
+    for p in model.schedule.agents:
+        if p.student_id in model.pupils_to_watch.values():
+            pupil_data[int(p.student_id)] = (p.e_math, p.e_math - p.s_math)
+    return pupil_data
+
+
 def compute_ave(model):
     return statistics.mean([agent.e_math for agent in model.schedule.agents])
 
