@@ -81,7 +81,6 @@ def simclass_draw(agent):
 
     portrayal = {
         "Shape": "model/lc_person_120_yellow.png",
-        "scale": 1.0,
         "Layer": 0,
         "text": round(agent.e_math, 1),
         "text_color": "#000000",
