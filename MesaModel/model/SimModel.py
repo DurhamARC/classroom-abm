@@ -15,9 +15,10 @@ from .truncated_normal_generator import TruncatedNormalGenerator
 from .utils import (
     compute_ave,
     get_num_disruptors,
+    get_num_passive,
     get_num_learning,
     get_grid_size,
-    get_pupils_to_watch_data,
+    get_pupil_data,
 )
 
 logger = logging.getLogger(__name__)
@@ -201,14 +202,14 @@ class SimModel(Model):
             pupil_counter += group_size
 
         # Collecting data while running the model
-        self.model_datacollector = DataCollector(
+        self.pupil_state_datacollector = DataCollector(
             model_reporters={
                 "Learning Students": get_num_learning,
+                "Passive Students": get_num_passive,
                 "Disruptive Students": get_num_disruptors,
-                "Average End Math": compute_ave,
             }
         )
-        self.model_datacollector.collect(self)
+        self.pupil_state_datacollector.collect(self)
         self.mean_maths = compute_ave(self)
 
         self.agent_datacollector = DataCollector(
@@ -223,35 +224,32 @@ class SimModel(Model):
             }
         )
 
-        # Monitor pupils with highest, median, lowest scores in class
-        self.pupils_to_watch = {
-            "Highest": int(
-                self.class_data[
-                    self.class_data.start_maths == self.class_data.start_maths.max()
-                ]
-                .iloc[0]
-                .student_id
+        # Monitor pupils with highest & lowest scores in class
+        pupils_to_watch_model_reporters = {
+            "Pupil with highest start score": lambda m: get_pupil_data(
+                m,
+                int(
+                    self.class_data[
+                        self.class_data.start_maths == self.class_data.start_maths.max()
+                    ]
+                    .iloc[0]
+                    .student_id
+                ),
             ),
-            "Mid": int(
-                self.class_data[
-                    self.class_data.start_maths >= self.class_data.start_maths.median()
-                ]
-                .sort_values(["start_maths"])
-                .iloc[0]
-                .student_id
-            ),
-            "Lowest": int(
-                self.class_data[
-                    self.class_data.start_maths == self.class_data.start_maths.min()
-                ]
-                .iloc[0]
-                .student_id
+            "Pupil with lowest start score": lambda m: get_pupil_data(
+                m,
+                int(
+                    self.class_data[
+                        self.class_data.start_maths == self.class_data.start_maths.min()
+                    ]
+                    .iloc[0]
+                    .student_id
+                ),
             ),
         }
-        self.pupil_datacollector = DataCollector(
-            model_reporters={"Pupils": get_pupils_to_watch_data},
-        )
-        self.pupil_datacollector.collect(self)
+        pupils_to_watch_model_reporters["Mean Score"] = compute_ave
+        self.maths_datacollector = DataCollector(pupils_to_watch_model_reporters)
+        self.maths_datacollector.collect(self)
         self.running = True
 
     @staticmethod
@@ -341,8 +339,8 @@ class SimModel(Model):
         self.update_school_time()
 
         # collect data
-        self.model_datacollector.collect(self)
-        self.pupil_datacollector.collect(self)
+        self.maths_datacollector.collect(self)
+        self.pupil_state_datacollector.collect(self)
         self.mean_maths = compute_ave(self)
 
         if self.current_date > self.end_date or self.running == False:
@@ -364,8 +362,8 @@ class SimModel(Model):
             )
             logger.debug("Written to output file")
             self.agent_datacollector = None
-            self.model_datacollector = None
-            self.pupil_datacollector = None
+            self.maths_datacollector = None
+            self.pupil_state_datacollector = None
             self.home_learning_random_gen = None
             self.school_learning_random_gen = None
             logger.info("Completed run for class %s", self.class_id)

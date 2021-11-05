@@ -28,17 +28,16 @@ class PupilMonitorElement(RightPanelElement):
         pass
 
     def render(self, model):
-        pupil_data = model.pupil_datacollector.model_vars["Pupils"][-1]
+        # pupil_data = model.pupil_state_datacollector.model_vars["Pupils"][-1]
         data = """
-<h4 style="margin-top:0">Pupil Maths Scores</h4>
+<h4 style="margin-top:0">Pupil Learning States</h4>
 <table>
-    <tr><th style="padding: 5px;">Pupil</th><th style="padding: 5px;text-align:right;">Score</th><th style="padding: 5px;text-align:right;">Change</th></tr>
+    <tr><th style="padding: 5px;">State</th><th style="padding: 5px;text-align:right;"># Pupils</th></tr>
 """
-        for k in ["Highest", "Mid", "Lowest"]:
+        for k in model.pupil_state_datacollector.model_vars:
             data += f"""        <tr>
             <td style="padding: 5px;">{k}</td>
-            <td style="padding: 5px;text-align:right;">{pupil_data[model.pupils_to_watch[k]][0]:.2f}</td>
-            <td style="padding: 5px;text-align:right;">{pupil_data[model.pupils_to_watch[k]][1]:.2f}</td>
+            <td style="padding: 5px;text-align:right;">{model.pupil_state_datacollector.model_vars[k][-1]}</td>
         </tr>
 """
 
@@ -100,16 +99,16 @@ def create_canvas_grid(width, height):
 
 
 def hist(model):
-    Average = model.model_datacollector.get_model_vars_dataframe()
-    Average.plot()
+    maths_scores = model.maths_datacollector.get_model_vars_dataframe()
+    maths_scores.plot()
 
 
 sim_element = TeacherMonitorElement()
 sim_chart = ChartModule(
     [
-        {"Label": "Learning Students", "Color": "green"},
-        {"Label": "Disruptive Students", "Color": "red"},
-        {"Label": "Average End Math", "Color": "black"},
+        {"Label": "Pupil with highest start score", "Color": "blue"},
+        {"Label": "Pupil with lowest start score", "Color": "purple"},
+        {"Label": "Mean Score", "Color": "orange"},
     ],
-    data_collector_name="model_datacollector",
+    data_collector_name="maths_datacollector",
 )
