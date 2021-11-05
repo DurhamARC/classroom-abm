@@ -13,6 +13,16 @@ def get_num_disruptors(model):
     )
 
 
+def get_num_passive(model):
+    return len(
+        [
+            p
+            for p in model.schedule.agents
+            if p.learning_state == PupilLearningState.YELLOW
+        ]
+    )
+
+
 def get_num_learning(model):
     return len(
         [
@@ -23,16 +33,14 @@ def get_num_learning(model):
     )
 
 
-def get_pupils_to_watch_data(model):
-    pupil_data = {}
+def get_pupil_data(model, student_id):
     for p in model.schedule.agents:
-        if p.student_id in model.pupils_to_watch.values():
-            pupil_data[int(p.student_id)] = (p.e_math, p.e_math - p.s_math)
-    return pupil_data
+        if int(p.student_id) == student_id:
+            return round(p.e_math, 2)
 
 
 def compute_ave(model):
-    return statistics.mean([agent.e_math for agent in model.schedule.agents])
+    return round(statistics.mean([agent.e_math for agent in model.schedule.agents]), 2)
 
 
 def get_grid_size(n_agents, max_group_size):
