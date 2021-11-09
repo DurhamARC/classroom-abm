@@ -21,7 +21,8 @@ CUSTOM_ROUNDING = {
 
 CUSTOM_LIMITS = {"random_select": (1, None), "conformity_factor": (None, 1)}
 
-CUSTOM_PERCENTAGE_CHANGE = {"random_select": 50, "conformity_factor": 0.001}
+CUSTOM_PERCENTAGE_CHANGE = {"random_select": 100, "conformity_factor": 0.001}
+DEFAULT_PERCENTAGE_CHANGE = 50
 
 
 def generate_new_param_file(best_params, output_filename, iteration_number):
@@ -35,7 +36,8 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     for k in best_params.keys():
         if k in valid_keys:
             percentage_change = (
-                CUSTOM_PERCENTAGE_CHANGE.get(k, 1) / 1.5 ** iteration_number
+                CUSTOM_PERCENTAGE_CHANGE.get(k, DEFAULT_PERCENTAGE_CHANGE)
+                / 1.2 ** iteration_number
             )
             min_val, max_val = CUSTOM_LIMITS.get(k, (None, None))
 
