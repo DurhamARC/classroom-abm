@@ -70,6 +70,12 @@ class PupilCanvasGrid(CanvasGrid):
 
         self.js_code = "elements.push(" + new_element + ");"
 
+    def render(self, model):
+        data = super().render(model)
+        data["grid_width"] = model.grid.width
+        data["grid_height"] = model.grid.height
+        return data
+
 
 def simclass_draw(agent):
     """

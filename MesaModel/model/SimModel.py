@@ -161,7 +161,7 @@ class SimModel(Model):
         # Set up agents
         pupil_counter = 0
         for i in range(self.grid_params.n_groups):
-            group_size = self.model_params.group_size
+            group_size = self.grid_params.max_group_size
             if i >= self.grid_params.n_full_groups:
                 group_size -= 1
 
