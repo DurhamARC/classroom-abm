@@ -89,6 +89,12 @@ def simclass_draw(agent):
         "Layer": 0,
         "text": round(agent.e_math, 1),
         "text_color": "#000000",
+        "Inattentiveness": round(agent.inattentiveness, 1),
+        "Hyperactivity/impulsivity": round(agent.hyper_impulsive, 1),
+        "Deprivation": round(agent.deprivation, 1),
+        "Ability": round(agent.ability, 2),
+        "Start Maths Score": round(agent.s_math, 1),
+        "Current Maths Score": round(agent.e_math, 1),
     }
     learning_state = agent.get_learning_state()
 
