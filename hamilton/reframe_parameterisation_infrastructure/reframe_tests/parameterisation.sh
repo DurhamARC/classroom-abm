@@ -13,7 +13,7 @@ case "$1" in
         ;;
     (*)
         echo "Please name a dataset for this job. Options are: "
-        echo "--with-big-dataset (up to 1hr per run), --with-medium-dataset (under 15 mins), --with-small-dataset (under 5 mins)."
+        echo "--with-big-dataset (up to 1hr per run), --with-medium-dataset (under 45 mins), --with-small-dataset (under 5 mins)."
         exit 1
         ;;
 esac
