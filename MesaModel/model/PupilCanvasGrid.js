@@ -8,8 +8,11 @@ var PupilCanvasModule = function(canvas_width, canvas_height, grid_width, grid_h
   PupilCanvasModule.prototype = Object.create(CanvasModule.prototype);
 
   this.canvas = $('.world-grid')[0];
-	this.context = this.canvas.getContext("2d");
+  this.context = this.canvas.getContext("2d");
   this.context.font = '12px sans-serif';
+
+  this.interaction_canvas = $('.world-grid')[1];
+  this.interaction_context = this.interaction_canvas.getContext("2d");
 
   this.currentWidth = grid_width;
   this.currentHeight = grid_height;
@@ -19,7 +22,7 @@ var PupilCanvasModule = function(canvas_width, canvas_height, grid_width, grid_h
       this.currentWidth = data['grid_width']
       this.currentHeight = data['grid_height']
       var gridSize = Math.max(this.currentWidth, this.currentHeight)
-      this.interactionHandler = new InteractionHandler(canvas_width, canvas_height, gridSize, gridSize, this.context);
+      this.interactionHandler = new InteractionHandler(canvas_width, canvas_height, gridSize, gridSize, this.interaction_context);
       this.canvasDraw = new GridVisualization(canvas_width, canvas_height, gridSize, gridSize, this.context, this.interactionHandler);
     }
     // Copied from parent method
