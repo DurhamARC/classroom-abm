@@ -22,7 +22,7 @@ CUSTOM_ROUNDING = {
 CUSTOM_LIMITS = {"random_select": (1, None), "conformity_factor": (None, 1)}
 
 CUSTOM_PERCENTAGE_CHANGE = {"random_select": 100, "conformity_factor": 0.001}
-DEFAULT_PERCENTAGE_CHANGE = 50
+DEFAULT_PERCENTAGE_CHANGE = 20
 
 
 def generate_new_param_file(best_params, output_filename, iteration_number):
