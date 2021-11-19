@@ -118,8 +118,6 @@ def hist(model):
 sim_element = TeacherMonitorElement()
 sim_chart = ChartModule(
     [
-        {"Label": "Pupil with highest start score", "Color": "blue"},
-        {"Label": "Pupil with lowest start score", "Color": "purple"},
         {"Label": "Mean Score", "Color": "orange"},
     ],
     data_collector_name="maths_datacollector",

@@ -224,31 +224,8 @@ class SimModel(Model):
             }
         )
 
-        # Monitor pupils with highest & lowest scores in class
-        pupils_to_watch_model_reporters = {
-            "Pupil with highest start score": lambda m: get_pupil_data(
-                m,
-                int(
-                    self.class_data[
-                        self.class_data.start_maths == self.class_data.start_maths.max()
-                    ]
-                    .iloc[0]
-                    .student_id
-                ),
-            ),
-            "Pupil with lowest start score": lambda m: get_pupil_data(
-                m,
-                int(
-                    self.class_data[
-                        self.class_data.start_maths == self.class_data.start_maths.min()
-                    ]
-                    .iloc[0]
-                    .student_id
-                ),
-            ),
-        }
-        pupils_to_watch_model_reporters["Mean Score"] = compute_ave
-        self.maths_datacollector = DataCollector(pupils_to_watch_model_reporters)
+        # Monitor mean maths score
+        self.maths_datacollector = DataCollector({"Mean Score": compute_ave})
         self.maths_datacollector.collect(self)
         self.running = True
 
