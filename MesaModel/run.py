@@ -155,7 +155,7 @@ def run_model(
     rngs = [np.random.default_rng(s) for s in ss.spawn(len(class_ids))]
 
     if webserver:
-        canvas_grid = create_canvas_grid(10, 10)
+        canvas_grid = create_canvas_grid(14, 14)
         pupil_element = PupilMonitorElement()
         server = ModularServer(
             SimModel,
@@ -183,26 +183,10 @@ def run_model(
                     5.0,
                     0.1,
                 ),
-                "teacher_quality_sd": UserSettableParameter(
-                    "slider",
-                    "Teaching quality standard deviation",
-                    model_params.teacher_quality_sd,
-                    0.00,
-                    5.0,
-                    0.1,
-                ),
                 "teacher_control_mean": UserSettableParameter(
                     "slider",
                     "Teaching control mean",
                     model_params.teacher_control_mean,
-                    0.00,
-                    5.0,
-                    0.1,
-                ),
-                "teacher_control_sd": UserSettableParameter(
-                    "slider",
-                    "Teaching control standard_deviation",
-                    model_params.teacher_control_sd,
                     0.00,
                     5.0,
                     0.1,
@@ -214,6 +198,19 @@ def run_model(
                     0.00,
                     10.0,
                     0.1,
+                ),
+                "group_size": UserSettableParameter(
+                    "slider",
+                    "Size of each group of pupils",
+                    model_params.group_size,
+                    1,
+                    40,
+                    1,
+                ),
+                "group_by_ability": UserSettableParameter(
+                    "checkbox",
+                    "Group pupils by ability (rather than at random)",
+                    model_params.group_by_ability,
                 ),
             },
         )

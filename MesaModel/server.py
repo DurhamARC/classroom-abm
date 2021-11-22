@@ -70,6 +70,12 @@ class PupilCanvasGrid(CanvasGrid):
 
         self.js_code = "elements.push(" + new_element + ");"
 
+    def render(self, model):
+        data = super().render(model)
+        data["grid_width"] = model.grid.width
+        data["grid_height"] = model.grid.height
+        return data
+
 
 def simclass_draw(agent):
     """
@@ -83,6 +89,12 @@ def simclass_draw(agent):
         "Layer": 0,
         "text": round(agent.e_math, 1),
         "text_color": "#000000",
+        "Inattentiveness": round(agent.inattentiveness, 1),
+        "Hyperactivity/impulsivity": round(agent.hyper_impulsive, 1),
+        "Deprivation": round(agent.deprivation, 1),
+        "Ability": round(agent.ability, 2),
+        "Start Maths Score": round(agent.s_math, 1),
+        "Current Maths Score": round(agent.e_math, 1),
     }
     learning_state = agent.get_learning_state()
 
@@ -106,8 +118,6 @@ def hist(model):
 sim_element = TeacherMonitorElement()
 sim_chart = ChartModule(
     [
-        {"Label": "Pupil with highest start score", "Color": "blue"},
-        {"Label": "Pupil with lowest start score", "Color": "purple"},
         {"Label": "Mean Score", "Color": "orange"},
     ],
     data_collector_name="maths_datacollector",
