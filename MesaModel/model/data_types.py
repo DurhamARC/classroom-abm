@@ -12,6 +12,7 @@ class GridParamType:
     height: int
     n_groups: int
     n_full_groups: int
+    max_group_size: int
     n_group_cols: int
     n_group_rows: int
     group_width: int

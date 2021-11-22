@@ -52,6 +52,11 @@ def get_grid_size(n_agents, max_group_size):
     n_groups = math.ceil(n_agents / max_group_size)
     n_full_groups = n_groups
     if n_groups * max_group_size != n_agents:
+        # With very large groups the difference between n_groups * max_group_size
+        # and n_agents can be more than the number of groups, so to get evenly-sized
+        # groups we need to decrease the max group size.
+        while n_groups * max_group_size - n_agents > n_groups:
+            max_group_size -= 1
         n_full_groups = n_agents % n_groups
 
     n_group_rows = math.ceil(math.sqrt(n_groups))
@@ -66,6 +71,7 @@ def get_grid_size(n_agents, max_group_size):
         height=grid_height,
         n_groups=n_groups,
         n_full_groups=n_full_groups,
+        max_group_size=max_group_size,
         n_group_cols=n_group_cols,
         n_group_rows=n_group_rows,
         group_width=group_width,
