@@ -8,6 +8,9 @@ case "$1" in
     "--with-medium-dataset")
         export DATASET=../classes_input/test_input_sampled_25.csv
         ;;
+    "--with-test-dataset")
+        export DATASET=../classes_input/test_input_sampled_25_test.csv
+        ;;
     "--with-small-dataset")
         export DATASET=../classes_input/test_input_short.csv
         ;;

@@ -49,7 +49,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             self.time_limit = (
                 "1h15m"
                 if "short" in os.environ["DATASET"]
-                else ("1h" if os.environ["DATASET"].endswith("_25.csv") else "1h30m")
+                else ("1h" if "_25" in os.environ["DATASET"] else "1h30m")
             )
 
         self.num_tasks = 1
