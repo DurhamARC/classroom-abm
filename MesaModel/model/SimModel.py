@@ -114,7 +114,7 @@ class SimModel(Model):
                 self.model_params.maths_ticks_mean,
                 self.model_params.maths_ticks_sd,
                 10,
-                300,
+                600,
             )
         )
         logger.debug("%s ticks per school day", self.ticks_per_school_day)
