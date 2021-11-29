@@ -33,6 +33,7 @@ class SimModel(Model):
         model_params,
         class_id_and_rng=None,
         class_id=None,
+        speedup=1,
         **kwargs,
     ):
         self.data = all_data
@@ -49,6 +50,7 @@ class SimModel(Model):
         logger.info("Modelling class %s", self.class_id)
 
         self.model_params = model_params
+        self.speedup = speedup
         self.write_file = False
 
         # Update any parameters passed as kwargs
@@ -117,6 +119,24 @@ class SimModel(Model):
                 300,
             )
         )
+        if self.speedup > 1:
+            # Can't have fewer than 1 tick per school day so reduce the speedup accordingly
+            if self.speedup > self.ticks_per_school_day:
+                self.speedup = self.ticks_per_school_day
+            # Speedup should be divisible by self.ticks_per_school_day
+            # e.g. if 10 ticks per day
+            # Can't have speedup more than 10 as we need 1 tick per days
+            # If speedup is 5 then we have 2 ticks per day
+            # If speedup is 8 then we would have 10/8 = 1.25 ticks per day
+            # Round that to 1, then speedup would be 10 (=10/1) not 8
+            # If speedup is 6 then we would have 10/6 = 1.67 ticks per day
+            # Round that to 2, then speedup would be 5 (=10/2) not 6
+            speedup_ticks_per_school_day = round(
+                self.ticks_per_school_day / self.speedup
+            )
+            self.speedup = self.ticks_per_school_day / speedup_ticks_per_school_day
+            self.ticks_per_school_day = speedup_ticks_per_school_day
+
         logger.debug("%s ticks per school day", self.ticks_per_school_day)
 
         self.holiday_week_numbers = self.calculate_holiday_weeks(
