@@ -119,10 +119,13 @@ class SimModel(Model):
                 300,
             )
         )
+        self.ticks_per_home_day = self.model_params.ticks_per_home_day
+
         if self.speedup > 1:
+            min_ticks = min(self.ticks_per_school_day, self.ticks_per_home_day)
             # Can't have fewer than 1 tick per school day so reduce the speedup accordingly
-            if self.speedup > self.ticks_per_school_day:
-                self.speedup = self.ticks_per_school_day
+            if self.speedup > min_ticks:
+                self.speedup = min_ticks
             # Speedup should be divisible by self.ticks_per_school_day
             # e.g. if 10 ticks per day
             # Can't have speedup more than 10 as we need 1 tick per days
@@ -136,6 +139,10 @@ class SimModel(Model):
             )
             self.speedup = self.ticks_per_school_day / speedup_ticks_per_school_day
             self.ticks_per_school_day = speedup_ticks_per_school_day
+
+            speedup_ticks_per_home_day = round(self.ticks_per_home_day / self.speedup)
+            self.home_speedup = self.ticks_per_home_day / speedup_ticks_per_home_day
+            self.ticks_per_home_day = speedup_ticks_per_school_day
 
         logger.debug("%s ticks per school day", self.ticks_per_school_day)
 
@@ -161,7 +168,7 @@ class SimModel(Model):
             5 / 2000,
             0.08,
             lower=0,
-            batch_size=self.model_params.ticks_per_home_day * batch_multiplier,
+            batch_size=self.ticks_per_home_day * batch_multiplier,
         )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
@@ -311,9 +318,7 @@ class SimModel(Model):
                     # Add holiday weeks
                     home_learning_days += 7 * self.model_params.weeks_per_holiday
 
-            self.home_learning_steps = (
-                home_learning_days * self.model_params.ticks_per_home_day
-            )
+            self.home_learning_steps = home_learning_days * self.ticks_per_home_day
 
             # Update current date
             self.current_date += datetime.timedelta(days=home_learning_days)
