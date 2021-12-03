@@ -172,6 +172,7 @@ def run_model(
     if webserver:
         canvas_grid = create_canvas_grid(14, 14)
         pupil_element = PupilMonitorElement()
+        max_speedup = round(model_params.maths_ticks_mean / 100) * 100
         server = ModularServer(
             SimModel,
             [sim_element, pupil_element, canvas_grid, sim_chart],
@@ -228,7 +229,11 @@ def run_model(
                     model_params.group_by_ability,
                 ),
                 "speedup": UserSettableParameter(
-                    "slider", "How much to speed up the simulation", 1, 10, 1000
+                    "slider",
+                    "How much to speed up (and approximate) the simulation",
+                    1,
+                    1,
+                    max_speedup,
                 ),
             },
         )
