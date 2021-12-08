@@ -69,7 +69,17 @@ class PupilCanvasGrid(CanvasGrid):
             self.canvas_width, self.canvas_height, self.grid_width, self.grid_height
         )
 
-        self.js_code = "elements.push(" + new_element + ");"
+        self.js_code = (
+            f"elements.push({new_element});"
+            + """
+// Add an onclose event to the WebSocket instance to show a message to the user
+$(document).ready(function(){
+    ws.onclose = function(...args) {
+      $('#error-msg-overlay').show();
+    }
+});
+"""
+        )
 
     def render(self, model):
         data = super().render(model)
