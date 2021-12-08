@@ -21,7 +21,11 @@ CUSTOM_ROUNDING = {
 
 CUSTOM_LIMITS = {"random_select": (1, None), "conformity_factor": (None, 1)}
 
-CUSTOM_PERCENTAGE_CHANGE = {"random_select": 100, "conformity_factor": 0.001}
+CUSTOM_PERCENTAGE_CHANGE = {
+    "random_select": 100,
+    "conformity_factor": 0.001,
+    "maths_ticks_sd": 25,
+}
 DEFAULT_PERCENTAGE_CHANGE = 10
 
 
