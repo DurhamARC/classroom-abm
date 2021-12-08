@@ -14,7 +14,11 @@ def merge_results(directory, filename_pattern, output_file, mse_limit=None):
     dataframes = []
 
     for dirpath, dirnames, filenames in os.walk(directory):
-        if not dirpath.endswith("corrupted"):
+        if not (
+            "corrupted" in dirpath
+            or "interventions" in dirpath
+            or "test_data" in dirpath
+        ):
             for f in filenames:
                 if filename_pattern in f:
                     full_path = os.path.join(dirpath, f)
