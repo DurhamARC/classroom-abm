@@ -58,7 +58,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
             print(f"{k}: {param_dict[k]}")
 
     lhs_sampling.generate_lhs_params(
-        output_file=output_filename, param_limits=param_dict
+        num_param_sets=25, output_file=output_filename, param_limits=param_dict
     )
 
 
