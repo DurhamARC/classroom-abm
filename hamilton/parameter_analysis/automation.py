@@ -87,7 +87,14 @@ def prepare_next_run(
         os.path.join(current_data_dir, "lowest_to_highest_mses.csv")
     )
 
-    best_params = merged_dataframe.iloc[0]
+    # Group by parameters and sort by mean MSE for each parameter set
+    means_dataframe = (
+        merged_dataframe.groupby(list(merged_dataframe.columns[:-1]))
+        .mean()
+        .sort_values(by=["mean_squared_error"])
+        .reset_index()
+    )
+    best_params = means_dataframe.iloc[0]
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
     generate_new_param_file(best_params, next_param_file, iteration_number)
