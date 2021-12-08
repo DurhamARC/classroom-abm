@@ -143,6 +143,8 @@ class SimModel(Model):
             speedup_ticks_per_home_day = round(self.ticks_per_home_day / self.speedup)
             self.home_speedup = self.ticks_per_home_day / speedup_ticks_per_home_day
             self.ticks_per_home_day = speedup_ticks_per_school_day
+        else:
+            self.home_speedup = 1
 
         logger.debug("%s ticks per school day", self.ticks_per_school_day)
 
