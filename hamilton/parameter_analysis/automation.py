@@ -88,12 +88,7 @@ def prepare_next_run(
     )
 
     # Group by parameters and sort by mean MSE for each parameter set
-    means_dataframe = (
-        merged_dataframe.groupby(list(merged_dataframe.columns[:-1]))
-        .mean()
-        .sort_values(by=["mean_squared_error"])
-        .reset_index()
-    )
+    means_dataframe = merge_results.get_means_dataframe(merged_dataframe)
     best_params = means_dataframe.iloc[0]
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")

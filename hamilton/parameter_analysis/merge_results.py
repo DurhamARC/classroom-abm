@@ -1,12 +1,25 @@
 import os
+import sys
 import pandas as pd
+
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../MesaModel"))
+from model.data_types import VARIABLE_PARAM_NAMES
 
 DEFAULT_MSE_LIMIT = 3
 
 
 def merge_best_results(directory, mse_limit=DEFAULT_MSE_LIMIT):
     output_path = os.path.join(directory, "best_mses.csv")
-    merge_results(directory, "lowest_to_highest_mses", output_path, mse_limit)
+    merged_dataframe = merge_results(directory, "lowest_to_highest_mses", output_path, mse_limit)
+
+    means_dataframe = get_means_dataframe(merged_dataframe)
+    means_output_path = os.path.join(directory, "best_mse_means.csv")
+    means_dataframe.to_csv(
+        means_output_path,
+        sep=",",
+        encoding="utf-8",
+        index=False,
+    )
 
 
 def merge_results(directory, filename_pattern, output_file, mse_limit=None):
@@ -59,3 +72,16 @@ def merge_repeats(*args, output_dir=os.getcwd()):
         index=False,
     )
     return merged_dataframe
+
+
+def get_means_dataframe(merged_dataframe):
+    columns_to_group = VARIABLE_PARAM_NAMES + ["test_id"]
+    if 'directory' in merged_dataframe.columns:
+        columns_to_group.append('directory')
+
+    return (
+        merged_dataframe.groupby(list(columns_to_group))
+        .mean()
+        .sort_values(by=["mean_squared_error"])
+        .reset_index()
+    )
