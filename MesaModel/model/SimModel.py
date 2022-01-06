@@ -14,6 +14,7 @@ from .Pupil import Pupil
 from .truncated_normal_generator import TruncatedNormalGenerator
 from .utils import (
     compute_ave,
+    get_date_for_chart,
     get_num_disruptors,
     get_num_passive,
     get_num_learning,
@@ -230,7 +231,12 @@ class SimModel(Model):
         )
 
         # Monitor mean maths score
-        self.maths_datacollector = DataCollector({"Mean Score": compute_ave})
+        self.maths_datacollector = DataCollector(
+            {
+                "Date": get_date_for_chart,
+                "Mean Score": compute_ave,
+            }
+        )
         self.maths_datacollector.collect(self)
         self.running = True
 
