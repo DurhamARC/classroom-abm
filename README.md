@@ -44,21 +44,33 @@ More options for running the model:
 Usage: run.py [OPTIONS]
 
 Options:
-  -i, --input-file TEXT         Input file path, relative to current working
-                                directory
+  -i, --input-file TEXT       Input file path, relative to current working
+                              directory
 
-  -o, --output-file TEXT        Output file path, relative to current working
-                                directory
+  -o, --output-file TEXT      Output file path, relative to current working
+                              directory
 
   -p, --n-processors INTEGER  Number of processors to be used by the
-                                batchrunner (used only if -a is set)
+                              batchrunner (used only if -a is set)
 
-  -c, --class_id INTEGER        ID of class to run model for
-  -a, --all_classes             Whether to run over all classes (overrides
-                                class_id; not available in webserver mode)
+  -c, --class_id INTEGER      ID of class to run model for
+  -a, --all_classes           Whether to run over all classes (overrides
+                              class_id; not available in webserver mode)
 
-  -w, --webserver               Whether to run an interactive web server
-  --help                        Show this message and exit.
+  -w, --webserver             Whether to run an interactive web server
+  -t, --test-mode             Whether to run in test mode (only 10 ticks per
+                              day)
+
+  -s, --speedup INTEGER       By how much (approximately) to speed up the
+                              model run. The selected speedup will be adjusted
+                              to ensure there is a whole number of ticks per
+                              day, and at least 1 tick per day.
+
+                              ** NB: Speedup is for use in tests and webserver
+                              mode only: should not be used for
+                              parameterisation runs. **
+
+  --help                      Show this message and exit.
 ```
 
 Logging can be configured by two environment variables, `CLASSROOM_ABM_LOG_LEVEL` and `CLASSROOM_ABM_LOG_FILE`. By

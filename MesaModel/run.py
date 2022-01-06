@@ -75,7 +75,12 @@ logging.basicConfig(
     "--speedup",
     "-s",
     default=1,
-    help="By how much to speed up the model run",
+    help="""By how much (approximately) to speed up the model run. The selected
+speedup will be adjusted to ensure there is a whole number of ticks per
+day, and at least 1 tick per day.
+
+** NB: Speedup is for use in tests and webserver mode only: should not be used
+for parameterisation runs. **""",
 )
 def run_model_cli(
     input_file,
