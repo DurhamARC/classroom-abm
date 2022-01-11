@@ -16,8 +16,10 @@ from model.data_types import VARIABLE_PARAM_NAMES
 PARAM_DICT = {
     "teacher_quality_mean": (3.81, 3.81, 3),
     "teacher_quality_sd": (0.0943, 0.0943, 4),
+    "teacher_quality_variation_sd": (0.0, 1, 3),
     "teacher_control_mean": (2.992, 2.992, 3),
     "teacher_control_sd": (0.3065, 0.3065, 4),
+    "teacher_control_variation_sd": (0.0, 1, 3),
     "random_select": (4, 7, 1),
     "school_learn_factor": (0.02757, 0.02757, 5),
     "home_learn_factor": (0.0006804, 0.0006804, 7),
