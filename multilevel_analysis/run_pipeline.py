@@ -37,21 +37,8 @@ from model.data_types import (
 @click.option(
     "--model-params",
     "-mp",
-    type=(
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
+    type=tuple(
+        float for _ in dataclasses.astuple(DEFAULT_MODEL_PARAMS)[:-STATIC_PARAM_COUNT]
     ),
     default=dataclasses.astuple(DEFAULT_MODEL_PARAMS)[:-STATIC_PARAM_COUNT],
     help="""Space separated model params, e.g. 2 2 0.12 0.0043 800 ...
@@ -60,8 +47,10 @@ Full parameter list (defined in data_type.ModelParamType) is:
 
     teacher_quality_mean: float
     teacher_quality_sd: float
+    teacher_quality_variation_sd: float
     teacher_control_mean: float
     teacher_control_sd: float
+    teacher_control_variation_sd: float
     random_select: float
     school_learn_factor: float
     home_learn_factor: float
