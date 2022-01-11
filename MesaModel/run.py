@@ -71,8 +71,26 @@ logging.basicConfig(
     is_flag=True,
     help="Whether to run in test mode (only 10 ticks per day)",
 )
+@click.option(
+    "--speedup",
+    "-s",
+    default=1,
+    help="""By how much (approximately) to speed up the model run. The selected
+speedup will be adjusted to ensure there is a whole number of ticks per
+day, and at least 1 tick per day.
+
+** NB: Speedup is for use in tests and webserver mode only: should not be used
+for parameterisation runs. **""",
+)
 def run_model_cli(
-    input_file, output_file, n_processors, class_id, all_classes, webserver, test_mode
+    input_file,
+    output_file,
+    n_processors,
+    class_id,
+    all_classes,
+    webserver,
+    test_mode,
+    speedup,
 ):
     run_model(
         input_file,
@@ -82,6 +100,7 @@ def run_model_cli(
         all_classes=all_classes,
         webserver=webserver,
         test_mode=test_mode,
+        speedup=speedup,
     )
 
 
@@ -102,6 +121,7 @@ def run_model(
     webserver=False,
     model_params=None,
     test_mode=False,
+    speedup=1,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -157,6 +177,7 @@ def run_model(
     if webserver:
         canvas_grid = create_canvas_grid(14, 14)
         pupil_element = PupilMonitorElement()
+        max_speedup = round(model_params.maths_ticks_mean / 100) * 100
         server = ModularServer(
             SimModel,
             [sim_element, pupil_element, canvas_grid, sim_chart],
@@ -212,6 +233,13 @@ def run_model(
                     "Group pupils by ability (rather than at random)",
                     model_params.group_by_ability,
                 ),
+                "speedup": UserSettableParameter(
+                    "slider",
+                    "How much to speed up (and approximate) the simulation",
+                    1,
+                    1,
+                    max_speedup,
+                ),
             },
         )
 
@@ -230,6 +258,7 @@ def run_model(
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
                 "model_params": model_params,
+                "speedup": speedup,
             },
             nr_processes=n_processors,
             iterations=1,

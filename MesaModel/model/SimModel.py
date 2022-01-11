@@ -33,6 +33,7 @@ class SimModel(Model):
         model_params,
         class_id_and_rng=None,
         class_id=None,
+        speedup=1,
         **kwargs,
     ):
         self.data = all_data
@@ -49,6 +50,7 @@ class SimModel(Model):
         logger.info("Modelling class %s", self.class_id)
 
         self.model_params = model_params
+        self.speedup = speedup
         self.write_file = False
 
         # Update any parameters passed as kwargs
@@ -117,6 +119,9 @@ class SimModel(Model):
                 600,
             )
         )
+        self.ticks_per_home_day = self.model_params.ticks_per_home_day
+
+        self.set_speedup()
         logger.debug("%s ticks per school day", self.ticks_per_school_day)
 
         self.holiday_week_numbers = self.calculate_holiday_weeks(
@@ -141,7 +146,7 @@ class SimModel(Model):
             5 / 2000,
             0.08,
             lower=0,
-            batch_size=self.model_params.ticks_per_home_day * batch_multiplier,
+            batch_size=self.ticks_per_home_day * batch_multiplier,
         )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
@@ -229,6 +234,32 @@ class SimModel(Model):
         self.maths_datacollector.collect(self)
         self.running = True
 
+    def set_speedup(self):
+        if self.speedup > 1:
+            min_ticks = min(self.ticks_per_school_day, self.ticks_per_home_day)
+            # Can't have fewer than 1 tick per school day so reduce the speedup accordingly
+            if self.speedup > min_ticks:
+                self.speedup = min_ticks
+            # Speedup should be divisible by self.ticks_per_school_day
+            # e.g. if 10 ticks per day
+            # Can't have speedup more than 10 as we need 1 tick per days
+            # If speedup is 5 then we have 2 ticks per day
+            # If speedup is 8 then we would have 10/8 = 1.25 ticks per day
+            # Round that to 1, then speedup would be 10 (=10/1) not 8
+            # If speedup is 6 then we would have 10/6 = 1.67 ticks per day
+            # Round that to 2, then speedup would be 5 (=10/2) not 6
+            speedup_ticks_per_school_day = round(
+                self.ticks_per_school_day / self.speedup
+            )
+            self.speedup = self.ticks_per_school_day / speedup_ticks_per_school_day
+            self.ticks_per_school_day = speedup_ticks_per_school_day
+
+            speedup_ticks_per_home_day = round(self.ticks_per_home_day / self.speedup)
+            self.home_speedup = self.ticks_per_home_day / speedup_ticks_per_home_day
+            self.ticks_per_home_day = speedup_ticks_per_school_day
+        else:
+            self.home_speedup = 1
+
     @staticmethod
     def calculate_holiday_weeks(
         start_date, end_date, number_of_holidays, weeks_per_holiday
@@ -291,9 +322,7 @@ class SimModel(Model):
                     # Add holiday weeks
                     home_learning_days += 7 * self.model_params.weeks_per_holiday
 
-            self.home_learning_steps = (
-                home_learning_days * self.model_params.ticks_per_home_day
-            )
+            self.home_learning_steps = home_learning_days * self.ticks_per_home_day
 
             # Update current date
             self.current_date += datetime.timedelta(days=home_learning_days)

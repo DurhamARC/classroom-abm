@@ -15,34 +15,35 @@ class TeacherMonitorElement(RightPanelElement):
 
     def render(self, model):
         return f"""
-<h4 style="margin-top:0">Teacher Variables</h4>
+<h4 style="margin-top:0">Model Variables</h4>
 <table>
     <tr><td style="padding: 5px;">Teacher quality</td><td style="padding: 5px;">{model.teacher_quality:.2f}</td></tr>
     <tr><td style="padding: 5px;">Teacher control</td><td style="padding: 5px;">{model.teacher_control:.2f}</td></tr>
+    <tr><td style="padding: 5px;">Current date</td><td style="padding: 5px;">{model.current_date}</td></tr>
 </table>
 """
 
 
 class PupilMonitorElement(RightPanelElement):
     def __init__(self):
-        pass
+        self.data = ""
 
     def render(self, model):
-        # pupil_data = model.pupil_state_datacollector.model_vars["Pupils"][-1]
-        data = """
+        if model.pupil_state_datacollector:
+            self.data = """
 <h4 style="margin-top:0">Pupil Learning States</h4>
 <table>
     <tr><th style="padding: 5px;">State</th><th style="padding: 5px;text-align:right;"># Pupils</th></tr>
 """
-        for k in model.pupil_state_datacollector.model_vars:
-            data += f"""        <tr>
-            <td style="padding: 5px;">{k}</td>
-            <td style="padding: 5px;text-align:right;">{model.pupil_state_datacollector.model_vars[k][-1]}</td>
-        </tr>
+            for k in model.pupil_state_datacollector.model_vars:
+                self.data += f"""        <tr>
+        <td style="padding: 5px;">{k}</td>
+        <td style="padding: 5px;text-align:right;">{model.pupil_state_datacollector.model_vars[k][-1]}</td>
+    </tr>
 """
 
-        data += "</table>"
-        return data
+            self.data += "</table>"
+        return self.data
 
 
 class PupilCanvasGrid(CanvasGrid):
@@ -87,6 +88,18 @@ $(document).ready(function(){
         return data
 
 
+class CustomChartModule(ChartModule):
+
+    # Override render method so if the data collector no longer exists,
+    # the chart remains as it is
+    def render(self, model):
+        data_collector = getattr(model, self.data_collector_name)
+        if data_collector:
+            return super().render(model)
+        else:
+            return []
+
+
 def simclass_draw(agent):
     """
     Portrayal Method for canvas
@@ -126,7 +139,7 @@ def hist(model):
 
 
 sim_element = TeacherMonitorElement()
-sim_chart = ChartModule(
+sim_chart = CustomChartModule(
     [
         {"Label": "Mean Score", "Color": "orange"},
     ],

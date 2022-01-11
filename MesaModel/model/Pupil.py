@@ -162,24 +162,28 @@ class Pupil(Agent):
                 params.school_learn_random_proportion
                 * self.model.school_learning_random_gen.get_value()
             )
-            self.e_math += params.school_learn_factor * (
-                ability_increment + random_increment
+            self.e_math += (
+                self.model.speedup
+                * params.school_learn_factor
+                * (ability_increment + random_increment)
             )
 
-        # degrade the start_maths measure by a random amount on each tock
-        self.e_math += params.degradation_factor * (
-            self.random.random() - 0.5
-        )  # this did not work alone so now in combination with conformity
-        # try reducing the extremes - pull everyone back to the middle
-        self.e_math = self.model.mean_maths + params.conformity_factor * (
-            self.e_math - self.model.mean_maths
-        )
+        for i in range(round(self.model.speedup)):
+            # degrade the start_maths measure by a random amount on each tock
+            self.e_math += params.degradation_factor * (self.random.random() - 0.5)
+
+            # degradation did not work alone so now in combination with conformity
+            # try reducing the extremes - pull everyone back to the middle
+            self.e_math = self.model.mean_maths + params.conformity_factor * (
+                self.e_math - self.model.mean_maths
+            )
 
     def learn_at_home(self):
         params = self.model.model_params
 
         self.e_math += (
-            params.home_learn_factor
+            self.model.home_speedup
+            * params.home_learn_factor
             * ((6 - self.deprivation) / 3) ** 0.01
             * (
                 self.home_learning_ability_random_gen.get_value()
