@@ -76,29 +76,29 @@ class SimModel(Model):
         self.class_size = len(self.class_data)
 
         if self.model_params.teacher_control_sd > 0:
-            self.teacher_control = TruncatedNormalGenerator.get_single_value(
+            self.base_teacher_control = TruncatedNormalGenerator.get_single_value(
                 self.model_params.teacher_control_mean,
                 self.model_params.teacher_control_sd,
                 lower=0,
                 rng=self.rng,
             )
         else:
-            self.teacher_control = self.model_params.teacher_control_mean
+            self.base_teacher_control = self.model_params.teacher_control_mean
 
         if self.model_params.teacher_quality_sd > 0:
-            self.teacher_quality = TruncatedNormalGenerator.get_single_value(
+            self.base_teacher_quality = TruncatedNormalGenerator.get_single_value(
                 self.model_params.teacher_quality_mean,
                 self.model_params.teacher_quality_sd,
                 lower=0,
                 rng=self.rng,
             )
         else:
-            self.teacher_quality = self.model_params.teacher_quality_mean
+            self.base_teacher_quality = self.model_params.teacher_quality_mean
 
         logger.debug(
             "Teacher control: %s, teacher quality %s",
-            self.teacher_control,
-            self.teacher_quality,
+            self.base_teacher_control,
+            self.base_teacher_quality,
         )
 
         self.schedule = RandomActivation(self)
@@ -148,6 +148,29 @@ class SimModel(Model):
             lower=0,
             batch_size=self.ticks_per_home_day * batch_multiplier,
         )
+
+        # Create truncnorm generators for teacher variables and generate initial values
+        if self.model_params.teacher_control_variation_sd > 0:
+            self.teacher_control_random_gen = TruncatedNormalGenerator(
+                self.base_teacher_control,
+                self.model_params.teacher_control_variation_sd,
+                lower=0,
+                batch_size=self.total_days,
+            )
+        else:
+            self.teacher_control_random_gen = None
+
+        if self.model_params.teacher_quality_variation_sd > 0:
+            self.teacher_quality_random_gen = TruncatedNormalGenerator(
+                self.base_teacher_quality,
+                self.model_params.teacher_quality_variation_sd,
+                lower=0,
+                batch_size=self.total_days,
+            )
+        else:
+            self.teacher_quality_random_gen = None
+
+        self.update_teacher_variables()
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid_params = get_grid_size(
@@ -305,6 +328,18 @@ class SimModel(Model):
             current_week += term_weeks + weeks_per_holiday
         return holiday_week_numbers
 
+    def update_teacher_variables(self):
+        # Update control/quality at random based on base_teacher_control
+        if self.teacher_control_random_gen:
+            self.current_teacher_control = self.teacher_control_random_gen.get_value()
+        else:
+            self.current_teacher_control = self.base_teacher_control
+
+        if self.teacher_quality_random_gen:
+            self.current_teacher_quality = self.teacher_quality_random_gen.get_value()
+        else:
+            self.current_teacher_quality = self.base_teacher_quality
+
     def update_school_time(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
 
@@ -326,6 +361,9 @@ class SimModel(Model):
 
             # Update current date
             self.current_date += datetime.timedelta(days=home_learning_days)
+
+            # Update teacher control/teacher_quality
+            self.update_teacher_variables()
         else:
             self.home_learning_steps = 0
 
