@@ -11,6 +11,7 @@ from mesa.time import RandomActivation
 
 from .data_types import PupilLearningState, ModelParamType
 from .Pupil import Pupil
+from .teacher_variable import TeacherVariable
 from .truncated_normal_generator import TruncatedNormalGenerator
 from .utils import (
     compute_ave,
@@ -75,32 +76,6 @@ class SimModel(Model):
         self.class_data = self.data.get_class_data(self.class_id)
         self.class_size = len(self.class_data)
 
-        if self.model_params.teacher_control_sd > 0:
-            self.base_teacher_control = TruncatedNormalGenerator.get_single_value(
-                self.model_params.teacher_control_mean,
-                self.model_params.teacher_control_sd,
-                lower=0,
-                rng=self.rng,
-            )
-        else:
-            self.base_teacher_control = self.model_params.teacher_control_mean
-
-        if self.model_params.teacher_quality_sd > 0:
-            self.base_teacher_quality = TruncatedNormalGenerator.get_single_value(
-                self.model_params.teacher_quality_mean,
-                self.model_params.teacher_quality_sd,
-                lower=0,
-                rng=self.rng,
-            )
-        else:
-            self.base_teacher_quality = self.model_params.teacher_quality_mean
-
-        logger.debug(
-            "Teacher control: %s, teacher quality %s",
-            self.base_teacher_control,
-            self.base_teacher_quality,
-        )
-
         self.schedule = RandomActivation(self)
 
         # Calculate steps per day and holidays
@@ -149,28 +124,21 @@ class SimModel(Model):
             batch_size=self.ticks_per_home_day * batch_multiplier,
         )
 
-        # Create truncnorm generators for teacher variables and generate initial values
-        if self.model_params.teacher_control_variation_sd > 0:
-            self.teacher_control_random_gen = TruncatedNormalGenerator(
-                self.base_teacher_control,
-                self.model_params.teacher_control_variation_sd,
-                lower=0,
-                batch_size=self.total_days,
-            )
-        else:
-            self.teacher_control_random_gen = None
-
-        if self.model_params.teacher_quality_variation_sd > 0:
-            self.teacher_quality_random_gen = TruncatedNormalGenerator(
-                self.base_teacher_quality,
-                self.model_params.teacher_quality_variation_sd,
-                lower=0,
-                batch_size=self.total_days,
-            )
-        else:
-            self.teacher_quality_random_gen = None
-
-        self.update_teacher_variables()
+        # Create TeacherVariable instances for quality and control
+        self.teacher_control_variable = TeacherVariable(
+            self.model_params.teacher_control_mean,
+            self.model_params.teacher_control_sd,
+            self.model_params.teacher_control_variation_sd,
+            self.rng,
+            self.total_days,
+        )
+        self.teacher_quality_variable = TeacherVariable(
+            self.model_params.teacher_quality_mean,
+            self.model_params.teacher_quality_sd,
+            self.model_params.teacher_quality_variation_sd,
+            self.rng,
+            self.total_days,
+        )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid_params = get_grid_size(
@@ -328,18 +296,6 @@ class SimModel(Model):
             current_week += term_weeks + weeks_per_holiday
         return holiday_week_numbers
 
-    def update_teacher_variables(self):
-        # Update control/quality at random based on base_teacher_control
-        if self.teacher_control_random_gen:
-            self.current_teacher_control = self.teacher_control_random_gen.get_value()
-        else:
-            self.current_teacher_control = self.base_teacher_control
-
-        if self.teacher_quality_random_gen:
-            self.current_teacher_quality = self.teacher_quality_random_gen.get_value()
-        else:
-            self.current_teacher_quality = self.base_teacher_quality
-
     def update_school_time(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
 
@@ -363,7 +319,8 @@ class SimModel(Model):
             self.current_date += datetime.timedelta(days=home_learning_days)
 
             # Update teacher control/teacher_quality
-            self.update_teacher_variables()
+            self.teacher_control_variable.update_current_value()
+            self.teacher_quality_variable.update_current_value()
         else:
             self.home_learning_steps = 0
 
