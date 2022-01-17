@@ -88,3 +88,16 @@ def min_neighbour_count_to_modify_state(n_neighbours, default_threshold, group_s
     # otherwise we use the same proportion but round down so e.g. only 1 in a
     # pair will change behaviour
     return max(1, math.floor(group_size * default_threshold / 8))
+
+
+def get_start_state_weights(inattentiveness, hyper_impulsive):
+    # Calculate weights for a pupil's starting state, based on their
+    # inattentiveness and hyper_impulsive scores.
+    # A high inattentiveness score gives a greater chance of being yellow than
+    # green; a high hyper_impulsive score gives a greater chance of being red
+    # than yellow
+    # Returns an array of weights for [green, yellow, red] states
+    green_weight = (6 - inattentiveness) / 10
+    red_weight = hyper_impulsive / 10
+    yellow_weight = 1 - green_weight - red_weight
+    return [green_weight, yellow_weight, red_weight]
