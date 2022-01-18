@@ -28,6 +28,10 @@ CUSTOM_PERCENTAGE_CHANGE = {
 }
 DEFAULT_PERCENTAGE_CHANGE = 10
 
+# Determines how quickly the ranges narrow down; 1 would not change the range;
+# 2 would halve the range on each iteration
+RANGE_NARROWING_RATE = 1.2
+
 
 def generate_new_param_file(best_params, output_filename, iteration_number):
     """Generates a new set of parameters based on a range around `best_params`,
@@ -41,7 +45,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
         if k in valid_keys:
             percentage_change = (
                 CUSTOM_PERCENTAGE_CHANGE.get(k, DEFAULT_PERCENTAGE_CHANGE)
-                / 1.2 ** iteration_number
+                / RANGE_NARROWING_RATE ** iteration_number
             )
             min_val, max_val = CUSTOM_LIMITS.get(k, (None, None))
 
