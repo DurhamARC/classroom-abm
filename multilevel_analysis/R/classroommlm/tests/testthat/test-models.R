@@ -29,3 +29,14 @@ test_that("simple full model works", {
   )
   expect_equal(simple_full_model(sampled_pupil_data, mlnscript_path), expected_simple_full_model, tolerance=0.01)
 })
+
+test_that("full model without deprivation works", {
+  expected_full_model_no_deprivation = data.frame(
+    "Actual"=c(30.20, 0.60, -1.35, 2.30, 19.38, 32.45, 37.39),
+    "StdErr"=c(0.431, 0.017, 0.068, 0.144, 1.375, 0.497, NA),
+    row.names=c("Constant (mean)", "Start maths", "Inattention", "Ability",
+                "Class variance", "Pupil variance",
+                "% of variance at class level")
+  )
+  expect_equal(full_model_no_deprivation(sampled_pupil_data, mlnscript_path), expected_full_model_no_deprivation, tolerance=0.01)
+})

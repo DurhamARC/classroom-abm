@@ -21,7 +21,16 @@ CUSTOM_ROUNDING = {
 
 CUSTOM_LIMITS = {"random_select": (1, None), "conformity_factor": (None, 1)}
 
-CUSTOM_PERCENTAGE_CHANGE = {"random_select": 50, "conformity_factor": 0.001}
+CUSTOM_PERCENTAGE_CHANGE = {
+    "random_select": 100,
+    "conformity_factor": 0.001,
+    "maths_ticks_sd": 25,
+}
+DEFAULT_PERCENTAGE_CHANGE = 10
+
+# Determines how quickly the ranges narrow down; 1 would not change the range;
+# 2 would halve the range on each iteration
+RANGE_NARROWING_RATE = 1.2
 
 
 def generate_new_param_file(best_params, output_filename, iteration_number):
@@ -35,7 +44,8 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     for k in best_params.keys():
         if k in valid_keys:
             percentage_change = (
-                CUSTOM_PERCENTAGE_CHANGE.get(k, 1) / 1.5 ** iteration_number
+                CUSTOM_PERCENTAGE_CHANGE.get(k, DEFAULT_PERCENTAGE_CHANGE)
+                / RANGE_NARROWING_RATE ** iteration_number
             )
             min_val, max_val = CUSTOM_LIMITS.get(k, (None, None))
 
@@ -52,7 +62,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
             print(f"{k}: {param_dict[k]}")
 
     lhs_sampling.generate_lhs_params(
-        output_file=output_filename, param_limits=param_dict
+        num_param_sets=25, output_file=output_filename, param_limits=param_dict
     )
 
 
@@ -81,7 +91,9 @@ def prepare_next_run(
         os.path.join(current_data_dir, "lowest_to_highest_mses.csv")
     )
 
-    best_params = merged_dataframe.iloc[0]
+    # Group by parameters and sort by mean MSE for each parameter set
+    means_dataframe = merge_results.get_means_dataframe(merged_dataframe)
+    best_params = means_dataframe.iloc[0]
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
     generate_new_param_file(best_params, next_param_file, iteration_number)

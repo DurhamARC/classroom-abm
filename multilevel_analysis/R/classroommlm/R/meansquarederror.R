@@ -16,18 +16,24 @@
 #'        e.g. if passed '~/classroom_abm/classes_output/2021-09-06_output', will create files:
 #'        '~/classroom_abm/classes_output/2021-09-06_output_null_model.csv' and
 #'        '~/classroom_abm/classes_output/2021-09-06_output_full_model.csv'
-#' @param simplified if TRUE (default), runs \code{\link{simple_full_model}}; otherwise runs \code{\link{full_model}}
+#' @param level if 1 (default), runs \code{\link{simple_full_model}}; if 2,
+#'        runs \code{\link{full_model_no_deprivation}} otherwise runs
+#'        \code{\link{full_model}}
 #' @return the mean squared error score
 #' @export
-classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix, simplified = FALSE) {
+classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix, level = 1) {
   # Run models on real and simulated data
   real_null_model <- classroommlm::null_model(real_data, mlwinpath)
   sim_null_model <- classroommlm::null_model(simulated_data, mlwinpath)
 
-  if (simplified) {
+  if (level == 1) {
     real_full_model <- classroommlm::simple_full_model(real_data, mlwinpath)
     sim_full_model <- classroommlm::simple_full_model(simulated_data, mlwinpath)
     pupil_properties = c('Start maths', 'Deprivation')
+  } else if (level == 2) {
+    real_full_model <- classroommlm::full_model_no_deprivation(real_data, mlwinpath)
+    sim_full_model <- classroommlm::full_model_no_deprivation(simulated_data, mlwinpath)
+    pupil_properties = c('Start maths', 'Inattention', 'Ability')
   } else {
     real_full_model <- classroommlm::full_model(real_data, mlwinpath)
     sim_full_model <- classroommlm::full_model(simulated_data, mlwinpath)

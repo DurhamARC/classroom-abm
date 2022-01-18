@@ -117,7 +117,7 @@ class SimModel(Model):
                 self.model_params.maths_ticks_mean,
                 self.model_params.maths_ticks_sd,
                 10,
-                300,
+                600,
             )
         )
         self.ticks_per_home_day = self.model_params.ticks_per_home_day

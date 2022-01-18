@@ -209,8 +209,16 @@ def run_webserver_with_params(csv_file, row_number):
     required=True,
     help="Percentage of input CSV to sample",
 )
-def create_sample(input_file, output_file, percentage_sample):
-    cs.create_sample(input_file, output_file, percentage_sample)
+@click.option(
+    "--exclude-samples",
+    "-x",
+    type=str,
+    multiple=True,
+    default=[],
+    help="Percentage of input CSV to sample",
+)
+def create_sample(input_file, output_file, percentage_sample, exclude_samples):
+    cs.create_sample(input_file, output_file, percentage_sample, exclude_samples)
 
 
 if __name__ == "__main__":

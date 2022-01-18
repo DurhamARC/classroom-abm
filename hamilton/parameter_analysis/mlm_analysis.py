@@ -19,7 +19,11 @@ def get_mlms(directory):
     test_id_dir_pattern = re.compile(r".*_(\d+)_\d+$")
 
     for dirpath, dirnames, filenames in os.walk(directory):
-        if not dirpath.endswith("corrupted"):
+        if not (
+            dirpath.endswith("corrupted")
+            or dirpath.endswith("interventions")
+            or dirpath.endswith("test_data")
+        ):
             for f in filenames:
                 if f.startswith("mse_output_") and f.endswith(".csv"):
                     full_path = os.path.join(dirpath, f)
