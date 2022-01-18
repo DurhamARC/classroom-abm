@@ -23,9 +23,11 @@ def run_webserver_with_params(parameter_csv, row_number):
         if k in model_param_dict:
             model_param_dict[k] = row[k]
 
+    os.chdir("../../MesaModel")
+
     run_model(
-        "../../classes_input/test_input_short.csv",
-        f"../../classes_output/output{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv",
+        "../classes_input/test_input_short.csv",
+        f"../classes_output/output{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv",
         1,
         all_classes=False,
         webserver=True,

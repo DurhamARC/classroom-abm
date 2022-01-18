@@ -16,7 +16,7 @@ def run_rscript(script=None, scriptname=None, args=None):
         sys.exit(2)
 
     if args:
-        params.extend(args)
+        params.extend([str(a) for a in args])
 
     print(f"Running: {' '.join(params)}")
     completed = subprocess.run(
@@ -64,7 +64,7 @@ def run_multilevel_analysis(real_data_file, simulated_data_file):
 
     run_rscript(script="renv::restore()")
     output = run_rscript(
-        scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path]
+        scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path, 2]
     )
     output_lines = output.splitlines()
     try:

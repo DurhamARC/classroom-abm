@@ -38,6 +38,7 @@ done
 
 python $SCRIPT_DIR/cli.py merge-best-results -d `pwd`
 python $SCRIPT_DIR/cli.py plot-correlations -i `pwd`/"best_mses.csv"
+python $SCRIPT_DIR/cli.py plot-correlations -i `pwd`/"best_mse_means.csv" -o `pwd`/means_correlations.png
 
 popd > /dev/null
 popd > /dev/null

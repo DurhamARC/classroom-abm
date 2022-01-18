@@ -46,7 +46,11 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         elif n_processors == 16:
             self.time_limit = "1h30m" if "short" in os.environ["DATASET"] else "2h"
         else:
-            self.time_limit = "1h15m" if "short" in os.environ["DATASET"] else "1h30m"
+            self.time_limit = (
+                "1h15m"
+                if "short" in os.environ["DATASET"]
+                else ("1h" if "_25" in os.environ["DATASET"] else "1h30m")
+            )
 
         self.num_tasks = 1
         self.num_cpus_per_task = n_processors

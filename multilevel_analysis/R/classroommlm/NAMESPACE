@@ -2,5 +2,10 @@
 
 export(classroom_mse)
 export(full_model)
+export(full_model_no_deprivation)
 export(null_model)
 export(simple_full_model)
+importFrom(stats,coef)
+importFrom(stats,sd)
+importFrom(stats,vcov)
+importFrom(utils,write.csv)

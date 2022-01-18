@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.3",
+    "Version": "4.1.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -88,9 +88,9 @@
     },
     "classroommlm": {
       "Package": "classroommlm",
-      "Version": "0.1.3",
+      "Version": "0.1.4",
       "Source": "Local",
-      "Hash": "e1b0dfb41c447d5c53627f277903c159"
+      "Hash": "8378d69c0ee2509aebf83441780ea678"
     },
     "cli": {
       "Package": "cli",
