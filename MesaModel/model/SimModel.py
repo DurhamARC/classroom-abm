@@ -304,36 +304,41 @@ class SimModel(Model):
 
     def update_school_time(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
-
-        if time_in_day == self.ticks_per_school_day - 1:
-            # Last tick of school day, so add home learning time
-            home_learning_days = 1
+        if (
+            time_in_day == self.ticks_per_school_day - 1
+            or self.ticks_per_school_day == 1
+        ):
+            # Have just finished the penultimate tick of school day, so add
+            # home learning time ready for the next tick
+            self.home_learning_days = 1
 
             # If it's Friday add 2 more days' home learning for the weekend
             if self.current_date.weekday() == 4:
-                home_learning_days += 2
+                self.home_learning_days += 2
 
                 # Is it a holiday?
                 week_number = math.floor((self.current_date - self.start_date).days / 7)
                 if week_number in self.holiday_week_numbers:
                     # Add holiday weeks
-                    home_learning_days += 7 * self.model_params.weeks_per_holiday
+                    self.home_learning_days += 7 * self.model_params.weeks_per_holiday
 
-            self.home_learning_steps = home_learning_days * self.ticks_per_home_day
+            self.home_learning_steps = self.home_learning_days * self.ticks_per_home_day
 
-            # Update current date
-            self.current_date += datetime.timedelta(days=home_learning_days)
+        else:
+            self.home_learning_steps = 0
+
+        if time_in_day == 0:
+            # Update current date by self.home_learning days now we've completed the last tick of the day
+            self.current_date += datetime.timedelta(days=self.home_learning_days)
+            self.home_learning_days = 0
 
             # Update teacher control/teacher_quality
             self.teacher_control_variable.update_current_value()
             self.teacher_quality_variable.update_current_value()
-        else:
-            self.home_learning_steps = 0
 
-            if time_in_day == 0 and self.current_date.weekday() == 0:
-                # First tick of the week so reset all pupils to Yellow
-                for pupil in self.schedule.agents:
-                    pupil.learning_state = PupilLearningState.YELLOW
+            # Reset all pupils's states ready for the next day
+            for pupil in self.schedule.agents:
+                pupil.resetState()
 
     def step(self):
         # Reset counter of learning and disruptive agents

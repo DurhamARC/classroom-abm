@@ -1,3 +1,5 @@
+import pytest
+
 from model.data_types import GridParamType
 from model import utils
 
@@ -103,3 +105,21 @@ def test_min_neighbour_count_to_modify_state():
     assert utils.min_neighbour_count_to_modify_state(5, 2, 6) == 1
     assert utils.min_neighbour_count_to_modify_state(6, 2, 7) == 1
     assert utils.min_neighbour_count_to_modify_state(7, 2, 8) == 2
+
+
+@pytest.mark.parametrize(
+    "inattentiveness,hyper_impulsive,expected_weights",
+    [
+        (1, 1, [0.5, 0.4, 0.1]),
+        (5, 5, [0.1, 0.4, 0.5]),
+        (3, 3, [0.3, 0.4, 0.3]),
+        (1, 5, [0.5, 0.0, 0.5]),
+        (5, 1, [0.1, 0.8, 0.1]),
+        (2, 4, [0.4, 0.2, 0.4]),
+        (4, 3, [0.2, 0.5, 0.3]),
+    ],
+)
+def test_get_start_state_weights(inattentiveness, hyper_impulsive, expected_weights):
+    assert utils.get_start_state_weights(
+        inattentiveness, hyper_impulsive
+    ) == pytest.approx(expected_weights)

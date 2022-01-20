@@ -2,7 +2,7 @@ from mesa import Agent
 
 from .data_types import PupilLearningState
 from .truncated_normal_generator import TruncatedNormalGenerator
-from .utils import min_neighbour_count_to_modify_state
+from .utils import min_neighbour_count_to_modify_state, get_start_state_weights
 
 
 class Pupil(Agent):
@@ -39,6 +39,11 @@ class Pupil(Agent):
         self.red_green_state_change_threshold = min_neighbour_count_to_modify_state(
             neighbour_count, 2, group_size
         )
+
+        self.start_state_weights = get_start_state_weights(
+            self.inattentiveness, self.hyper_impulsive
+        )
+        self.resetState()
 
         # Create truncnorm generators for learning increments based on pupil's ability
         self.school_learning_ability_random_gen = TruncatedNormalGenerator(
@@ -86,6 +91,12 @@ class Pupil(Agent):
 
         for i in range(self.model.home_learning_steps):
             self.learn_at_home()
+
+    def resetState(self):
+        old_state = self.learning_state
+        self.learning_state = self.model.rng.choice(
+            list(PupilLearningState), p=self.start_state_weights
+        )
 
     def changeState(self):
         total_count, red_count, yellow_count, green_count = self.getNeighbourCount()
