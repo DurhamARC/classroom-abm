@@ -19,8 +19,8 @@ class TeacherMonitorElement(RightPanelElement):
         return f"""
 <h4 style="margin-top:0">Model Variables</h4>
 <table>
-    <tr><td style="padding: 5px;">Teacher quality</td><td style="padding: 5px;">{model.teacher_quality:.2f}</td></tr>
-    <tr><td style="padding: 5px;">Teacher control</td><td style="padding: 5px;">{model.teacher_control:.2f}</td></tr>
+    <tr><td style="padding: 5px;">Teacher quality</td><td style="padding: 5px;">{model.teacher_quality_variable.current_value:.2f}</td></tr>
+    <tr><td style="padding: 5px;">Teacher control</td><td style="padding: 5px;">{model.teacher_control_variable.current_value:.2f}</td></tr>
     <tr><td style="padding: 5px;">Current date</td><td style="padding: 5px;">{model.current_date}</td></tr>
 </table>
 """
