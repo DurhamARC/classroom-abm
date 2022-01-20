@@ -46,14 +46,11 @@ def get_date_for_chart(model):
     # through the school day (9am-3pm) and putting the last tick of the day at
     # 6pm.
     ticks_in_day = model.schedule.steps % model.ticks_per_school_day
-    if ticks_in_day == model.ticks_per_school_day - 1:
+    if ticks_in_day == 0:
         # Date has updated to next day so set time to 6pm the day before (at
-        # end of home learning time), or 3 days before if it's Monday)
-        days_to_subtract = 1
-        if model.current_date.weekday() == 0:
-            days_to_subtract = 3
-        date = model.current_date - datetime.timedelta(days=days_to_subtract)
+        # end of home learning time)
         time = datetime.time(18, 0, 0)
+        date = model.current_date - datetime.timedelta(days=1)
     else:
         # Work out how far through the school day (9am-3pm) we are
         date = model.current_date
@@ -61,9 +58,8 @@ def get_date_for_chart(model):
         minutes = int(day_fraction * 360)
         time = datetime.time(9 + minutes // 60, minutes % 60, 0)
 
-    return datetime.datetime.combine(
-        date, time, tzinfo=datetime.timezone.utc
-    ).timestamp()
+    date_with_time = datetime.datetime.combine(date, time, tzinfo=datetime.timezone.utc)
+    return date_with_time.timestamp()
 
 
 def compute_ave(model):

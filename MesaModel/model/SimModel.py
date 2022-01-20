@@ -304,8 +304,10 @@ class SimModel(Model):
 
     def update_school_time(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
-
-        if time_in_day == self.ticks_per_school_day - 1:
+        if (
+            time_in_day == self.ticks_per_school_day - 1
+            or self.ticks_per_school_day == 1
+        ):
             # Have just finished the penultimate tick of school day, so add
             # home learning time ready for the next tick
             self.home_learning_days = 1
@@ -325,18 +327,18 @@ class SimModel(Model):
         else:
             self.home_learning_steps = 0
 
-            if time_in_day == 0:
-                # Update current date by self.home_learning days now we've completed the last tick of the day
-                self.current_date += datetime.timedelta(days=self.home_learning_days)
-                self.home_learning_days = 0
+        if time_in_day == 0:
+            # Update current date by self.home_learning days now we've completed the last tick of the day
+            self.current_date += datetime.timedelta(days=self.home_learning_days)
+            self.home_learning_days = 0
 
-                # Update teacher control/teacher_quality
-                self.teacher_control_variable.update_current_value()
-                self.teacher_quality_variable.update_current_value()
+            # Update teacher control/teacher_quality
+            self.teacher_control_variable.update_current_value()
+            self.teacher_quality_variable.update_current_value()
 
-                # Reset all pupils's states ready for the next day
-                for pupil in self.schedule.agents:
-                    pupil.resetState()
+            # Reset all pupils's states ready for the next day
+            for pupil in self.schedule.agents:
+                pupil.resetState()
 
     def step(self):
         # Reset counter of learning and disruptive agents
