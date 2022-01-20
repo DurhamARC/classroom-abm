@@ -11,9 +11,11 @@ from mesa.time import RandomActivation
 
 from .data_types import PupilLearningState, ModelParamType
 from .Pupil import Pupil
+from .teacher_variable import TeacherVariable
 from .truncated_normal_generator import TruncatedNormalGenerator
 from .utils import (
     compute_ave,
+    get_date_for_chart,
     get_num_disruptors,
     get_num_passive,
     get_num_learning,
@@ -75,32 +77,6 @@ class SimModel(Model):
         self.class_data = self.data.get_class_data(self.class_id)
         self.class_size = len(self.class_data)
 
-        if self.model_params.teacher_control_sd > 0:
-            self.teacher_control = TruncatedNormalGenerator.get_single_value(
-                self.model_params.teacher_control_mean,
-                self.model_params.teacher_control_sd,
-                lower=0,
-                rng=self.rng,
-            )
-        else:
-            self.teacher_control = self.model_params.teacher_control_mean
-
-        if self.model_params.teacher_quality_sd > 0:
-            self.teacher_quality = TruncatedNormalGenerator.get_single_value(
-                self.model_params.teacher_quality_mean,
-                self.model_params.teacher_quality_sd,
-                lower=0,
-                rng=self.rng,
-            )
-        else:
-            self.teacher_quality = self.model_params.teacher_quality_mean
-
-        logger.debug(
-            "Teacher control: %s, teacher quality %s",
-            self.teacher_control,
-            self.teacher_quality,
-        )
-
         self.schedule = RandomActivation(self)
 
         # Calculate steps per day and holidays
@@ -116,7 +92,7 @@ class SimModel(Model):
                 self.model_params.maths_ticks_mean,
                 self.model_params.maths_ticks_sd,
                 10,
-                300,
+                600,
             )
         )
         self.ticks_per_home_day = self.model_params.ticks_per_home_day
@@ -147,6 +123,22 @@ class SimModel(Model):
             0.08,
             lower=0,
             batch_size=self.ticks_per_home_day * batch_multiplier,
+        )
+
+        # Create TeacherVariable instances for quality and control
+        self.teacher_control_variable = TeacherVariable(
+            self.model_params.teacher_control_mean,
+            self.model_params.teacher_control_sd,
+            self.model_params.teacher_control_variation_sd,
+            self.rng,
+            self.total_days,
+        )
+        self.teacher_quality_variable = TeacherVariable(
+            self.model_params.teacher_quality_mean,
+            self.model_params.teacher_quality_sd,
+            self.model_params.teacher_quality_variation_sd,
+            self.rng,
+            self.total_days,
         )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
@@ -230,7 +222,12 @@ class SimModel(Model):
         )
 
         # Monitor mean maths score
-        self.maths_datacollector = DataCollector({"Mean Score": compute_ave})
+        self.maths_datacollector = DataCollector(
+            {
+                "Date": get_date_for_chart,
+                "Mean Score": compute_ave,
+            }
+        )
         self.maths_datacollector.collect(self)
         self.running = True
 
@@ -332,6 +329,10 @@ class SimModel(Model):
                 # Update current date by self.home_learning days now we've completed the last tick of the day
                 self.current_date += datetime.timedelta(days=self.home_learning_days)
                 self.home_learning_days = 0
+
+                # Update teacher control/teacher_quality
+                self.teacher_control_variable.update_current_value()
+                self.teacher_quality_variable.update_current_value()
 
                 # Reset all pupils's states ready for the next day
                 for pupil in self.schedule.agents:

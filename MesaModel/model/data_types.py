@@ -24,8 +24,10 @@ class ModelParamType:
     # For parameterisation
     teacher_quality_mean: float
     teacher_quality_sd: float
+    teacher_quality_variation_sd: float
     teacher_control_mean: float
     teacher_control_sd: float
+    teacher_control_variation_sd: float
     random_select: float
     school_learn_factor: float
     home_learn_factor: float
@@ -52,8 +54,10 @@ class ModelParamType:
 DEFAULT_MODEL_PARAMS = ModelParamType(
     teacher_quality_mean=3.8767199999999997,
     teacher_quality_sd=0.09516000000000001,
+    teacher_quality_variation_sd=0.5,
     teacher_control_mean=2.95547,
     teacher_control_sd=0.30268,
+    teacher_control_variation_sd=0.5,
     random_select=1.03267,
     school_learn_factor=0.02758,
     home_learn_factor=0.0006981,

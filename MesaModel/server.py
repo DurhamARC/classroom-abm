@@ -1,3 +1,5 @@
+import json
+
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import VisualizationElement
 
@@ -17,8 +19,8 @@ class TeacherMonitorElement(RightPanelElement):
         return f"""
 <h4 style="margin-top:0">Model Variables</h4>
 <table>
-    <tr><td style="padding: 5px;">Teacher quality</td><td style="padding: 5px;">{model.teacher_quality:.2f}</td></tr>
-    <tr><td style="padding: 5px;">Teacher control</td><td style="padding: 5px;">{model.teacher_control:.2f}</td></tr>
+    <tr><td style="padding: 5px;">Teacher quality</td><td style="padding: 5px;">{model.teacher_quality_variable.current_value:.2f}</td></tr>
+    <tr><td style="padding: 5px;">Teacher control</td><td style="padding: 5px;">{model.teacher_control_variable.current_value:.2f}</td></tr>
     <tr><td style="padding: 5px;">Current date</td><td style="padding: 5px;">{model.current_date}</td></tr>
 </table>
 """
@@ -90,12 +92,41 @@ $(document).ready(function(){
 
 class CustomChartModule(ChartModule):
 
+    package_includes = ["ChartModule.js"]
+    local_includes = [
+        "model/MomentTzChart.min.js",
+        "model/TimeSeriesChartModule.js",
+    ]
+
+    def __init__(
+        self,
+        series,
+        canvas_height=200,
+        canvas_width=500,
+        data_collector_name="datacollector",
+    ):
+        super().__init__(series, canvas_height, canvas_width, data_collector_name)
+        series_json = json.dumps(self.series)
+        new_element = "new TimeSeriesChartModule({}, {},  {})"
+        new_element = new_element.format(series_json, canvas_width, canvas_height)
+        self.js_code = "elements.push(" + new_element + ");"
+
     # Override render method so if the data collector no longer exists,
     # the chart remains as it is
     def render(self, model):
+        current_values = []
         data_collector = getattr(model, self.data_collector_name)
         if data_collector:
-            return super().render(model)
+
+            for s in self.series:
+                name = s["Label"]
+                try:
+                    date = data_collector.model_vars["Date"][-1]
+                    val = data_collector.model_vars[name][-1]  # Latest value
+                except (IndexError, KeyError):
+                    val = (0, 0)
+                current_values.append((date, val))
+            return current_values
         else:
             return []
 
