@@ -27,13 +27,10 @@ CUSTOM_LIMITS = {
 }
 
 CUSTOM_PERCENTAGE_CHANGE = {
-    "random_select": 200,
-    "teacher_quality_variation_sd": 200,
-    "teacher_control_variation_sd": 200,
+    "random_select": 100,
     "conformity_factor": 0.001,
-    "maths_ticks_sd": 25,
 }
-DEFAULT_PERCENTAGE_CHANGE = 20
+DEFAULT_PERCENTAGE_CHANGE = 10
 
 # Determines how quickly the ranges narrow down; 1 would not change the range;
 # 2 would halve the range on each iteration
