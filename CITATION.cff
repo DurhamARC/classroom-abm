@@ -1,0 +1,27 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Classroom ABM
+message: 'If you use this software, please cite it as below.'
+type: software
+authors:
+  - given-names: Alison
+    email: alison.r.clarke@durham.ac.uk
+    affiliation: Durham University
+    orcid: 'https://orcid.org/0000-0002-0205-6644'
+    family-names: Clarke
+  - given-names: Mark
+    family-names: Turner
+    email: mark.turner@durham.ac.uk
+    affiliation: Durham University
+    orcid: 'https://orcid.org/0000-0002-5274-957X'
+  - given-names: Peter
+    family-names: Tymms
+    email: p.b.tymms@durham.ac.uk
+    affiliation: Durham University
+    orcid: 'https://orcid.org/0000-0002-7170-2566'
+  - given-names: Khulood
+    family-names: Alharbi
+    affiliation: Durham University
+license: MIT
