@@ -5,6 +5,7 @@ cff-version: 1.2.0
 title: Classroom ABM
 message: 'If you use this software, please cite it as below.'
 type: software
+url: "https://github.com/DurhamARC/classroom-abm"
 authors:
   - given-names: Alison
     email: alison.r.clarke@durham.ac.uk
