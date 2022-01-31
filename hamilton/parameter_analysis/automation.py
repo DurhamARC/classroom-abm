@@ -14,6 +14,7 @@ import merge_results
 import plot_correlations
 
 CUSTOM_ROUNDING = {
+    "teacher_control_variation_sd": 7,
     "home_learn_factor": 7,
     "conformity_factor": 9,
     "maths_ticks_mean": 0,
