@@ -22,12 +22,8 @@ def plot_correlations(input_filename, output_filename=None):
     y_vars = ["mean_squared_error"]
     x_vars = [x for x in VARIABLE_PARAM_NAMES if x in list(df.columns.values)]
 
-    pp = sns.pairplot(
-        data=df,
-        kind="reg",
-        y_vars=y_vars,
-        x_vars=x_vars,
-        diag_kind=None,
-        hue="is_min_mse",
-    )
-    pp.savefig(output_filename)
+    grid = sns.PairGrid(df, x_vars=x_vars, y_vars=y_vars, hue="is_min_mse")
+    grid = grid.map(sns.regplot, order=2)
+    grid.add_legend()
+    grid.tight_layout()
+    grid.savefig(output_filename)
