@@ -1,22 +1,20 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks 1
+#SBATCH --ntasks 6
 #SBATCH --cpus-per-task 6
-#SBATCH --time=3:0:0
+#SBATCH --time=0:30:0
 #SBATCH -J run_mesa_with_batchrunner
 #SBATCH -o run_mesa_with_batchrunner.out
 #SBATCH -e run_mesa_with_batchrunner.err
-#SBATCH --exclusive
-# Run on Hamilton7's queue for distributed work
-#SBATCH -p par7.q
+# Run on Hamilton8's queue for distributed work
+#SBATCH -p shared
 
 module purge
-module load miniconda2/4.1.11
-module load r/4.0.3
+module load r/4.1.2
+module load $R_BUILD_MODULES
 
 source activate classroom_abm
 
-pushd /ddn/home/$USER/classroom-abm/multilevel_analysis
+pushd $HOME/classroom-abm/multilevel_analysis
 
 # prepend 'time' to the following command if doing
 # benchmarking work. Note: this runs all 6 classes in

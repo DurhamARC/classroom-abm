@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --nodes=1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 2
 #SBATCH --time=0:15:0
@@ -13,12 +12,11 @@ module purge
 module load r/4.1.2
 module load $R_BUILD_MODULES
 
-
 source activate classroom_abm
 
 pushd $HOME/classroom-abm/multilevel_analysis
 
-# Change these paths to /ddn/home if that's where you installed mlwin
+# Change these paths to $HOME if that's where you installed mlwin
 export MLNSCRIPT_PATH=$NOBACKUP/usr/bin/mlnscript
 export LD_LIBRARY_PATH=$NOBACKUP/usr/lib64:$LD_LIBRARY_PATH
 

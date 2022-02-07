@@ -1,25 +1,24 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks 1
-#SBATCH --cpus-per-task 24
-#SBATCH --time=24:0:0
+#SBATCH --ntasks 64
+#SBATCH --cpus-per-task 64
+#SBATCH --time=2:0:0
 #SBATCH -J run_mesa_with_batchrunner
 #SBATCH -o run_mesa_with_batchrunner.out
 #SBATCH -e run_mesa_with_batchrunner.err
-# Run on test queue for distributed work
-#SBATCH -p par7.q
+# Run on Hamilton8's shared queue
+#SBATCH -p shared
 
 module purge
-module load miniconda2/4.1.11
-module load r/4.0.3
+module load r/4.1.2
+module load $R_BUILD_MODULES
 
 source activate classroom_abm
 
-pushd /ddn/home/$USER/classroom-abm/multilevel_analysis
+pushd $HOME/classroom-abm/multilevel_analysis
 
-# Change these paths to /ddn/home if that's where you installed mlwin
-export LD_LIBRARY_PATH=/ddn/data/$USER/usr/lib64
-export MLNSCRIPT_PATH=/ddn/data/$USER/usr/bin/mlnscript
+# Change these paths to $HOME if that's where you installed mlwin
+export MLNSCRIPT_PATH=$NOBACKUP/usr/bin/mlnscript
+export LD_LIBRARY_PATH=$NOBACKUP/usr/lib64:$LD_LIBRARY_PATH
 
 # prepend 'time' to the following command if doing
 # benchmarking work. Note: this runs all 6 classes in
@@ -29,4 +28,4 @@ export MLNSCRIPT_PATH=/ddn/data/$USER/usr/bin/mlnscript
 # the full dataset add -i ../classes_input/test_input.csv
 # If you do this set -p to 24 to exploit all of the cores
 # one of Hamilton's nodes.
-python run_pipeline.py -i ../classes_input/test_input.csv -p 24
+python run_pipeline.py -i ../classes_input/test_input.csv -p 64
