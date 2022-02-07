@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --ntasks 64
 #SBATCH --cpus-per-task 64
 #SBATCH --time=2:0:0
 #SBATCH -J run_mesa_with_batchrunner
