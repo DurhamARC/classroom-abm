@@ -55,8 +55,11 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         self.num_tasks = 1
         self.num_cpus_per_task = n_processors
 
-        self.valid_prog_environs = ["intel"]
-        self.valid_systems = ["hamilton:multi_cpu_single_node"]
+        self.valid_prog_environs = ["intel", "amd"]
+        self.valid_systems = [
+            "hamilton:multi_cpu_single_node",
+            "hamilton8:multi_cpu_shared",
+        ]
 
         self.sanity_patterns = sn.assert_found(r"Mean squared error:", self.stdout)
 

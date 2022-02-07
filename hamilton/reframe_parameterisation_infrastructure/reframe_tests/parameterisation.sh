@@ -42,8 +42,18 @@ else
   echo "Will run one set of parameters."
 fi
 
+if [ -n "$NUM_ITERATIONS" ]; then
+  echo "Will generate new parameters and run $NUM_ITERATIONS times"
+else
+  export NUM_ITERATIONS=1
+  echo "Will run one set of parameters."
+fi
 
-source ../environ/env_hamilton.sh
+if [ -z "$HAMILTON_VERSION" ]; then
+  export $HAMILTON_VERSION="hamilton"
+fi
+
+source ../environ/env_${HAMILTON_VERSION}
 
 for i in $(seq $NUM_ITERATIONS); do
   START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
@@ -73,13 +83,21 @@ for i in $(seq $NUM_ITERATIONS); do
 
   # Set up conda env to run generate_next_params
   module purge
-  module load miniconda2/4.1.11
+  if [[ $HAMILTON_VERSION == "hamilton" ]]; then
+    module load miniconda2/4.1.11
+  fi
+
   source activate classroom_abm
   python ../../parameter_analysis/cli.py prepare-next-run -t $START_DATETIME -r $OUTPUT_FILE -rd $OUTPUT_DIR -pd $PARAMETERISATION_RESULTS_DIR -it $i
 
   # Reset modules for reframe
   module purge
-  module load python/3.6.8
+
+  if [[ $HAMILTON_VERSION == "hamilton" ]]; then
+    module load python/3.6.8
+  fi
+    module load python/3.9.9
+  fi
 
   pushd $PARAMETERISATION_RESULTS_DIR/$START_DATETIME > /dev/null
   cp $PARAMETER_FILE parameters.csv
@@ -88,7 +106,10 @@ for i in $(seq $NUM_ITERATIONS); do
   echo "Creating zip $ZIPFILE"
   zip $ZIPFILE *
 
-  pushd $OUTPUT_DIR/hamilton/multi_cpu_single_node/intel/ > /dev/null
+  if [[ $HAMILTON_VERSION == "hamilton" ]]; then
+    pushd $OUTPUT_DIR/hamilton/multi_cpu_single_node/intel/ > /dev/null
+  else
+    pushd $OUTPUT_DIR/hamilton8/multi_cpu_shared/amd/ > /dev/null
 
   zip -r $ZIPFILE Parameterisation_24_*
 
