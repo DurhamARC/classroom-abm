@@ -10,7 +10,9 @@
 #SBATCH -p test
 
 module purge
-module load r/4.0.3
+module load r/4.1.2
+module load $R_BUILD_MODULES
+
 
 source activate classroom_abm
 
