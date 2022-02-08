@@ -4,7 +4,7 @@ site_configuration = {
             "name": "hamilton",
             "descr": "hamilton ARC supercomputer",
             "hostnames": ["hamilton1.hpc.dur.ac.uk", "hamilton2.hpc.dur.ac.uk"],
-            "modules_system": "nomod",
+            "modules_system": "tmod",
             "partitions": [
                 {
                     "name": "login",
@@ -29,7 +29,7 @@ site_configuration = {
             "name": "hamilton8",
             "descr": "hamilton8 ARC supercomputer",
             "hostnames": ["login1.ham8.dur.ac.uk", "login2.ham8.dur.ac.uk"],
-            "modules_system": "tmod",
+            "modules_system": "nomod",
             "partitions": [
                 {
                     "name": "login",
