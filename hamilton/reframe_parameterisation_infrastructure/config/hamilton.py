@@ -65,7 +65,6 @@ site_configuration = {
             ],
         },
         {
-            "modules": ["r/4.1.2", "$R_BUILD_MODULES"],
             "name": "amd",
             "cc": "icc",
             "cxx": "icpc",

@@ -80,7 +80,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         if os.environ.get("HAMILTON_VERSION") == "hamilton8":
             # Need to manualy load modules on hamilton8 as modules system isn't compatible with ReFrame
             self.prerun_cmds.extend(
-                [f"module load {m}" for m in self.current_environ.modules]
+                ["module load r/4.1.2", "module load $R_BUILD_MODULES"],
             )
 
         self.executable = "python run_pipeline.py"
