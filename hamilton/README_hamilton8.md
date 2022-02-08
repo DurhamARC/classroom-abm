@@ -98,7 +98,7 @@ load python:
 ```
 cd ~/
 module purge
-module load python/3.6.8
+module load python/3.9.9
 ```
 
 Then clone and install ReFrame:
@@ -171,6 +171,7 @@ prior to running ReFrame.
 Navigate to the test directory, open a screen session and run:
 
 ```
+export HAMILTON_VERSION=hamilton8
 cd ~/classroom-abm/hamilton/reframe_parameterisation_infrastructure/reframe_tests
 screen
 ./parameterisation.sh --with-<small/big>-dataset

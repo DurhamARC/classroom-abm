@@ -42,13 +42,6 @@ else
   echo "Will run one set of parameters."
 fi
 
-if [ -n "$NUM_ITERATIONS" ]; then
-  echo "Will generate new parameters and run $NUM_ITERATIONS times"
-else
-  export NUM_ITERATIONS=1
-  echo "Will run one set of parameters."
-fi
-
 if [ -z "$HAMILTON_VERSION" ]; then
   export HAMILTON_VERSION="hamilton"
 fi
@@ -94,12 +87,7 @@ for i in $(seq $NUM_ITERATIONS); do
 
   # Reset modules for reframe
   module purge
-
-  if [[ $HAMILTON_VERSION == "hamilton" ]]; then
-    module load python/3.6.8
-  else
-    module load python/3.9.9
-  fi
+  module load python
 
   pushd $PARAMETERISATION_RESULTS_DIR/$START_DATETIME > /dev/null
   cp $PARAMETER_FILE parameters.csv
@@ -108,11 +96,7 @@ for i in $(seq $NUM_ITERATIONS); do
   echo "Creating zip $ZIPFILE"
   zip $ZIPFILE *
 
-  if [[ $HAMILTON_VERSION == "hamilton" ]]; then
-    pushd $OUTPUT_DIR/hamilton/multi_cpu_single_node/intel/ > /dev/null
-  else
-    pushd $OUTPUT_DIR/hamilton8/multi_cpu_shared/amd/ > /dev/null
-  fi
+  pushd $OUTPUT_SUBDIR > /dev/null
 
   zip -r $ZIPFILE Parameterisation_24_*
 
