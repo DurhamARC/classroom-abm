@@ -50,10 +50,11 @@ else
 fi
 
 if [ -z "$HAMILTON_VERSION" ]; then
-  export $HAMILTON_VERSION="hamilton"
+  export HAMILTON_VERSION="hamilton"
 fi
 
-source ../environ/env_${HAMILTON_VERSION}
+echo "Loading env from ../environ/env_${HAMILTON_VERSION}.sh"
+source ../environ/env_${HAMILTON_VERSION}.sh
 
 for i in $(seq $NUM_ITERATIONS); do
   START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
@@ -63,6 +64,7 @@ for i in $(seq $NUM_ITERATIONS); do
   echo "Outputting CSV to $OUTPUT_FILE"
 
 
+  export PATH=/apps/infrastructure/modules/default/default/default/Modules/default/bin/:$PATH
   ~/reframe/bin/reframe \
       --max-retries=0 \
       --exec-policy async \
@@ -71,7 +73,7 @@ for i in $(seq $NUM_ITERATIONS); do
       -C $config \
       -c parameterisation_tests.py \
       -r \
-      -v \
+      -vvvvv \
       --performance-report \
       -n \
       'Parameterisation' \
@@ -95,7 +97,7 @@ for i in $(seq $NUM_ITERATIONS); do
 
   if [[ $HAMILTON_VERSION == "hamilton" ]]; then
     module load python/3.6.8
-  fi
+  else
     module load python/3.9.9
   fi
 
@@ -110,6 +112,7 @@ for i in $(seq $NUM_ITERATIONS); do
     pushd $OUTPUT_DIR/hamilton/multi_cpu_single_node/intel/ > /dev/null
   else
     pushd $OUTPUT_DIR/hamilton8/multi_cpu_shared/amd/ > /dev/null
+  fi
 
   zip -r $ZIPFILE Parameterisation_24_*
 

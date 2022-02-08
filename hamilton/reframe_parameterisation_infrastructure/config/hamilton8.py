@@ -3,7 +3,7 @@ site_configuration = {
         {
             "name": "hamilton8",
             "descr": "hamilton8 ARC supercomputer",
-            "hostnames": ["hamilton8.dur.ac.uk"],
+            "hostnames": ["login1.ham8.dur.ac.uk"],
             "modules_system": "tmod",
             "partitions": [
                 {
