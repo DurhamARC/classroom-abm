@@ -64,7 +64,7 @@ def run_multilevel_analysis(real_data_file, simulated_data_file):
 
     run_rscript(script="renv::restore()")
     output = run_rscript(
-        scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path, 2]
+        scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path, 1]
     )
     output_lines = output.splitlines()
     try:

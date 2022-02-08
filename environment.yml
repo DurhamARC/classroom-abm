@@ -6,11 +6,11 @@ channels:
 dependencies:
   - click
   - mesa
-  - numpy
+  - numpy>=1.21
   - pandas
   - scipy=1.5.2
   # dev dependencies
-  - black
+  - black=20.8b1
   - conda-lock
   - pre_commit
   - pytest
