@@ -14,17 +14,22 @@ import merge_results
 import plot_correlations
 
 CUSTOM_ROUNDING = {
+    "teacher_control_variation_sd": 7,
     "home_learn_factor": 7,
     "conformity_factor": 9,
     "maths_ticks_mean": 0,
 }
 
-CUSTOM_LIMITS = {"random_select": (1, None), "conformity_factor": (None, 1)}
+CUSTOM_LIMITS = {
+    "random_select": (1, None),
+    "conformity_factor": (None, 1),
+    "teacher_quality_variation_sd": (0, None),
+    "teacher_control_variation_sd": (0, None),
+}
 
 CUSTOM_PERCENTAGE_CHANGE = {
     "random_select": 100,
     "conformity_factor": 0.001,
-    "maths_ticks_sd": 25,
 }
 DEFAULT_PERCENTAGE_CHANGE = 10
 
