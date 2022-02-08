@@ -77,6 +77,12 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "source activate classroom_abm",
         ]
 
+        if os.environ.get("HAMILTON_VERSION") == "hamilton8":
+            # Need to manualy load modules on hamilton8 as modules system isn't compatible with ReFrame
+            self.prerun_cmds.extend(
+                [f"module load {m}" for m in self.current_environ.modules]
+            )
+
         self.executable = "python run_pipeline.py"
 
         self.test_id = test_id
