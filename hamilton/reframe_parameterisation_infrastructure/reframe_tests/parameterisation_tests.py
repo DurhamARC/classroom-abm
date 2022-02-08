@@ -72,7 +72,12 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         self.prerun_cmds = [
             f"pushd {execution_dir}",
             f"rm -rf pupil_data_output_{test_id}_{iteration}.csv",  # prevent appending to previous data
+            "echo $PATH",
+            "source $HOME/.bashrc",
+            "conda init",
             "source activate classroom_abm",
+            "conda list",
+            "echo $CONDA_PREFIX",
         ]
 
         if os.environ.get("HAMILTON_VERSION") == "hamilton8":
@@ -81,7 +86,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
                 ["module load r/4.1.2", "module load $R_BUILD_MODULES"],
             )
 
-        self.executable = "python run_pipeline.py"
+        self.executable = "$CONDA_PREFIX/bin/python run_pipeline.py"
 
         self.test_id = test_id
         self.repeat_no = iteration

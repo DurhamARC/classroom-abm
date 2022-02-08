@@ -46,6 +46,8 @@ if [ -z "$HAMILTON_VERSION" ]; then
   export HAMILTON_VERSION="hamilton"
 fi
 
+source $HOME/.bashrc
+
 echo "Loading env from ../environ/env_${HAMILTON_VERSION}.sh"
 source ../environ/env_${HAMILTON_VERSION}.sh
 

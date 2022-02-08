@@ -73,10 +73,6 @@ site_configuration = {
             "variables": [
                 ["MLNSCRIPT_PATH", "$NOBACKUP/usr/bin/mlnscript"],
                 ["LD_LIBRARY_PATH", "$NOBACKUP/usr/lib64:$LD_LIBRARY_PATH"],
-                [
-                    "PATH",
-                    "/apps/infrastructure/modules/default/default/default/Modules/default/bin/:$PATH",
-                ],
             ],
         },
     ],
