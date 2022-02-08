@@ -1,0 +1,57 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Classroom ABM
+message: 'If you use this software, please cite it as below.'
+type: software
+url: "https://github.com/DurhamARC/classroom-abm"
+authors:
+  - given-names: Alison
+    email: alison.r.clarke@durham.ac.uk
+    affiliation: Durham University
+    orcid: 'https://orcid.org/0000-0002-0205-6644'
+    family-names: Clarke
+  - given-names: Mark
+    family-names: Turner
+    email: mark.turner@durham.ac.uk
+    affiliation: Durham University
+    orcid: 'https://orcid.org/0000-0002-5274-957X'
+  - given-names: Peter
+    family-names: Tymms
+    email: p.b.tymms@durham.ac.uk
+    affiliation: Durham University
+    orcid: 'https://orcid.org/0000-0002-7170-2566'
+  - given-names: Khulood
+    family-names: Alharbi
+    email: khulood.o.alharbi@durham.ac.uk
+    affiliation: Durham University
+    orcid: https://orcid.org/0000-0003-4941-125X
+  - given-names: Chris
+    family-names: Brown
+    email: p.b.tymms@durham.ac.uk
+    affiliation: Durham University
+    orcid: 'https://orcid.org/0000-0002-7170-2566'
+references:
+  - authors:
+      - given-names: Peter
+        family-names: Tymms
+      - given-names: Christine
+        family-names: Merrell
+      - given-names: Katharine
+        family-names: Bailey
+    title: "The long-term impact of effective teaching"
+    doi: 10.1080/09243453.2017.1404478
+  - authors:
+      - given-names: Khulood
+        family-names: Alharbi
+      - given-names: Alexandra
+        family-names: Cristea
+      - given-names: Lei
+        family-names: Shi
+      - given-names: Peter
+        family-names: Tymms
+      - given-names: Chris
+        family-names: Brown
+    title: "Agent-Based Classroom Environment Simulation: The Effect of Disruptive Schoolchildren's Behaviour Versus Teacher Control over Neighbours"
+    doi: 10.1007/978-3-030-78270-2_8
