@@ -76,12 +76,10 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "source $HOME/.bashrc",
             "conda init",
             "source activate classroom_abm",
-            "conda list",
-            "echo $CONDA_PREFIX",
         ]
 
         if os.environ.get("HAMILTON_VERSION") == "hamilton8":
-            # Need to manualy load modules on hamilton8 as modules system isn't compatible with ReFrame
+            # Need to manually load modules on hamilton8 as modules system isn't compatible with ReFrame
             self.prerun_cmds.extend(
                 ["module load r/4.1.2", "module load $R_BUILD_MODULES"],
             )

@@ -58,7 +58,6 @@ for i in $(seq $NUM_ITERATIONS); do
   fi
   echo "Outputting CSV to $OUTPUT_FILE"
 
-
   export PATH=/apps/infrastructure/modules/default/default/default/Modules/default/bin/:$PATH
   ~/reframe/bin/reframe \
       --max-retries=0 \
@@ -68,7 +67,7 @@ for i in $(seq $NUM_ITERATIONS); do
       -C $config \
       -c parameterisation_tests.py \
       -r \
-      -vvvvv \
+      -v \
       --performance-report \
       -n \
       'Parameterisation' \
@@ -82,6 +81,9 @@ for i in $(seq $NUM_ITERATIONS); do
   module purge
   if [[ $HAMILTON_VERSION == "hamilton" ]]; then
     module load miniconda2/4.1.11
+  else
+    source $HOME/.bashrc,
+    conda init
   fi
 
   source activate classroom_abm
