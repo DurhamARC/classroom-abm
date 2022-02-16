@@ -28,5 +28,5 @@ def plot_correlations(input_filename, output_filename=None):
         grid.add_legend()
         grid.tight_layout()
         grid.savefig(output_filename)
-    except Error as e:
+    except Exception as e:
         print("Could not generate correlations plots: " + str(e))
