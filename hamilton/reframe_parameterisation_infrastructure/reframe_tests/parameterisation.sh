@@ -82,7 +82,7 @@ for i in $(seq $NUM_ITERATIONS); do
   if [[ $HAMILTON_VERSION == "hamilton" ]]; then
     module load miniconda2/4.1.11
   else
-    source $HOME/.bashrc,
+    source $HOME/.bashrc
     conda init
   fi
 
