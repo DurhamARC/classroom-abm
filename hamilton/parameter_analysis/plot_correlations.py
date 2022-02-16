@@ -29,4 +29,4 @@ def plot_correlations(input_filename, output_filename=None):
         grid.tight_layout()
         grid.savefig(output_filename)
     except Error as e:
-        print("Could not generate correlations plots: " + str(e)
+        print("Could not generate correlations plots: " + str(e))
