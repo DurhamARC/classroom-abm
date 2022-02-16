@@ -9,6 +9,7 @@ source activate classroom_abm
 cd parameter_input
 python lhs_sampling.py
 export PARAMETER_FILE=`pwd`/lhs_params.csv
+export HAMILTON_VERSION=hamilton8
 echo "Will run with the following parameters: "
 column -s, -t $PARAMETER_FILE
 
