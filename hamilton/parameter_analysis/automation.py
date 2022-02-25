@@ -31,7 +31,7 @@ CUSTOM_PERCENTAGE_CHANGE = {
     "random_select": 100,
     "conformity_factor": 0.001,
 }
-DEFAULT_PERCENTAGE_CHANGE = 10
+DEFAULT_PERCENTAGE_CHANGE = 5
 
 # Determines how quickly the ranges narrow down; 1 would not change the range;
 # 2 would halve the range on each iteration
