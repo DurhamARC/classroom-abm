@@ -1,10 +1,11 @@
 var TimeSeriesChartModule = function(series, canvas_width, canvas_height) {
   window.moment.tz.setDefault("UTC");
 
-  ChartModule.call(this, canvas_width, canvas_height);
+  ChartModule.call(this, series, canvas_width, canvas_height);
   TimeSeriesChartModule.prototype = Object.create(ChartModule.prototype);
 
   var canvas = $("#elements").children().last()[0];
+  canvas.style.border = "solid #f5f5f5 1px";
   var context = canvas.getContext("2d");
 
   var convertColorOpacity = function(hex) {

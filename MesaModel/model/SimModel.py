@@ -74,6 +74,14 @@ class SimModel(Model):
         if "write_file" in kwargs:
             self.write_file = kwargs["write_file"]
 
+        # Get summary data to display to users
+        self.class_summary_data = None
+        if "summary_data" in kwargs and kwargs["summary_data"] is not None:
+            summary_df = kwargs["summary_data"]
+            class_summary_data = summary_df[summary_df["class_id"] == self.class_id]
+            if not class_summary_data.empty:
+                self.class_summary_data = class_summary_data
+
         self.class_data = self.data.get_class_data(self.class_id)
         self.class_size = len(self.class_data)
 
