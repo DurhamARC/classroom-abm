@@ -1,4 +1,4 @@
-# Running on Hamilton8
+# Running on Hamilton
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
@@ -24,9 +24,7 @@
 
 <!-- /TOC -->
 
-NB: This file gives instructions on how to run the model on Hamilton 8. To run on Hamilton 7, see [README_hamilton7.md](README_hamilton7.md) but note that the wrapper scripts e.g. `fetch_files.sh` are
-hard-coded to work on Hamilton8, and other changes made to the code since we last ran jobs on
-Hamilton 7 may mean the code no longer works on Hamilton 7.
+**NB: the parameterisation code has been adjusted to run on Hamilton 8 and may no longer work on Hamilton 7.**
 
 ## Installation
 
@@ -44,22 +42,9 @@ git checkout <branch_name>
 
 ### Set up the conda environment
 
-Currently conda is not available as a module on Hamilton8, so needs to be manually installed in your home directory:
-
 ```
-cd $HOME
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-chmod a+x Miniconda3-latest-Linux-x86_64.sh
-./Miniconda3-latest-Linux-x86_64.sh
-source .bashrc
-```
-
-(Accept the default installation directory, which should be your home directory.)
-
-Then create the classroom_abm environment:
-
-```
-cd $HOME/classroom-abm
+module purge
+module load miniconda2/4.1.11
 conda create --name classroom_abm --file conda_locks/conda-linux-64.lock
 ```
 
@@ -75,19 +60,16 @@ source activate classroom_abm
 Issue the following commands:
 
 ```
-module load r/4.1.2
-module load $R_BUILD_MODULES
+module load r/4.0.3
 ```
 
-Download MLwiN and mlnscript as described in the main [README](https://github.com/DurhamARC/classroom-abm/blob/master/README.md), but be sure to download it for RedHat/Rocky. Use scp from your own machine to put the file in `$NOBACKUP`. Then issue the following commands:
+Download MLwiN and mlnscript as described in the main [README](https://github.com/DurhamARC/classroom-abm/blob/master/README.md), but be sure to download it for Centos 7. Use scp from your own machine to put the file in `/ddn/data/<usr>`. Then issue the following commands:
 
 ```
-cd $NOBACKUP
+cd /ddn/data/$USER
 rpm2cpio mlnscript-3.05-1.el7.x86_64.rpm | cpio -idv
-export MLNSCRIPT_PATH=$NOBACKUP/usr/bin/mlnscript
-export LD_LIBRARY_PATH=$NOBACKUP/usr/lib64:$LD_LIBRARY_PATH
-ln -s /apps/developers/libraries/openblas/0.3.18/1/gcc-11.2/lib/libopenblas.so /nobackup/ksvf48/usr/lib64/libblas.so.3
-ln -s /apps/developers/libraries/openblas/0.3.18/1/gcc-11.2/lib/libopenblas.so /nobackup/ksvf48/usr/lib64/liblapack.so.3
+export MLNSCRIPT_PATH=/ddn/data/$USER/usr/bin/mlnscript
+export LD_LIBRARY_PATH=/ddn/data/$USER/usr/lib64
 ```
 
 Then build the classroommlm R package and run as described [here](https://github.com/DurhamARC/classroom-abm/blob/master/README.md)
@@ -102,7 +84,7 @@ load python:
 ```
 cd ~/
 module purge
-module load python/3.9.9
+module load python/3.6.8
 ```
 
 Then clone and install ReFrame:
@@ -116,13 +98,15 @@ cd reframe
 
 ## Single runs
 
-There are some example job scripts in the `example_slurm_scripts` directory that illustrate how the MesaModel can be
-run on Hamilton8:
+There is an example job script in this directory that illustrates how the MesaModel can be run on Hamilton:
+`example_slurm_scripts/batchrunner_with_six_classes.sh`.
 
- * `batchrunner_with_two_classes.sh` runs the Mesa model over 2 classes in `../classes_input/test_input_2_classes.csv` (but does not run the multilevel analysis)
- * `batchrunner_with_six_classes.sh` runs the Mesa model on the 6 classes in `../classes_input/test_input_short.csv`
- * `batchrunner_pipeline_two_classes.sh` runs the full pipeline (including multilevel modelling) on 2 classes in `../classes_input/test_input_2_classes.csv`
- * `batchrunner_pipeline_six_classes.sh` runs the full pipeline on the classes in `../classes_input/test_input_short.csv`
+This runs all 6 classes in `../classes_input/test_input_short.csv` but will not run
+the full pipeline (for that use the above structure
+on `../multilevel_analysis/run_pipeline.py`). To run on
+the full dataset add `-i` `../classes_input/test_input.csv`
+If you do this set `-p` to 24 to exploit all of the cores
+one of Hamilton's par7.q nodes.
 
 ## Parameterisation
 
@@ -170,53 +154,31 @@ prior to running ReFrame.
 
 ### Deploying automated parameterisation tests via Reframe
 
-Ensure that the classroom-abm repo is set up with a working multilevel model implementation, as documented above.
+Navigate to the test directory, open a screen session and run:
 
-Navigate to the test directory, open a [screen](https://linuxize.com/post/how-to-use-linux-screen/) session and run the tests as follows:
-
-```bash
+```
 cd ~/classroom-abm/hamilton/reframe_parameterisation_infrastructure/reframe_tests
-screen -S classroom_abm_parameterisation
-export PARAMETER_FILE=<path-to-param-csv>
-export NUM_ITERATIONS=<num_iterations>
-export NUM_REPEATS=<num_repeats>
-./parameterisation.sh --with-<small/medium/big>-dataset
+screen
+./parameterisation.sh --with-<small/big>-dataset
 ```
 
-where:
-
- * `$PARAMETER_FILE` is the CSV to use as a starting point (e.g. generated via `lhs_sampling.py` or `python cli.py generate-next-params ...`)
- * `$NUM_REPEATS` is the number of times to repeat each step (defaults to 1)
- * `$NUM_ITERATIONS` is the number of iterations of parameter sets to run (defaults to 1). This runs a fairly naive algorithm which uses the best result from the previous run to set ranges for Latin Hypercube Sampling, generating a new CSV of parameters and setting off another set of jobs via reframe. The range around the mean decreases with each iteration (see `automation.py` in `parameter_analysis`).
+This assumes that the classroom-abm repo is setup with a working multilevel model implementation.
+The steps for how to do this on Hamilton are documented above. Further,
+at the moment this will just run the pipeline with three different numbers of processors
+(8, 16 and 24). Once our parameter set is stable they will all be added following Latin Hypercube sampling.
 
 Tests will run independently over as many nodes as SLURM allows adding an extra layer of
 'parallelism' to what was achieved with Mesa's BatchRunnerMP.
 
-Note: Hamilton accepts a maximum of 50 jobs from a single user at any time. So if 2 repeats are run for
-30 parameter sets, 10 will automatically fail.
+By default, ReFrame only runs one repeat of each parameter set. To change this export the following
+environment variable prior to calling ReFrame:
 
-Using `screen` should mean that if you disconnect from Hamilton whilst Reframe is running, you should be able to reconnect
-to the session when you log back in:
-
-```bash
-screen -r classroom_abm_parameterisation
+```
+export NUM_REPEATS=<n>
 ```
 
-(or just use `screen -r` if you don't have any other `screen` sessions open).
-
-Use of screen is necessary using ReFrame because at a high level ReFrame's work flow is as follows:
-
- 1) Setup a test
- 2) Issue jobs to SLURM
- 3) Wait until SLURM jobs complete
- 4) Evaluate Sanity checks, perform postrun commands etc.
-
-Step (4) is important for us, we use it to collate results and check tests have executed
-successfully. It can only take place if the ReFrame process is not cancelled during step 3.
-Further, terminating ReFrame during step 3 has the consequence of cancelling the SLURM jobs that
-are submitted under that  process. Given that our runs are long we need a strategy to ensure the
-ReFrame process is not killed during our runs; using `screen` ensures the ReFrame process continues
-to run even if we log out of hamilton.
+Note: Hamilton accepts a maximum of 50 jobs from a single user at any time. So if 2 repeats are run for
+30 parameter sets, 10 will automatically fail.
 
 
 ### Quick setup
@@ -231,13 +193,12 @@ The script `setup_new_run.sh` in the `hamilton` directory will generate and disp
 
 We currently have various postprocessing scripts in `hamilton/parameter_analysis` that allow users to get results
 from Hamilton and do some sorting and very basic analysis. These assume that the shared
-folder containing parameterisation results has been symlinked to the classroom_abm directory (or a folder called
-`parameterisation_results`) has been created.
+folder containing parameterisation results has been symlinked to the classroom_abm directory.
 
-### fetch_files.sh
+#### fetch_files.sh
 
-`fetch_files.sh` copies the output files from Hamilton into the `parameterisation_results` directory and runs
-`merge_repeats` and `plot_correlations` on them (see below).
+`fetch_files.sh` copies the output files from Hamilton into the `parameter_analysis` directory and runs
+`merge_repeats` and `plot_correlations` on them.
 
 To run (from its own directory):
 
@@ -246,14 +207,10 @@ DATE_TO_FETCH=2021-09-13 TIME_TO_FETCH=141114 ./fetch_files.sh
 ```
 
 Note that you only need to set `DATE_TO_FETCH` to fetch a previous day's results, and `TIME_TO_FETCH` if you have done multiple
-runs in one day (to avoid fetching multiple results from `$HOME/classroom-abm/hamilton/mse_results_from_reframe`).
-If set, `TIME_TO_FETCH` should match the time in the filenames inside that folder on Hamilton, e.g. if the file is `$HOME/classroom-abm/hamilton/mse_results_from_reframe/mse_output_2021-09-07_144734.zip` then use `TIME_TO_FETCH=144734`.
+runs in one day (to avoid fetching multiple results from `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe`).
+If set, `TIME_TO_FETCH` should match the time in the filenames inside that folder on Hamilton, e.g. if the file is `/ddn/home/$USER/classroom-abm/hamilton/mse_results_from_reframe/mse_output_2021-09-07_144734.zip` then use `TIME_TO_FETCH=144734`.
 
-You can also use `START_TIME` and `END_TIME` to specify a range of result folders within a day, or `START_DAY` and
-`END_DAY` to specify a range of dates within the same month, e.g. `START_DAY=25 END_DAY=26`. (NB: the way this works is
-slightly naive so it won't work across month boundaries or if you try to use both start/end day and time at the same
-time! If not all data is fetched as expected, use separate commands to fetch the data then manually move the folders and
-run the CLI commands below to merge repeats and plot correlations.)
+**NB `fetch_files.sh` assumes only a single reframe run rather than multiple parts.**
 
 ### cli.py
 
@@ -309,4 +266,48 @@ e.g. to run the 1st row in the `lowest_to_highest_mses.csv` from the result on 2
 
 ```
 python cli.py run-webserver-with-params -f ../../parameterisation_results/2021-09-24_part_001/lowest_to_highest_mses.csv -r 0
+```
+
+### Hamilton issues
+
+Hamilton login nodes automatically kill your processes when you log out, even if they are nohup'd. This is
+something that will be changed for Hamilton 8. It is problematic when using ReFrame because at
+a high level ReFrame's work flow is as follows:
+
+ 1) Setup a test
+ 2) Issue jobs to SLURM
+ 3) Wait until SLURM jobs complete
+ 4) Evaluate Sanity checks, perform postrun commands etc.
+
+Step (4) is important for us, we use it to collate results and check tests have executed
+successfully. It can only take place if the ReFrame process is not cancelled during step 3.
+Further, terminating ReFrame during step 3 has the consequence of cancelling the SLURM jobs that
+are submitted under that  process. Given that our runs are long we need a strategy to ensure the
+ReFrame process is not killed during our runs, else we would have to ensure our live terminal
+session is sustained throughout the duration of our runs (impractical).
+
+The easiest solution to the problem of having an always open connection to hamilton is to use
+the NCC cluster in Comp Sci. We run a tmux session on NCC's headnode, and in there have an
+ssh session to hamilton. We have the following workflow:
+
+Access NCC through ssh (use Durham's VPN), begin a tmux session called abm-session
+and tunnel into Hamilton:
+
+```
+ssh <user>@ncc1.clients.dur.ac.uk
+tmux new -s abm-session
+ssh <user>@hamilton.dur.ac.uk
+```
+
+Start ReFrame as described above and operate the tmux session with the following commands:
+
+```
+Ctrl-b + [									to scroll
+ctrl-b + d									to detach
+tmux attach-session -t abm-session   		to reattach
+```
+
+To kill the session once done:
+```
+tmux kill-session -t 0
 ```

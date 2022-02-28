@@ -24,7 +24,32 @@ site_configuration = {
                     "max_jobs": 100,
                 },
             ],
-        }
+        },
+        {
+            "name": "hamilton8",
+            "descr": "hamilton8 ARC supercomputer",
+            "hostnames": ["login1.ham8.dur.ac.uk", "login2.ham8.dur.ac.uk"],
+            "modules_system": "nomod",
+            "partitions": [
+                {
+                    "name": "login",
+                    "descr": "login nodes",
+                    "scheduler": "local",
+                    "launcher": "local",
+                    "environs": ["amd"],
+                    "max_jobs": 100,
+                },
+                {
+                    "name": "multi_cpu_shared",
+                    "descr": "parallel jobs (Hamilton8) - shared queue",
+                    "scheduler": "slurm",
+                    "launcher": "local",
+                    "access": ["-p shared"],
+                    "environs": ["amd"],
+                    "max_jobs": 100,
+                },
+            ],
+        },
     ],
     "environments": [
         {
@@ -38,7 +63,18 @@ site_configuration = {
                 ["MLNSCRIPT_PATH", "/ddn/data/$USER/usr/bin/mlnscript"],
                 ["LD_LIBRARY_PATH", "/ddn/data/$USER/usr/lib64"],
             ],
-        }
+        },
+        {
+            "name": "amd",
+            "cc": "icc",
+            "cxx": "icpc",
+            "ftn": "",
+            "target_systems": ["hamilton8"],
+            "variables": [
+                ["MLNSCRIPT_PATH", "$NOBACKUP/usr/bin/mlnscript"],
+                ["LD_LIBRARY_PATH", "$NOBACKUP/usr/lib64:$LD_LIBRARY_PATH"],
+            ],
+        },
     ],
     "logging": [
         {

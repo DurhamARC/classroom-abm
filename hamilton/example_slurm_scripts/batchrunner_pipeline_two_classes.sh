@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --nodes=1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 2
 #SBATCH --time=0:15:0
@@ -7,19 +6,19 @@
 #SBATCH -o run_mesa_with_batchrunner.out
 #SBATCH -e run_mesa_with_batchrunner.err
 # Run on test queue for distributed work
-#SBATCH -p test.q
+#SBATCH -p test
 
 module purge
-module load miniconda2/4.1.11
-module load r/4.0.3
+module load r/4.1.2
+module load $R_BUILD_MODULES
 
 source activate classroom_abm
 
-pushd /ddn/home/$USER/classroom-abm/multilevel_analysis
+pushd $HOME/classroom-abm/multilevel_analysis
 
-# Change these paths to /ddn/home if that's where you installed mlwin
-export LD_LIBRARY_PATH=/ddn/data/$USER/usr/lib64
-export MLNSCRIPT_PATH=/ddn/data/$USER/usr/bin/mlnscript
+# Change these paths to $HOME if that's where you installed mlwin
+export MLNSCRIPT_PATH=$NOBACKUP/usr/bin/mlnscript
+export LD_LIBRARY_PATH=$NOBACKUP/usr/lib64:$LD_LIBRARY_PATH
 
 # prepend 'time' to the following command if doing
 # benchmarking work. Note: this runs all 6 classes in

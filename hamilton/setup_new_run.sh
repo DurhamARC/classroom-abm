@@ -2,8 +2,7 @@ cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null
 SCRIPT_DIR=`pwd`
 
 module purge
-module load miniconda2/4.1.11
-module load r/4.0.3
+source $HOME/.bashrc
 source activate classroom_abm
 
 cd parameter_input

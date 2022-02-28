@@ -17,13 +17,16 @@ def plot_correlations(input_filename, output_filename=None):
         )
 
     df = pd.read_csv(input_filename)
-    df["is_min_mse"] = df.mean_squared_error == df.mean_squared_error.min()
+    try:
+        df["is_min_mse"] = df.mean_squared_error == df.mean_squared_error.min()
 
-    y_vars = ["mean_squared_error"]
-    x_vars = [x for x in VARIABLE_PARAM_NAMES if x in list(df.columns.values)]
+        y_vars = ["mean_squared_error"]
+        x_vars = [x for x in VARIABLE_PARAM_NAMES if x in list(df.columns.values)]
 
-    grid = sns.PairGrid(df, x_vars=x_vars, y_vars=y_vars, hue="is_min_mse")
-    grid = grid.map(sns.regplot, order=2)
-    grid.add_legend()
-    grid.tight_layout()
-    grid.savefig(output_filename)
+        grid = sns.PairGrid(df, x_vars=x_vars, y_vars=y_vars, hue="is_min_mse")
+        grid = grid.map(sns.regplot, order=2)
+        grid.add_legend()
+        grid.tight_layout()
+        grid.savefig(output_filename)
+    except Exception as e:
+        print("Could not generate correlations plots: " + str(e))

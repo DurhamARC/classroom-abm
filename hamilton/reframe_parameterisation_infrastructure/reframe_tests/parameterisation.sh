@@ -42,8 +42,16 @@ else
   echo "Will run one set of parameters."
 fi
 
+if [[ $HOSTNAME == *ham8.dur.ac.uk ]]; then
+  export HAMILTON_VERSION="hamilton8"
+else
+  export HAMILTON_VERSION="hamilton7"
+fi
 
-source ../environ/env_hamilton.sh
+source $HOME/.bashrc
+
+echo "Loading env from ../environ/env_${HAMILTON_VERSION}.sh"
+source ../environ/env_${HAMILTON_VERSION}.sh
 
 for i in $(seq $NUM_ITERATIONS); do
   START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
@@ -52,7 +60,7 @@ for i in $(seq $NUM_ITERATIONS); do
   fi
   echo "Outputting CSV to $OUTPUT_FILE"
 
-
+  export PATH=/apps/infrastructure/modules/default/default/default/Modules/default/bin/:$PATH
   ~/reframe/bin/reframe \
       --max-retries=0 \
       --exec-policy async \
@@ -73,13 +81,19 @@ for i in $(seq $NUM_ITERATIONS); do
 
   # Set up conda env to run generate_next_params
   module purge
-  module load miniconda2/4.1.11
+  if [[ $HAMILTON_VERSION == "hamilton7" ]]; then
+    module load miniconda2/4.1.11
+  else
+    source $HOME/.bashrc
+    conda init
+  fi
+
   source activate classroom_abm
   python ../../parameter_analysis/cli.py prepare-next-run -t $START_DATETIME -r $OUTPUT_FILE -rd $OUTPUT_DIR -pd $PARAMETERISATION_RESULTS_DIR -it $i
 
   # Reset modules for reframe
   module purge
-  module load python/3.6.8
+  module load python
 
   pushd $PARAMETERISATION_RESULTS_DIR/$START_DATETIME > /dev/null
   cp $PARAMETER_FILE parameters.csv
@@ -88,7 +102,7 @@ for i in $(seq $NUM_ITERATIONS); do
   echo "Creating zip $ZIPFILE"
   zip $ZIPFILE *
 
-  pushd $OUTPUT_DIR/hamilton/multi_cpu_single_node/intel/ > /dev/null
+  pushd $OUTPUT_SUBDIR > /dev/null
 
   zip -r $ZIPFILE Parameterisation_24_*
 
