@@ -24,7 +24,9 @@
 
 <!-- /TOC -->
 
-NB: This file gives instructions on how to run the model on Hamilton 8. To run on Hamilton 7, see [README_hamilton7.md](README_hamilton7.md).
+NB: This file gives instructions on how to run the model on Hamilton 8. To run on Hamilton 7, see [README_hamilton7.md](README_hamilton7.md) but note that the wrapper scripts e.g. `fetch_files.sh` are
+hard-coded to work on Hamilton8, and other changes made to the code since we last ran jobs on
+Hamilton 7 may mean the code no longer works on Hamilton 7.
 
 ## Installation
 
@@ -175,7 +177,6 @@ Navigate to the test directory, open a [screen](https://linuxize.com/post/how-to
 ```bash
 cd ~/classroom-abm/hamilton/reframe_parameterisation_infrastructure/reframe_tests
 screen -S classroom_abm_parameterisation
-export HAMILTON_VERSION=hamilton8
 export PARAMETER_FILE=<path-to-param-csv>
 export NUM_ITERATIONS=<num_iterations>
 export NUM_REPEATS=<num_repeats>

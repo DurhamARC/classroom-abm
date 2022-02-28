@@ -42,8 +42,10 @@ else
   echo "Will run one set of parameters."
 fi
 
-if [ -z "$HAMILTON_VERSION" ]; then
-  export HAMILTON_VERSION="hamilton"
+if [[ $HOSTNAME == *ham8.dur.ac.uk ]]; then
+  export HAMILTON_VERSION="hamilton8"
+else
+  export HAMILTON_VERSION="hamilton7"
 fi
 
 source $HOME/.bashrc
@@ -79,7 +81,7 @@ for i in $(seq $NUM_ITERATIONS); do
 
   # Set up conda env to run generate_next_params
   module purge
-  if [[ $HAMILTON_VERSION == "hamilton" ]]; then
+  if [[ $HAMILTON_VERSION == "hamilton7" ]]; then
     module load miniconda2/4.1.11
   else
     source $HOME/.bashrc

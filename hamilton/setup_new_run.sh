@@ -2,14 +2,12 @@ cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null
 SCRIPT_DIR=`pwd`
 
 module purge
-module load miniconda2/4.1.11
-module load r/4.0.3
+source $HOME/.bashrc
 source activate classroom_abm
 
 cd parameter_input
 python lhs_sampling.py
 export PARAMETER_FILE=`pwd`/lhs_params.csv
-export HAMILTON_VERSION=hamilton8
 echo "Will run with the following parameters: "
 column -s, -t $PARAMETER_FILE
 
