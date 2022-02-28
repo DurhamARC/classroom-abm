@@ -218,8 +218,14 @@ def run_model(
                 "canvas_grid": canvas_grid,
                 "instructions": UserSettableParameter(
                     "static_text",
-                    value="<p>Classrooms in school are places when students are supposed to learn and the most often do. But things can go awry; the students can play up and that can result in an unruly class and learning can suffer.  This model aims to look at how much students learn according to how good the teacher is a classroom control and how good he or she is at teaching per se.</p><p>Modify the parameters below then click Reset to update the model."
-                    " Setting 'Frames Per Second' to 0 runs the model at maximum speed.",
+                    value="<p>Classrooms in school are places when students learn and this model examines how this "
+                    "learning in mathematics changes over a year. As time passes students can be attentive (green), "
+                    "passive (yellow) or disruptive (red).</p>"
+                    "<p>There are some variables related to the classroom which you can change in the model using the "
+                    "option on the left. Then click Reset before setting it going. (Setting <em>Frames Per Second</em> "
+                    "to 0 runs the model at maximum speed.)</p>"
+                    "<p>Whilst the model runs you can watch individual students or the average score for the class."
+                    "Try changing the value of the parameters to improve class learning.</p>",
                 ),
                 "class_id": UserSettableParameter(
                     "choice", "Class ID", value=class_ids[0], choices=class_ids
