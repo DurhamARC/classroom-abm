@@ -24,6 +24,8 @@
 
 <!-- /TOC -->
 
+**NB: the parameterisation code has been adjusted to run on Hamilton 8 and may no longer work on Hamilton 7.**
+
 ## Installation
 
 ### Code checkout
