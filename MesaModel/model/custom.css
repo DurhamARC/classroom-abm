@@ -15,6 +15,30 @@
    padding:10px;
 }
 
+.right-panel h4 {
+  margin-top: 0;
+}
+
+.right-panel table {
+  width: 100%;
+}
+
+.right-panel table td, .right-panel table th {
+  padding: 3px;
+}
+
+.right-panel table tr {
+  background: #e8e8e8;
+}
+
+.right-panel table tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.right-panel table .number {
+  text-align: right;
+}
+
 .navbar-inverse .navbar-brand {
   color: white;
   font-weight: bold;

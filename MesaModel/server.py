@@ -22,11 +22,11 @@ class TeacherMonitorElement(RightPanelElement):
 
     def render(self, model):
         return f"""
-<h4 style="margin-top:0">Model Variables</h4>
+<h4>Model Variables</h4>
 <table>
-    <tr><td style="padding: 3px;">Teacher quality</td><td style="padding: 3px;">{model.teacher_quality_variable.current_value:.2f}</td></tr>
-    <tr><td style="padding: 3px;">Teacher control</td><td style="padding: 3px;">{model.teacher_control_variable.current_value:.2f}</td></tr>
-    <tr><td style="padding: 3px;">Current date</td><td style="padding: 3px;">{model.current_date}</td></tr>
+    <tr><td>Teacher quality</td><td class="number">{model.teacher_quality_variable.current_value:.2f}</td></tr>
+    <tr><td>Teacher control</td><td class="number">{model.teacher_control_variable.current_value:.2f}</td></tr>
+    <tr><td>Current date</td><td class="number">{model.current_date}</td></tr>
 </table>
 """
 
@@ -38,14 +38,14 @@ class PupilMonitorElement(RightPanelElement):
     def render(self, model):
         if model.pupil_state_datacollector:
             self.data = """
-<h4 style="margin-top:0">Pupil Learning States</h4>
+<h4>Pupil Learning States</h4>
 <table>
-    <tr><th style="padding: 3px;">State</th><th style="padding: 3px;text-align:right;"># Pupils</th></tr>
+    <tr><th>State</th><th class="number"># Pupils</th></tr>
 """
             for k in model.pupil_state_datacollector.model_vars:
                 self.data += f"""        <tr>
-        <td style="padding: 3px;">{k}</td>
-        <td style="padding: 3px;text-align:right;">{model.pupil_state_datacollector.model_vars[k][-1]}</td>
+        <td>{k}</td>
+        <td class="number">{model.pupil_state_datacollector.model_vars[k][-1]}</td>
     </tr>
 """
 
@@ -60,28 +60,28 @@ class ClassMonitorElement(RightPanelElement):
     def render(self, model):
         if model.class_summary_data is not None and not model.class_summary_data.empty:
             self.data = f"""
-<h4 style="margin-top:0">Class details</h4>
+<h4>Class details</h4>
 <table>
     <tr>
-        <td style="padding: 3px;">Total pupils</td>
-        <td style="padding: 3px;text-align:right;">{model.class_summary_data.iloc[0]['total_pupils']}</td>
+        <td>Total pupils</td>
+        <td class="number">{model.class_summary_data.iloc[0]['total_pupils']}</td>
     </tr>
     <tr>
-        <td style="padding: 3px;">Pupils taking free school meals</td>
-        <td style="padding: 3px;text-align:right;">{model.class_summary_data.iloc[0]['fsm_pupils']}</td>
+        <td>Pupils taking free school meals</td>
+        <td class="number">{model.class_summary_data.iloc[0]['fsm_pupils']}</td>
     </tr>
     <tr>
-        <td style="padding: 3px;">Pupils from ethnic minorities</td>
-        <td style="padding: 3px;text-align:right;">{model.class_summary_data.iloc[0]['ethnic_minority_pupils']}</td>
+        <td>Pupils from ethnic minorities</td>
+        <td class="number">{model.class_summary_data.iloc[0]['ethnic_minority_pupils']}</td>
     </tr>
     <tr>
-        <td style="padding: 3px;">Pupils with special educational needs</td>
-        <td style="padding: 3px;text-align:right;">{model.class_summary_data.iloc[0]['sen_pupils']}</td>
+        <td>Pupils with special educational needs</td>
+        <td class="number">{model.class_summary_data.iloc[0]['sen_pupils']}</td>
     </tr>
 
     <tr>
-        <td style="padding: 3px;">Boys</td>
-        <td style="padding: 3px;text-align:right;">{model.class_summary_data.iloc[0]['total_pupils'] - model.class_summary_data.iloc[0]['girls']}</td>
+        <td>Boys</td>
+        <td class="number">{model.class_summary_data.iloc[0]['total_pupils'] - model.class_summary_data.iloc[0]['girls']}</td>
     </tr>
 </table>
 """
