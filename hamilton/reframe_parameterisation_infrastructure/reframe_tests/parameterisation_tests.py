@@ -31,8 +31,7 @@ with open(OUTPUT_FILE, "w") as output:
 
 @rfm.parameterized_test(
     *(
-        [n_processors, test_id, iteration]
-        for n_processors in [24]  # 24 only relevant for par7.q
+        [test_id, iteration]
         for test_id in range(1, len(ROWS))
         for iteration in [
             i + 1 for i in range(int(os.environ["NUM_REPEATS"]))
@@ -40,29 +39,26 @@ with open(OUTPUT_FILE, "w") as output:
     )
 )
 class Parameterisation(rfm.RunOnlyRegressionTest):
-    def __init__(self, n_processors, test_id, iteration):
-        if n_processors == 8:
-            self.time_limit = "1h45m" if "short" in os.environ["DATASET"] else "3h"
-        elif n_processors == 16:
-            self.time_limit = "1h30m" if "short" in os.environ["DATASET"] else "2h"
+    def __init__(self, test_id, iteration):
+        if "short" in os.environ["DATASET"]:
+            n_processors = 2
+            self.time_limit = "30m"
         else:
-            self.time_limit = (
-                "1h15m"
-                if "short" in os.environ["DATASET"]
-                else ("1h" if "_25" in os.environ["DATASET"] else "1h30m")
-            )
+            n_processors = 64 if self.current_system.name == "hamilton8" else 24
+            self.time_limit = "1h" if "_25" in os.environ["DATASET"] else "1h30m"
 
         self.num_tasks = 1
         self.num_cpus_per_task = n_processors
 
-        self.valid_prog_environs = ["intel"]
-        self.valid_systems = ["hamilton:multi_cpu_single_node"]
+        self.valid_prog_environs = ["intel", "amd"]
+        self.valid_systems = [
+            "hamilton:multi_cpu_single_node",
+            "hamilton8:multi_cpu_shared",
+        ]
 
         self.sanity_patterns = sn.assert_found(r"Mean squared error:", self.stdout)
 
-        execution_dir = (
-            "/ddn/home/" + os.environ["USER"] + "/classroom-abm/multilevel_analysis"
-        )
+        execution_dir = os.environ["HOME"] + "/classroom-abm/multilevel_analysis"
 
         self.keep_files = [
             f"{execution_dir}/pupil_data_output_{test_id}_{iteration}*.csv"
@@ -71,10 +67,19 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         self.prerun_cmds = [
             f"pushd {execution_dir}",
             f"rm -rf pupil_data_output_{test_id}_{iteration}.csv",  # prevent appending to previous data
+            "echo $PATH",
+            "source $HOME/.bashrc",
+            "conda init",
             "source activate classroom_abm",
         ]
 
-        self.executable = "python run_pipeline.py"
+        if self.current_system.name == "hamilton8":
+            # Need to manually load modules on hamilton8 as modules system isn't compatible with ReFrame
+            self.prerun_cmds.extend(
+                ["module load r/4.1.2", "module load $R_BUILD_MODULES"],
+            )
+
+        self.executable = "$CONDA_PREFIX/bin/python run_pipeline.py"
 
         self.test_id = test_id
         self.repeat_no = iteration
