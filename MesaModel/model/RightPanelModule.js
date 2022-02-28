@@ -6,7 +6,12 @@ var RightPanelModule = function() {
 	$("#elements").append(div);
 
 	this.render = function(data) {
-		$(div).html(data);
+		if (data) {
+			$(div).html(data);
+			$(div).hide();
+		} else {
+			$(div).hide();
+		}
 	};
 
 	this.reset = function() {

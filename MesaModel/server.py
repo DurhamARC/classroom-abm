@@ -85,6 +85,9 @@ class ClassMonitorElement(RightPanelElement):
     </tr>
 </table>
 """
+        else:
+            self.data = ""
+
         return self.data
 
 
