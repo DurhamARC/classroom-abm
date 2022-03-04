@@ -8,7 +8,7 @@ var RightPanelModule = function() {
 	this.render = function(data) {
 		if (data) {
 			$(div).html(data);
-			$(div).hide();
+			$(div).show();
 		} else {
 			$(div).hide();
 		}
