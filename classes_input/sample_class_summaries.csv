@@ -1,5 +1,7 @@
-"","class_id","total_pupils","fsm_pupils","ethnic_minority_pupils","sen_pupils","girls"
-"1",489,37,0,0,6,18
-"2",1005,37,0,1,4,21
-"3",1477,38,1,0,6,21
-"4",2201,39,2,1,10,16
+"class_id","total_pupils","fsm_pupils","ethnic_minority_pupils","sen_pupils","girls"
+489,37,0,0,6,18
+1005,37,0,1,4,21
+1122,37,7,0,19,15
+1477,38,1,0,6,21
+2201,39,2,1,10,16
+2480,38,6,4,9,17
