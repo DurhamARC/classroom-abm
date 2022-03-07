@@ -8,12 +8,20 @@ from mesa.batchrunner import BatchRunnerMP
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 import numpy as np
+import pandas as pd
 
 from model.data_types import ModelState, DEFAULT_MODEL_PARAMS
 from model.input_data import InputData
 from model.output_data import OutputDataWriter
 from model.SimModel import SimModel
-from server import create_canvas_grid, sim_element, sim_chart, PupilMonitorElement
+from server import (
+    create_canvas_grid,
+    sim_element,
+    sim_chart,
+    CssElement,
+    PupilMonitorElement,
+    ClassMonitorElement,
+)
 
 # Set up logging
 loglevel = os.getenv("CLASSROOM_ABM_LOG_LEVEL", "INFO")
@@ -176,22 +184,48 @@ def run_model(
 
     if webserver:
         canvas_grid = create_canvas_grid(14, 14)
+        css_element = CssElement()
         pupil_element = PupilMonitorElement()
+        class_element = ClassMonitorElement()
         max_speedup = round(model_params.maths_ticks_mean / 100) * 100
+
+        summary_filepath = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "classes_input",
+            "sample_class_summaries.csv",
+        )
+        summary_data = None
+        if os.path.isfile(summary_filepath):
+            summary_data = pd.read_csv(summary_filepath)
+
         server = ModularServer(
             SimModel,
-            [sim_element, pupil_element, canvas_grid, sim_chart],
-            "Classroom ABM",
+            [
+                sim_element,
+                class_element,
+                pupil_element,
+                canvas_grid,
+                sim_chart,
+                css_element,
+            ],
+            "SimulatED",
             {
                 "all_data": all_data,
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
                 "model_params": model_params,
+                "summary_data": summary_data,
                 "canvas_grid": canvas_grid,
                 "instructions": UserSettableParameter(
                     "static_text",
-                    value="Modify the parameters below then click Reset to update the model."
-                    " Setting 'Frames Per Second' to 0 runs the model at maximum speed",
+                    value="<p>Classrooms in school are places when students learn and this model examines how this "
+                    "learning in mathematics changes over a year. As time passes students can be attentive (green), "
+                    "passive (yellow) or disruptive (red).</p>"
+                    "<p>There are some variables related to the classroom which you can change in the model using the "
+                    "option on the left. Then click Reset before setting it going. (Setting <em>Frames Per Second</em> "
+                    "to 0 runs the model at maximum speed.)</p>"
+                    "<p>Whilst the model runs you can watch individual students or the average score for the class."
+                    "Try changing the value of the parameters to improve class learning.</p>",
                 ),
                 "class_id": UserSettableParameter(
                     "choice", "Class ID", value=class_ids[0], choices=class_ids
