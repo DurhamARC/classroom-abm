@@ -21,23 +21,24 @@ class GridParamType:
 
 @dataclass(unsafe_hash=True)
 class ModelParamType:
-    # For parameterisation
-    teacher_quality_mean: float
-    teacher_quality_sd: float
-    teacher_quality_variation_sd: float
-    teacher_control_mean: float
-    teacher_control_sd: float
-    teacher_control_variation_sd: float
-    random_select: float
-    school_learn_factor: float
-    home_learn_factor: float
-    school_learn_mean_divisor: float
-    school_learn_sd: float
-    school_learn_random_proportion: float
-    conformity_factor: float
-    degradation_factor: float
-    maths_ticks_mean: float
-    maths_ticks_sd: float
+    # For parameterisation (with ranges as comments)
+    teacher_quality_mean: float  # [0, 5]
+    teacher_quality_sd: float  # (0, *)
+    teacher_quality_variation_sd: float  # (0, *)
+    teacher_control_mean: float  # [0, 5]
+    teacher_control_sd: float  # (0, *)
+    teacher_control_variation_sd: float  # (0, *)
+    random_select: float  # [0, 5]
+    school_learn_factor: float  # (0, *)
+    home_learn_factor: float  # (0, *)
+    school_learn_mean_divisor: float  # (0, *)
+    school_learn_sd: float  # (0, *)
+    school_learn_random_proportion: float  # (0, 1)
+    conformity_factor: float  # (0, 1)
+    degradation_factor: float  # (0, 1)
+    # maths_ticks_mean reflects actual minute per day spent in school on Maths
+    maths_ticks_mean: float  # [170, 660]
+    maths_ticks_sd: float  # (0, *)
 
     # For test purposes
     ticks_per_home_day: int
