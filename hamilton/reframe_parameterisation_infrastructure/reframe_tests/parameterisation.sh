@@ -53,6 +53,11 @@ source $HOME/.bashrc
 echo "Loading env from ../environ/env_${HAMILTON_VERSION}.sh"
 source ../environ/env_${HAMILTON_VERSION}.sh
 
+# [NEW] A file to store all previous concatenated merged_mses.csv
+#export MERGE_FILE="Hello World"
+export MERGE_FILE="../../mse_results_from_reframe/all_merged_mses.csv"
+echo "Using ${MERGE_FILE} for storing all previous parameter sets with mean MSEs for narrowing down the parameter range set"
+
 for i in $(seq $NUM_ITERATIONS); do
   START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
   if [ -n $OUTPUT_FILE ]; then
@@ -89,7 +94,9 @@ for i in $(seq $NUM_ITERATIONS); do
   fi
 
   source activate classroom_abm
-  python ../../parameter_analysis/cli.py prepare-next-run -t $START_DATETIME -r $OUTPUT_FILE -rd $OUTPUT_DIR -pd $PARAMETERISATION_RESULTS_DIR -it $i
+  # [NEW] -m, --merge-csv option added in prepare-next-run
+  python ../../parameter_analysis/cli.py prepare-next-run -t $START_DATETIME -r $OUTPUT_FILE -rd $OUTPUT_DIR -pd $PARAMETERISATION_RESULTS_DIR -it $i -m $MERGE_FILE
+#  python ../../parameter_analysis/cli.py prepare-next-run -t $START_DATETIME -r $OUTPUT_FILE -rd $OUTPUT_DIR -pd $PARAMETERISATION_RESULTS_DIR -it $i
 
   # Reset modules for reframe
   module purge
