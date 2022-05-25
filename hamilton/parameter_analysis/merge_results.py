@@ -52,14 +52,13 @@ def merge_results(directory, filename_pattern, output_file, mse_limit=None):
     return merged_dataframe
 
 
-# [NEW]
 def merge_previous_results(merged_dataframe, output_file):
     print(f"Merging current results with all previous ones")
     dataframes = []
 
     if os.path.exists(output_file):
-        dataframes.append(pd.read_csv(output_file, sep=",")) # all previous dataframes
-    dataframes.append(merged_dataframe) # current dataframes
+        dataframes.append(pd.read_csv(output_file, sep=","))
+    dataframes.append(merged_dataframe)
 
     merged_dataframe = pd.concat(dataframes, axis=0)
     merged_dataframe = merged_dataframe.sort_values(by=["mean_squared_error"])
