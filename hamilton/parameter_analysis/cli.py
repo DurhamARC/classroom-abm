@@ -153,8 +153,20 @@ def generate_next_params(input_file, output_file, iteration):
     required=True,
     help="Iteration number",
 )
+@click.option(
+    "--merge-csv",
+    "-m",
+    type=str,
+    default=None,
+    help="CSV file with all previous MSE results to merge",
+)
 def prepare_next_run(
-    timestamp, reframe_csv, reframe_data_dir, parameterisation_data_dir, iteration
+    timestamp,
+    reframe_csv,
+    reframe_data_dir,
+    parameterisation_data_dir,
+    iteration,
+    merge_csv,
 ):
     """Prepares for the next run by:
     * Creating a subdirectory of `parameterisation_data_dir` using `timestamp`
@@ -164,7 +176,12 @@ def prepare_next_run(
       `next_lhs_params_<timestamp>.csv`
     """
     automation.prepare_next_run(
-        timestamp, reframe_csv, reframe_data_dir, parameterisation_data_dir, iteration
+        timestamp,
+        reframe_csv,
+        reframe_data_dir,
+        parameterisation_data_dir,
+        iteration,
+        merge_csv,
     )
 
 

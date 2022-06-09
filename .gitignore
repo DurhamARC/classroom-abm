@@ -2,6 +2,7 @@
 *.tmp.nlogo
 classes_output/*
 !classes_output/.gitkeep
+multilevel_analysis/*.csv
 NetLogo/classes_output/*
 !NetLogo/classes_output/.gitkeep
 parameterisation_results

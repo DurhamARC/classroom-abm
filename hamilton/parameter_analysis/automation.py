@@ -50,7 +50,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
         if k in valid_keys:
             percentage_change = (
                 CUSTOM_PERCENTAGE_CHANGE.get(k, DEFAULT_PERCENTAGE_CHANGE)
-                / RANGE_NARROWING_RATE ** iteration_number
+                / RANGE_NARROWING_RATE**iteration_number
             )
             min_val, max_val = CUSTOM_LIMITS.get(k, (None, None))
 
@@ -72,7 +72,12 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
 
 
 def prepare_next_run(
-    timestamp, output_csv, reframe_data_dir, parameterisation_data_dir, iteration_number
+    timestamp,
+    output_csv,
+    reframe_data_dir,
+    parameterisation_data_dir,
+    iteration_number,
+    merge_csv=None,
 ):
     """Prepares for the next run by:
     * Creating a subdirectory of `parameterisation_data_dir` using `timestamp`
@@ -89,12 +94,21 @@ def prepare_next_run(
     os.mkdir(current_data_dir)
     shutil.copy(output_csv, current_data_dir)
 
+    # Get dataframes from $OUTPUT_FILE and
+    # .. save them in the current merged_mses.csv in the folder of the current iteration
     merged_dataframe = merge_results.merge_repeats(
         output_csv, output_dir=current_data_dir
     )
     plot_correlations.plot_correlations(
         os.path.join(current_data_dir, "lowest_to_highest_mses.csv")
     )
+
+    # Merge the current dataframe with all concatenated merged_mses.csv from previous iterations
+    # .. (kept as $MERGE_FILE) and update the $MERGE_FILE
+    if merge_csv:
+        merged_dataframe = merge_results.merge_previous_results(
+            merged_dataframe, merge_csv
+        )
 
     # Group by parameters and sort by mean MSE for each parameter set
     means_dataframe = merge_results.get_means_dataframe(merged_dataframe)
