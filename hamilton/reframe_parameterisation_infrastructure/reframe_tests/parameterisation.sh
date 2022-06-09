@@ -108,7 +108,7 @@ for i in $(seq $NUM_ITERATIONS); do
 
   pushd $OUTPUT_SUBDIR > /dev/null
 
-  zip -r $ZIPFILE Parameterisation_24_*
+  zip -r $ZIPFILE Parameterisation_*
 
   popd > /dev/null
   popd > /dev/null
