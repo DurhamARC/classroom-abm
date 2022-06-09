@@ -55,6 +55,7 @@ source ../environ/env_${HAMILTON_VERSION}.sh
 
 # A file to store all previous concatenated merged_mses.csv
 export MERGE_FILE="../../mse_results_from_reframe/all_merged_mses.csv"
+[ -f $MERGE_FILE ] && rm $MERGE_FILE
 echo "Using ${MERGE_FILE} for storing all previous parameter sets with mean MSEs for narrowing down the parameter range set"
 
 for i in $(seq $NUM_ITERATIONS); do
