@@ -96,7 +96,7 @@ To run the model with the full pipeline (including multilevel analysis) see [bel
 
 To use Black as a Git hook on all commits run `pre-commit install` from the root of the repository.
 
-Add new dependencies to environment.yml. Then execute `conda-lock` from the root of the repository. This will create lock files for osx, linux and windows which we store in the conda_locks/ directory to minimise clutter:
+Add new dependencies to `environment.yml`. Then execute `conda-lock` from the root of the repository. This will create lock files for osx, linux and windows which we store in the conda_locks/ directory to minimise clutter:
 
 ```
 conda-lock --filename-template conda_locks/conda-{platform}.lock
