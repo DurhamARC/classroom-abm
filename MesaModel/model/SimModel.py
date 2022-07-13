@@ -20,7 +20,7 @@ from .utils import (
     get_num_passive,
     get_num_learning,
     get_grid_size,
-    get_pupil_data,
+#    get_pupil_data,
 )
 
 logger = logging.getLogger(__name__)
@@ -133,7 +133,18 @@ class SimModel(Model):
             batch_size=self.ticks_per_home_day * batch_multiplier,
         )
 
+        # Create a random teacher quality feedback factor for variation of the teacher quality variable
+        self.teacher_quality_factor = TruncatedNormalGenerator.get_single_value(0.05, 0.05, 0, 1)
+
         # Create TeacherVariable instances for quality and control
+        self.teacher_quality_variable = TeacherVariable(
+            self.model_params.teacher_quality_mean,
+            self.model_params.teacher_quality_sd,
+            self.model_params.teacher_quality_variation_sd,
+            self.rng,
+            self.total_days,
+            self.teacher_quality_factor,
+        )
         self.teacher_control_variable = TeacherVariable(
             self.model_params.teacher_control_mean,
             self.model_params.teacher_control_sd,
@@ -141,17 +152,10 @@ class SimModel(Model):
             self.rng,
             self.total_days,
         )
-        self.teacher_quality_variable = TeacherVariable(
-            self.model_params.teacher_quality_mean,
-            self.model_params.teacher_quality_sd,
-            self.model_params.teacher_quality_variation_sd,
-            self.rng,
-            self.total_days,
-        )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid_params = get_grid_size(
-            len(self.class_data), self.model_params.group_size
+            self.class_size, self.model_params.group_size
         )
         self.grid = SingleGrid(
             self.grid_params.width, self.grid_params.height, torus=False
@@ -216,6 +220,8 @@ class SimModel(Model):
         )
         self.pupil_state_datacollector.collect(self)
         self.mean_maths = compute_ave(self)
+        self.prev_mean_maths = self.mean_maths
+        self.diff_mean_maths = 0
 
         self.agent_datacollector = DataCollector(
             agent_reporters={
@@ -310,7 +316,7 @@ class SimModel(Model):
             current_week += term_weeks + weeks_per_holiday
         return holiday_week_numbers
 
-    def update_school_time(self):
+    def update_school_time_and_maths(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
         if (
             time_in_day == self.ticks_per_school_day - 1
@@ -320,9 +326,14 @@ class SimModel(Model):
             # home learning time ready for the next tick
             self.home_learning_days = 1
 
-            # If it's Friday add 2 more days' home learning for the weekend
+            # If it's Friday:
+            # - add 2 more days home learning for the weekend
+            # - update the difference in the mean maths score since the beginning of the previous week
+            # - store the mean maths score at the beginning of the current week for the next school week
             if self.current_date.weekday() == 4:
                 self.home_learning_days += 2
+                self.diff_mean_maths = self.mean_maths - self.prev_mean_maths
+                self.prev_mean_maths = self.mean_maths
 
                 # Is it a holiday?
                 week_number = math.floor((self.current_date - self.start_date).days / 7)
@@ -340,9 +351,9 @@ class SimModel(Model):
             self.current_date += datetime.timedelta(days=self.home_learning_days)
             self.home_learning_days = 0
 
-            # Update teacher control/teacher_quality
+            # Update TeacherVariable instances for quality and control
+            self.teacher_quality_variable.update_current_value(self.diff_mean_maths)
             self.teacher_control_variable.update_current_value()
-            self.teacher_quality_variable.update_current_value()
 
             # Reset all pupils's states ready for the next day
             for pupil in self.schedule.agents:
@@ -356,11 +367,13 @@ class SimModel(Model):
         # Advance the model by one step
         self.schedule.step()
 
-        self.update_school_time()
+        self.update_school_time_and_maths()
 
         # collect data
         self.maths_datacollector.collect(self)
         self.pupil_state_datacollector.collect(self)
+
+        # Calculate the mean math score every tick
         self.mean_maths = compute_ave(self)
 
         if self.current_date > self.end_date or self.running == False:
