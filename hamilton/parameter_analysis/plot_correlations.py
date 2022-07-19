@@ -11,6 +11,7 @@ from model.data_types import ModelParamType, DEFAULT_MODEL_PARAMS, VARIABLE_PARA
 
 
 def plot_correlations(input_filename, output_filename=None):
+    print("Plotting correlations")
     if output_filename is None:
         output_filename = os.path.join(
             os.path.dirname(input_filename), "correlations.png"
@@ -22,6 +23,7 @@ def plot_correlations(input_filename, output_filename=None):
 
         y_vars = ["mean_squared_error"]
         x_vars = [x for x in VARIABLE_PARAM_NAMES if x in list(df.columns.values)]
+        print(f"var: x_vars = {x_vars}")
 
         grid = sns.PairGrid(df, x_vars=x_vars, y_vars=y_vars, hue="is_min_mse")
         grid = grid.map(sns.regplot, order=2)

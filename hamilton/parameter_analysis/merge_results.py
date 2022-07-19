@@ -11,6 +11,7 @@ DEFAULT_MSE_LIMIT = 3
 
 
 def merge_best_results(directory, mse_limit=DEFAULT_MSE_LIMIT):
+    print(f"Merging best results in {directory} with limit {mse_limit}")
     output_path = os.path.join(directory, "best_mses.csv")
     merged_dataframe = merge_results(
         directory, "lowest_to_highest_mses", output_path, mse_limit
@@ -53,7 +54,7 @@ def merge_results(directory, filename_pattern, output_file, mse_limit=None):
 
 
 def merge_previous_results(merged_dataframe, output_file):
-    print(f"Merging current results with all previous ones")
+    print("Merging current results with all previous ones")
     dataframes = []
 
     if os.path.exists(output_file):
@@ -68,6 +69,8 @@ def merge_previous_results(merged_dataframe, output_file):
 
 
 def merge_repeats(*args, output_dir=os.getcwd()):
+    print(f"Saving dataframes from {[arg for arg in args]} in {output_dir}")
+
     dataframes = []
 
     for arg in args:
@@ -95,7 +98,9 @@ def merge_repeats(*args, output_dir=os.getcwd()):
 
 
 def get_means_dataframe(merged_dataframe):
+    print("Grouping by parameters and sorting by mean MSE for each parameter set")
     columns_to_group = VARIABLE_PARAM_NAMES + ["test_id"]
+    print(f"var: columns_to_group = {columns_to_group}")
     if "directory" in merged_dataframe.columns:
         columns_to_group.append("directory")
 
