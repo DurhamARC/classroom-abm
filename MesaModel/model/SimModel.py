@@ -134,7 +134,9 @@ class SimModel(Model):
         )
 
         # Create a random teacher quality feedback factor for variation of the teacher quality variable
-        self.teacher_quality_factor = TruncatedNormalGenerator.get_single_value(0.05, 0.05, 0, 1)
+        self.teacher_quality_factor = self.model_params.teacher_quality_factor
+#        self.teacher_quality_factor = 0.05
+#        self.teacher_quality_factor = TruncatedNormalGenerator.get_single_value(0.05, 0.05, 0, 1)
 
         # Create TeacherVariable instances for quality and control
         self.teacher_quality_variable = TeacherVariable(

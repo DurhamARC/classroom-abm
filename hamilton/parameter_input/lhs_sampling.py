@@ -30,6 +30,7 @@ PARAM_DICT = {
     "conformity_factor": (0.99999, 0.999995, 9),
     "maths_ticks_mean": (289.0, 600.0, 0),
     "maths_ticks_sd": (1, 5, 2),
+    "teacher_quality_factor": (0.0, 1.0, 5),
 }
 
 # Position indices to access tuples in the dict above:

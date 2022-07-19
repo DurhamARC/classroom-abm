@@ -8,7 +8,7 @@ sys.path.append(this_dir)
 sys.path.append(os.path.join(this_dir, "../../MesaModel"))
 sys.path.append(os.path.join(this_dir, "../parameter_input"))
 
-from model.data_types import ModelParamType, DEFAULT_MODEL_PARAMS, VARIABLE_PARAM_NAMES
+from model.data_types import VARIABLE_PARAM_NAMES
 import lhs_sampling
 import merge_results
 import plot_correlations
@@ -18,6 +18,7 @@ CUSTOM_ROUNDING = {
     "home_learn_factor": 7,
     "conformity_factor": 9,
     "maths_ticks_mean": 0,
+    "teacher_quality_factor": 5,
 }
 
 CUSTOM_LIMITS = {
@@ -25,11 +26,13 @@ CUSTOM_LIMITS = {
     "conformity_factor": (None, 1),
     "teacher_quality_variation_sd": (0, None),
     "teacher_control_variation_sd": (0, None),
+    "teacher_quality_factor": (0.0, 1.0),
 }
 
 CUSTOM_PERCENTAGE_CHANGE = {
     "random_select": 100,
     "conformity_factor": 0.001,
+    "teacher_quality_factor": 50,
 }
 DEFAULT_PERCENTAGE_CHANGE = 8
 
@@ -45,7 +48,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     """
     print("Determining next parameter ranges:")
     param_dict = {}
-    valid_keys = dataclasses.asdict(DEFAULT_MODEL_PARAMS).keys()
+    valid_keys = VARIABLE_PARAM_NAMES
     for k in best_params.keys():
         if k in valid_keys:
             percentage_change = (
