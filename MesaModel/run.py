@@ -116,7 +116,7 @@ def run_model_cli(
         webserver=webserver,
         test_mode=test_mode,
         speedup=speedup,
-        feedback_period=feedback_period
+        feedback_period=feedback_period,
     )
 
 

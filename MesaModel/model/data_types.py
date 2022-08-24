@@ -52,6 +52,7 @@ class ModelParamType:
     group_size: int
     group_by_ability: bool
 
+
 # Default set of model parameters. Note: variable parameters must be added before
 # static parameters!
 # (currently, 16 var, 1 const and 5 static parameters
@@ -104,15 +105,16 @@ VARIABLE_PARAM_NAMES = [
 # The CONSTANT_PARAM_COUNT parameters are in addtion to
 # VARAIBLE_PARAM_NAMES to output along with them as well,
 # but these parameters are not parameterised
-#CONSTANT_PARAM_COUNT = 1
-#CONSTANT_PARAM_VALUES = [
+# CONSTANT_PARAM_COUNT = 1
+# CONSTANT_PARAM_VALUES = [
 #    getattr(DEFAULT_MODEL_PARAMS, field.name)
 #    for field in dataclasses.fields(DEFAULT_MODEL_PARAMS)[VARIABLE_PARAM_COUNT-CONSTANT_PARAM_COUNT:-STATIC_PARAM_COUNT]
-#]
-#CONSTANT_PARAM_NAMES = [
+# ]
+# CONSTANT_PARAM_NAMES = [
 #    field.name
 #    for field in dataclasses.fields(DEFAULT_MODEL_PARAMS)[VARIABLE_PARAM_COUNT-CONSTANT_PARAM_COUNT:-STATIC_PARAM_COUNT]
-#]
+# ]
+
 
 @dataclass(unsafe_hash=True)
 class ModelState:

@@ -73,7 +73,9 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     lhs_sampling.generate_lhs_params(
         num_param_sets=25, output_file=output_filename, param_limits=param_dict
     )
-    print(f"automation.generate_new_param_file(): a new set of 25 parameters in {output_filename} using LHS sampling generated")
+    print(
+        f"automation.generate_new_param_file(): a new set of 25 parameters in {output_filename} using LHS sampling generated"
+    )
 
 
 def prepare_next_run(
@@ -107,7 +109,9 @@ def prepare_next_run(
     merged_dataframe = merge_results.merge_repeats(
         output_csv, output_dir=current_data_dir
     )
-    print(f"automation.prepare_next_run(): dataframes from lowest MSE to highest MSE sorted")
+    print(
+        f"automation.prepare_next_run(): dataframes from lowest MSE to highest MSE sorted"
+    )
     plot_correlations.plot_correlations(
         os.path.join(current_data_dir, "lowest_to_highest_mses.csv")
     )
@@ -127,5 +131,6 @@ def prepare_next_run(
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
     generate_new_param_file(best_params, next_param_file, iteration_number)
-    print(f"automation.prepare_next_run(): a new param file `next_lhs_params_{timestamp}.csv` generated")
-
+    print(
+        f"automation.prepare_next_run(): a new param file `next_lhs_params_{timestamp}.csv` generated"
+    )

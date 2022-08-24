@@ -20,14 +20,13 @@ from .utils import (
     get_num_passive,
     get_num_learning,
     get_grid_size,
-#    get_pupil_data,
+    #    get_pupil_data,
 )
 
 logger = logging.getLogger(__name__)
 
 
 class SimModel(Model):
-
     def __init__(
         self,
         all_data,
@@ -140,8 +139,6 @@ class SimModel(Model):
 
         # Create a random teacher quality feedback factor for variation of the teacher quality variable
         self.teacher_quality_factor = self.model_params.teacher_quality_factor
-#        self.teacher_quality_factor = 0.05
-#        self.teacher_quality_factor = TruncatedNormalGenerator.get_single_value(0.05, 0.05, 0, 1)
 
         # Create TeacherVariable instances for quality and control
         self.teacher_quality_variable = TeacherVariable(
@@ -161,9 +158,7 @@ class SimModel(Model):
         )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
-        self.grid_params = get_grid_size(
-            self.class_size, self.model_params.group_size
-        )
+        self.grid_params = get_grid_size(self.class_size, self.model_params.group_size)
         self.grid = SingleGrid(
             self.grid_params.width, self.grid_params.height, torus=False
         )
@@ -252,8 +247,6 @@ class SimModel(Model):
         self.maths_datacollector.collect(self)
         self.running = True
 
-
-
     def set_speedup(self):
         if self.speedup > 1:
             min_ticks = min(self.ticks_per_school_day, self.ticks_per_home_day)
@@ -279,8 +272,6 @@ class SimModel(Model):
             self.ticks_per_home_day = speedup_ticks_per_school_day
         else:
             self.home_speedup = 1
-
-
 
     @staticmethod
     def calculate_holiday_weeks(
@@ -327,8 +318,6 @@ class SimModel(Model):
             current_week += term_weeks + weeks_per_holiday
         return holiday_week_numbers
 
-
-
     def _update_home_learning(self):
         # Have just finished the penultimate tick of school day, so add
         # home learning time ready for the next tick
@@ -347,8 +336,6 @@ class SimModel(Model):
 
         self.home_learning_steps = self.home_learning_days * self.ticks_per_home_day
 
-
-
     def _update_mean_maths(self):
         # If it's Friday:
         # - update the difference in the mean maths score since the `feedback_period` weeks ago
@@ -360,7 +347,6 @@ class SimModel(Model):
                 self.prev_mean_maths = self.mean_maths
             else:
                 self.current_week += 1
-
 
     def update_school(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
@@ -386,8 +372,6 @@ class SimModel(Model):
             # Reset all pupils's states ready for the next day
             for pupil in self.schedule.agents:
                 pupil.resetState()
-
-
 
     def step(self):
         # Reset counter of learning and disruptive agents

@@ -48,4 +48,6 @@ class TeacherVariable:
     def update_current_value(self, diff=0):
         """Updates the instance's current_values"""
         if self.tng:
-            self.current_value = self.tng.get_value() + self.factor * self.variation_sd * diff
+            self.current_value = (
+                self.tng.get_value() + self.factor * self.variation_sd * diff
+            )
