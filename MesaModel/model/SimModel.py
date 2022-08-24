@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class SimModel(Model):
+
     def __init__(
         self,
         all_data,
@@ -36,6 +37,7 @@ class SimModel(Model):
         class_id_and_rng=None,
         class_id=None,
         speedup=1,
+        feedback_period=1,
         **kwargs,
     ):
         self.data = all_data
@@ -54,6 +56,7 @@ class SimModel(Model):
         self.model_params = model_params
         self.speedup = speedup
         self.write_file = False
+        self.feedback_period = feedback_period
 
         # Update any parameters passed as kwargs
         param_dict = dataclasses.asdict(self.model_params)
@@ -114,6 +117,8 @@ class SimModel(Model):
             self.model_params.number_of_holidays,
             self.model_params.weeks_per_holiday,
         )
+
+        self.current_week = 1
 
         # Create truncnorm generators for school and home learning random
         # increments
@@ -247,6 +252,8 @@ class SimModel(Model):
         self.maths_datacollector.collect(self)
         self.running = True
 
+
+
     def set_speedup(self):
         if self.speedup > 1:
             min_ticks = min(self.ticks_per_school_day, self.ticks_per_home_day)
@@ -272,6 +279,8 @@ class SimModel(Model):
             self.ticks_per_home_day = speedup_ticks_per_school_day
         else:
             self.home_speedup = 1
+
+
 
     @staticmethod
     def calculate_holiday_weeks(
@@ -318,33 +327,50 @@ class SimModel(Model):
             current_week += term_weeks + weeks_per_holiday
         return holiday_week_numbers
 
-    def update_school_time_and_maths(self):
+
+
+    def _update_home_learning(self):
+        # Have just finished the penultimate tick of school day, so add
+        # home learning time ready for the next tick
+        self.home_learning_days = 1
+
+        # If it's Friday:
+        # - add 2 more days home learning for the weekend
+        if self.current_date.weekday() == 4:
+            self.home_learning_days += 2
+
+            # Is it a holiday?
+            week_number = math.floor((self.current_date - self.start_date).days / 7)
+            if week_number in self.holiday_week_numbers:
+                # Add holiday weeks
+                self.home_learning_days += 7 * self.model_params.weeks_per_holiday
+
+        self.home_learning_steps = self.home_learning_days * self.ticks_per_home_day
+
+
+
+    def _update_mean_maths(self):
+        # If it's Friday:
+        # - update the difference in the mean maths score since the `feedback_period` weeks ago
+        # - store the previous mean maths score for the next `feedback_period` weeks
+        if self.current_date.weekday() == 4:
+            if self.current_week >= self.feedback_period:
+                self.current_week = 1
+                self.diff_mean_maths = self.mean_maths - self.prev_mean_maths
+                self.prev_mean_maths = self.mean_maths
+            else:
+                self.current_week += 1
+
+
+    def update_school(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
+        # If the current day has finished, check if update is needed (done inside update functions)
         if (
             time_in_day == self.ticks_per_school_day - 1
             or self.ticks_per_school_day == 1
         ):
-            # Have just finished the penultimate tick of school day, so add
-            # home learning time ready for the next tick
-            self.home_learning_days = 1
-
-            # If it's Friday:
-            # - add 2 more days home learning for the weekend
-            # - update the difference in the mean maths score since the beginning of the previous week
-            # - store the mean maths score at the beginning of the current week for the next school week
-            if self.current_date.weekday() == 4:
-                self.home_learning_days += 2
-                self.diff_mean_maths = self.mean_maths - self.prev_mean_maths
-                self.prev_mean_maths = self.mean_maths
-
-                # Is it a holiday?
-                week_number = math.floor((self.current_date - self.start_date).days / 7)
-                if week_number in self.holiday_week_numbers:
-                    # Add holiday weeks
-                    self.home_learning_days += 7 * self.model_params.weeks_per_holiday
-
-            self.home_learning_steps = self.home_learning_days * self.ticks_per_home_day
-
+            self._update_home_learning()
+            self._update_mean_maths()
         else:
             self.home_learning_steps = 0
 
@@ -361,6 +387,8 @@ class SimModel(Model):
             for pupil in self.schedule.agents:
                 pupil.resetState()
 
+
+
     def step(self):
         # Reset counter of learning and disruptive agents
         self.model_state.learning_count = 0
@@ -369,7 +397,7 @@ class SimModel(Model):
         # Advance the model by one step
         self.schedule.step()
 
-        self.update_school_time_and_maths()
+        self.update_school()
 
         # collect data
         self.maths_datacollector.collect(self)

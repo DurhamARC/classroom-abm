@@ -90,6 +90,12 @@ day, and at least 1 tick per day.
 ** NB: Speedup is for use in tests and webserver mode only: should not be used
 for parameterisation runs. **""",
 )
+@click.option(
+    "--feedback-period",
+    "-f",
+    default=1,
+    help="Feedback period in weeks how often the teacher quality is reassessed in the model",
+)
 def run_model_cli(
     input_file,
     output_file,
@@ -99,6 +105,7 @@ def run_model_cli(
     webserver,
     test_mode,
     speedup,
+    feedback_period,
 ):
     run_model(
         input_file,
@@ -109,6 +116,7 @@ def run_model_cli(
         webserver=webserver,
         test_mode=test_mode,
         speedup=speedup,
+        feedback_period=feedback_period
     )
 
 
@@ -130,6 +138,7 @@ def run_model(
     model_params=None,
     test_mode=False,
     speedup=1,
+    feedback_period=1,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -293,6 +302,7 @@ def run_model(
                 "output_data_writer": output_data_writer,
                 "model_params": model_params,
                 "speedup": speedup,
+                "feedback_period": feedback_period,
             },
             nr_processes=n_processors,
             iterations=1,

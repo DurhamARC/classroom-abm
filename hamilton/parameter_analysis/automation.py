@@ -2,6 +2,7 @@ import dataclasses
 import os
 import shutil
 import sys
+import csv
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(this_dir)
@@ -46,7 +47,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     using LHS sampling.
     The range is determined by iteration_number and decreases as iteration_number increases.
     """
-    print("Determining next parameter ranges:")
+    print("Determining next parameter ranges...")
     param_dict = {}
     valid_keys = VARIABLE_PARAM_NAMES
     for k in best_params.keys():
@@ -72,6 +73,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     lhs_sampling.generate_lhs_params(
         num_param_sets=25, output_file=output_filename, param_limits=param_dict
     )
+    print(f"automation.generate_new_param_file(): a new set of 25 parameters in {output_filename} using LHS sampling generated")
 
 
 def prepare_next_run(
@@ -89,22 +91,27 @@ def prepare_next_run(
     * Generating a new set of parameters based on the previous best results, saving to file
       `next_lhs_params_<timestamp>.csv`
     """
+    print("Preparing for the next run...")
     current_data_dir = os.path.join(parameterisation_data_dir, timestamp)
     if os.path.exists(current_data_dir):
         print(f"Directory {current_data_dir} already exists. Exiting.")
         sys.exit(1)
 
     os.mkdir(current_data_dir)
+    print(f"automation.prepare_next_run(): {current_data_dir} created")
     shutil.copy(output_csv, current_data_dir)
+    print(f"automation.prepare_next_run(): {output_csv} copied")
 
     # Get dataframes from $OUTPUT_FILE and
     # .. save them in the current merged_mses.csv in the folder of the current iteration
     merged_dataframe = merge_results.merge_repeats(
         output_csv, output_dir=current_data_dir
     )
+    print(f"automation.prepare_next_run(): dataframes from lowest MSE to highest MSE sorted")
     plot_correlations.plot_correlations(
         os.path.join(current_data_dir, "lowest_to_highest_mses.csv")
     )
+    print(f"automation.prepare_next_run(): correlations plotted")
 
     # Merge the current dataframe with all concatenated merged_mses.csv from previous iterations
     # .. (kept as $MERGE_FILE) and update the $MERGE_FILE
@@ -115,7 +122,10 @@ def prepare_next_run(
 
     # Group by parameters and sort by mean MSE for each parameter set
     means_dataframe = merge_results.get_means_dataframe(merged_dataframe)
+    print(f"automation.prepare_next_run(): the best mean results sorted")
     best_params = means_dataframe.iloc[0]
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
     generate_new_param_file(best_params, next_param_file, iteration_number)
+    print(f"automation.prepare_next_run(): a new param file `next_lhs_params_{timestamp}.csv` generated")
+

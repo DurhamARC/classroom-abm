@@ -54,3 +54,10 @@ docs/
 
 # translation temp files
 po/*~
+
+# Output files from Hamilton runs
+hamilton/example_slurm_scripts/*.err
+hamilton/example_slurm_scripts/*.out
+hamilton/mse_results_from_reframe/
+hamilton/reframe_parameterisation_infrastructure/reframe_tests/*.log
+

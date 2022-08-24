@@ -58,11 +58,19 @@ export MERGE_FILE="../../mse_results_from_reframe/all_merged_mses.csv"
 [ -f $MERGE_FILE ] && rm $MERGE_FILE
 echo "Using ${MERGE_FILE} for storing all previous parameter sets with mean MSEs for narrowing down the parameter range set"
 
+if [ -n "$FEEDBACK_WEEKS" ]; then
+  echo "Teacher quality will be reassessed every $FEEDBACK_WEEKS week(s)"
+else
+  echo "Teacher quality will be reassessed every week"
+fi
+
 for i in $(seq $NUM_ITERATIONS); do
   START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
   if [ -n $OUTPUT_FILE ]; then
     export OUTPUT_FILE="../../mse_results_from_reframe/mse_output_${START_DATETIME}.csv"
   fi
+  echo
+  echo "Iteration: ${i}/${NUM_ITERATIONS}"
   echo "Outputting CSV to $OUTPUT_FILE"
 
   export PATH=/apps/infrastructure/modules/default/default/default/Modules/default/bin/:$PATH

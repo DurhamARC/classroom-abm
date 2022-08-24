@@ -138,32 +138,24 @@ Better, is to use LHS sampling to generate a parameter csv that can then be pass
 We offer the facility to calculate parameters using maximum-minimum distance LHS. ReFrame
 will then work through these parameter sets in turn.
 
-To run this, do:
+To run this, change directory (`cd hamilton/parameter_input`) and do one of the following:
 
 ```
-cd hamilton/parameter_input
-python lhs_sampling.py
+python lhs_sampling.py # (1) this will generate 30 (default number) sets of parameters, saving them in the default file (`lhs_params.csv`)
+python lhs_sampling.py -ns 25 # (2) this will generate 25 sets of parameters
+python lhs_sampling.py -o new_lhs_params.csv # (3) the same as (1), but saving the parameter sets in the specified file
 ```
 
-This will generate 30 sets of parameters in a new file: `lhs_params.csv`. To use this with ReFrame simply
-execute:
+To use the generated sets of parameters with ReFrame, simply execute:
 
 ```
 export PARAMETER_FILE=<path-to-parameter-file>
 ```
 
-Note: the call to `lhs_sampling.py` can be configured with the following options:
-
-```
-  -ns, --num-param-sets INTEGER  How many sets of params to generate (this
-                                 will equal the number of ReFrame tests)
-  -o, --output-file TEXT         Output file path, relative to current working
-                                 directory
-  --help                         Show this message and exit.
-```
-
-The sampling algorithm is fixed with a random seed so if you rerun the tool you will get the same
+The sampling algorithm is fixed with a random seed, so if you rerun the tool, you will get the same
 output provided `-ns` is set to the same value.
+
+Note: the description of possible options to `lhs_sampling.py` can be retrieved by running `python ./lhs_sampling.py --help`.
 
 If you want to write your own parameter file then you can do so - remember to set `PARAMETER_FILE` accordingly
 prior to running ReFrame.
