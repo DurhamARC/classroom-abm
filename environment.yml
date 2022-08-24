@@ -6,7 +6,7 @@ channels:
 dependencies:
   - click
   - mesa
-  - numpy>=1.21
+  - numpy>=1.22
   - pandas
   - scipy=1.5.2
   # dev dependencies
