@@ -15,11 +15,12 @@ class TeacherVariable:
     :attr current_value: current value of the variable
     """
 
-    def __init__(self, mean, sd, variation_sd, rng, batch_size, factor=0):
+    def __init__(self, mean, sd, variation_sd, rng, batch_size, rate=0, factor=0):
         self.mean = mean
         self.sd = sd
         self.variation_sd = variation_sd
         self.factor = factor
+        self.rate = rate
 
         if self.sd > 0:
             self.base_value = TruncatedNormalGenerator.get_single_value(
@@ -38,6 +39,7 @@ class TeacherVariable:
                 lower=0,
                 rng=rng,
                 batch_size=batch_size,
+                convergence_rate = rate,
             )
         else:
             self.tng = None
@@ -48,6 +50,4 @@ class TeacherVariable:
     def update_current_value(self, diff=0):
         """Updates the instance's current_values"""
         if self.tng:
-            self.current_value = (
-                self.tng.get_value() + self.factor * self.variation_sd * diff
-            )
+            self.current_value = self.tng.get_value() + self.factor * self.variation_sd * diff

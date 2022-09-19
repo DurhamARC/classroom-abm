@@ -47,7 +47,8 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             n_processors = 64 if self.current_system.name == "hamilton8" else 24
             self.time_limit = "1h" if "_25" in os.environ["DATASET"] else "1h30m"
 
-        feedback_period = os.environ["FEEDBACK_WEEKS"]
+        feedback_weeks = os.environ["FEEDBACK_WEEKS"]
+        convergence_days = os.environ["CONVERGENCE_DAYS"]
 
         self.num_tasks = 1
         self.num_cpus_per_task = n_processors
@@ -96,8 +97,10 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             f"{n_processors}",
             "--model-params",
             params,
-            "--feedback-period",
-            f"{feedback_period}",
+            "--feedback-weeks",
+            f"{feedback_weeks}",
+            "--convergence-days",
+            f"{convergence_days}",
         ]
 
     def extract_mse(self):

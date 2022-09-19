@@ -91,10 +91,16 @@ day, and at least 1 tick per day.
 for parameterisation runs. **""",
 )
 @click.option(
-    "--feedback-period",
+    "--feedback-weeks",
     "-f",
     default=1,
-    help="Feedback period in weeks how often the teacher quality is reassessed in the model",
+    help="How often (in weeks) the teacher quality is reassessed in the model",
+)
+@click.option(
+    "--convergence-days",
+    "-c",
+    default=30,
+    help="How often (in days) the teacher standard deviation is reduced in the model",
 )
 def run_model_cli(
     input_file,
@@ -105,7 +111,8 @@ def run_model_cli(
     webserver,
     test_mode,
     speedup,
-    feedback_period,
+    feedback_weeks,
+    convergence_days,
 ):
     run_model(
         input_file,
@@ -116,7 +123,8 @@ def run_model_cli(
         webserver=webserver,
         test_mode=test_mode,
         speedup=speedup,
-        feedback_period=feedback_period,
+        feedback_weeks=feedback_weeks,
+        convergence_days=convergence_days,
     )
 
 
@@ -138,7 +146,8 @@ def run_model(
     model_params=None,
     test_mode=False,
     speedup=1,
-    feedback_period=1,
+    feedback_weeks=1,
+    convergence_days=30,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -302,7 +311,8 @@ def run_model(
                 "output_data_writer": output_data_writer,
                 "model_params": model_params,
                 "speedup": speedup,
-                "feedback_period": feedback_period,
+                "feedback_weeks": feedback_weeks,
+                "convergence_days": convergence_days,
             },
             nr_processes=n_processors,
             iterations=1,

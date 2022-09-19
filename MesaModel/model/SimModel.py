@@ -36,7 +36,8 @@ class SimModel(Model):
         class_id_and_rng=None,
         class_id=None,
         speedup=1,
-        feedback_period=1,
+        feedback_weeks=0,
+        convergence_days=0,
         **kwargs,
     ):
         self.data = all_data
@@ -55,7 +56,8 @@ class SimModel(Model):
         self.model_params = model_params
         self.speedup = speedup
         self.write_file = False
-        self.feedback_period = feedback_period
+        self.feedback_weeks = feedback_weeks
+        self.convergence_days = convergence_days
 
         # Update any parameters passed as kwargs
         param_dict = dataclasses.asdict(self.model_params)
@@ -117,7 +119,7 @@ class SimModel(Model):
             self.model_params.weeks_per_holiday,
         )
 
-        self.current_week = 1
+        self.curr_feedback_week = 1
 
         # Create truncnorm generators for school and home learning random
         # increments
@@ -141,21 +143,42 @@ class SimModel(Model):
         self.teacher_quality_factor = self.model_params.teacher_quality_factor
 
         # Create TeacherVariable instances for quality and control
-        self.teacher_quality_variable = TeacherVariable(
-            self.model_params.teacher_quality_mean,
-            self.model_params.teacher_quality_sd,
-            self.model_params.teacher_quality_variation_sd,
-            self.rng,
-            self.total_days,
-            self.teacher_quality_factor,
-        )
-        self.teacher_control_variable = TeacherVariable(
-            self.model_params.teacher_control_mean,
-            self.model_params.teacher_control_sd,
-            self.model_params.teacher_control_variation_sd,
-            self.rng,
-            self.total_days,
-        )
+        if(convergence_days > 0):
+            self.teacher_quality_variable = TeacherVariable(
+                self.model_params.teacher_quality_mean,
+                self.model_params.teacher_quality_sd,
+                self.model_params.teacher_quality_variation_sd,
+                self.rng,
+                self.convergence_days,
+                self.model_params.teacher_convergence_rate,
+                self.teacher_quality_factor,
+            )
+            self.teacher_control_variable = TeacherVariable(
+                self.model_params.teacher_control_mean,
+                self.model_params.teacher_control_sd,
+                self.model_params.teacher_control_variation_sd,
+                self.rng,
+                self.convergence_days,
+                self.model_params.teacher_convergence_rate,
+            )
+        else:
+            self.teacher_quality_variable = TeacherVariable(
+                self.model_params.teacher_quality_mean,
+                self.model_params.teacher_quality_sd,
+                self.model_params.teacher_quality_variation_sd,
+                self.rng,
+                self.total_days,
+                0,
+                self.teacher_quality_factor,
+            )
+            self.teacher_control_variable = TeacherVariable(
+                self.model_params.teacher_control_mean,
+                self.model_params.teacher_control_sd,
+                self.model_params.teacher_control_variation_sd,
+                self.rng,
+                self.total_days,
+                0,
+            )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid_params = get_grid_size(self.class_size, self.model_params.group_size)
@@ -338,15 +361,15 @@ class SimModel(Model):
 
     def _update_mean_maths(self):
         # If it's Friday:
-        # - update the difference in the mean maths score since the `feedback_period` weeks ago
-        # - store the previous mean maths score for the next `feedback_period` weeks
-        if self.current_date.weekday() == 4:
-            if self.current_week >= self.feedback_period:
-                self.current_week = 1
+        # - update the difference in the mean maths score since the `feedback_weeks` ago
+        # - store the previous mean maths score for the next `feedback_weeks`
+        if self.current_date.weekday() == 4 and self.feedback_weeks > 0:
+            if self.curr_feedback_week >= self.feedback_weeks:
+                self.curr_feedback_week = 1
                 self.diff_mean_maths = self.mean_maths - self.prev_mean_maths
                 self.prev_mean_maths = self.mean_maths
             else:
-                self.current_week += 1
+                self.curr_feedback_week += 1
 
     def update_school(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
@@ -360,6 +383,7 @@ class SimModel(Model):
         else:
             self.home_learning_steps = 0
 
+        # Beginning of the day
         if time_in_day == 0:
             # Update current date by self.home_learning days now we've completed the last tick of the day
             self.current_date += datetime.timedelta(days=self.home_learning_days)
@@ -389,6 +413,8 @@ class SimModel(Model):
 
         # Calculate the mean math score every tick
         self.mean_maths = compute_ave(self)
+
+        logger.debug("Current date %s, weekday %s, feedback week %s", self.current_date, self.current_date.weekday(), self.curr_feedback_week)
 
         if self.current_date > self.end_date or self.running == False:
             logger.debug("Finished run; collecting data")

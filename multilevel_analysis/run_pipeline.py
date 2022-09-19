@@ -62,6 +62,7 @@ Full parameter list (defined in data_type.ModelParamType) is:
     maths_ticks_mean: float
     maths_ticks_sd: float
     teacher_quality_factor: float
+    teacher_convergence_rate: float
 """,
 )
 @click.option(
@@ -72,13 +73,19 @@ Full parameter list (defined in data_type.ModelParamType) is:
     help="Whether to run in test mode (only 10 ticks per day)",
 )
 @click.option(
-    "--feedback-period",
+    "--feedback-weeks",
     "-f",
     default=1,
-    help="Feedback period in weeks how often the teacher quality is reassessed in the model",
+    help="How often (in weeks) the teacher quality is reassessed in the model",
+)
+@click.option(
+    "--convergence-days",
+    "-c",
+    default=30,
+    help="How often (in days) the teacher standard deviation is reduced in the model",
 )
 def run_model_and_mlm(
-    input_file, output_file, n_processors, model_params, test_mode, feedback_period
+    input_file, output_file, n_processors, model_params, test_mode, feedback_weeks, convergence_days
 ):
     model_params = model_params + STATIC_PARAMS
     run_model(
@@ -87,7 +94,8 @@ def run_model_and_mlm(
         n_processors,
         model_params=ModelParamType(*model_params),
         test_mode=test_mode,
-        feedback_period=feedback_period,
+        feedback_weeks=feedback_weeks,
+        convergence_days=convergence_days,
     )
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
     print(f"Mean squared error: {mean_squared_error}")

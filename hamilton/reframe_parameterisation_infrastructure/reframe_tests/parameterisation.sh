@@ -64,6 +64,12 @@ else
   echo "Teacher quality will be reassessed every week"
 fi
 
+if [ -n "$CONVERGENCE_DAYS" ]; then
+  echo "Teacher standard deviation will be reduced by teacher_convergence_rate every $CONVERGENCE_DAYS day(s)"
+else
+  echo "Teacher standard deviation will be reduced by teacher_convergence_rate every 30 days"
+fi
+
 for i in $(seq $NUM_ITERATIONS); do
   START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
   if [ -n $OUTPUT_FILE ]; then

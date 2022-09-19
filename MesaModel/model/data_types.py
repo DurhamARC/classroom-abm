@@ -42,6 +42,7 @@ class ModelParamType:
 
     # For teacher variables parameterisation
     teacher_quality_factor: float
+    teacher_convergence_rate: float
 
     # For test purposes
     ticks_per_home_day: int
@@ -55,8 +56,6 @@ class ModelParamType:
 
 # Default set of model parameters. Note: variable parameters must be added before
 # static parameters!
-# (currently, 16 var, 1 const and 5 static parameters
-# !please check again when changing ModelParamType)
 DEFAULT_MODEL_PARAMS = ModelParamType(
     teacher_quality_mean=2.56743,
     teacher_quality_sd=0.06792,
@@ -75,6 +74,7 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     maths_ticks_mean=302.0,
     maths_ticks_sd=6.15693,
     teacher_quality_factor=0.05,
+    teacher_convergence_rate=0.05,
     ticks_per_home_day=330,
     number_of_holidays=2,
     weeks_per_holiday=2,
@@ -87,34 +87,10 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
 # by web app users later on
 STATIC_PARAM_COUNT = 5
 STATIC_PARAMS = dataclasses.astuple(DEFAULT_MODEL_PARAMS)[-STATIC_PARAM_COUNT:]
-
-# Model parameters set consist of (in the order)
-# - VARIABLE_PARAM_COUNT parameters which are parameterised
-# - CONSTANT_PARAM_COUNT parameters which aren't parameterised,
-#   but added in the final output results
-#   (can be parameterised in future versions)
-# - STATIC_PARAM_COUNT parameters which aren't parameterised
-#   and are not added in the final output results
-#   (should not be modified when parameterising)
-VARIABLE_PARAM_COUNT = 17
 VARIABLE_PARAM_NAMES = [
     field.name
-    for field in dataclasses.fields(DEFAULT_MODEL_PARAMS)[0:VARIABLE_PARAM_COUNT]
+    for field in dataclasses.fields(DEFAULT_MODEL_PARAMS)[0:-STATIC_PARAM_COUNT]
 ]
-
-# The CONSTANT_PARAM_COUNT parameters are in addtion to
-# VARAIBLE_PARAM_NAMES to output along with them as well,
-# but these parameters are not parameterised
-# CONSTANT_PARAM_COUNT = 1
-# CONSTANT_PARAM_VALUES = [
-#    getattr(DEFAULT_MODEL_PARAMS, field.name)
-#    for field in dataclasses.fields(DEFAULT_MODEL_PARAMS)[VARIABLE_PARAM_COUNT-CONSTANT_PARAM_COUNT:-STATIC_PARAM_COUNT]
-# ]
-# CONSTANT_PARAM_NAMES = [
-#    field.name
-#    for field in dataclasses.fields(DEFAULT_MODEL_PARAMS)[VARIABLE_PARAM_COUNT-CONSTANT_PARAM_COUNT:-STATIC_PARAM_COUNT]
-# ]
-
 
 @dataclass(unsafe_hash=True)
 class ModelState:

@@ -20,6 +20,7 @@ CUSTOM_ROUNDING = {
     "conformity_factor": 9,
     "maths_ticks_mean": 0,
     "teacher_quality_factor": 5,
+    "teacher_convergence_rate": 5,
 }
 
 CUSTOM_LIMITS = {
@@ -28,12 +29,14 @@ CUSTOM_LIMITS = {
     "teacher_quality_variation_sd": (0, None),
     "teacher_control_variation_sd": (0, None),
     "teacher_quality_factor": (0.0, 1.0),
+    "teacher_convergence_rate": (0.0, 1.0),
 }
 
 CUSTOM_PERCENTAGE_CHANGE = {
     "random_select": 100,
     "conformity_factor": 0.001,
     "teacher_quality_factor": 50,
+    "teacher_convergence_rate": 50,
 }
 DEFAULT_PERCENTAGE_CHANGE = 8
 

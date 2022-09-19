@@ -3,7 +3,7 @@
 # Load env for hamilton8
 
 # User variables, change accordingly
-export REFRAME_TEST="variation_with_feedback"
+export REFRAME_TEST="convergence-rate-test"
 # if [ -z "$REFRAME_TEST" ]; then
 #   export REFRAME_TEST="parameterisation_results"
 # fi
