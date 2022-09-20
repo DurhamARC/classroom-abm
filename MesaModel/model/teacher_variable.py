@@ -39,7 +39,7 @@ class TeacherVariable:
                 lower=0,
                 rng=rng,
                 batch_size=batch_size,
-                convergence_rate = rate,
+                convergence_rate=rate,
             )
         else:
             self.tng = None
@@ -50,4 +50,6 @@ class TeacherVariable:
     def update_current_value(self, diff=0):
         """Updates the instance's current_values"""
         if self.tng:
-            self.current_value = self.tng.get_value() + self.factor * self.variation_sd * diff
+            self.current_value = (
+                self.tng.get_value() + self.factor * self.variation_sd * diff
+            )

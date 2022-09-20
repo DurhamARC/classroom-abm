@@ -143,7 +143,7 @@ class SimModel(Model):
         self.teacher_quality_factor = self.model_params.teacher_quality_factor
 
         # Create TeacherVariable instances for quality and control
-        if(convergence_days > 0):
+        if convergence_days > 0:
             self.teacher_quality_variable = TeacherVariable(
                 self.model_params.teacher_quality_mean,
                 self.model_params.teacher_quality_sd,
@@ -414,7 +414,12 @@ class SimModel(Model):
         # Calculate the mean math score every tick
         self.mean_maths = compute_ave(self)
 
-        logger.debug("Current date %s, weekday %s, feedback week %s", self.current_date, self.current_date.weekday(), self.curr_feedback_week)
+        logger.debug(
+            "Current date %s, weekday %s, feedback week %s",
+            self.current_date,
+            self.current_date.weekday(),
+            self.curr_feedback_week,
+        )
 
         if self.current_date > self.end_date or self.running == False:
             logger.debug("Finished run; collecting data")

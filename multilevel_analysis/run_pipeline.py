@@ -85,7 +85,13 @@ Full parameter list (defined in data_type.ModelParamType) is:
     help="How often (in days) the teacher standard deviation is reduced in the model",
 )
 def run_model_and_mlm(
-    input_file, output_file, n_processors, model_params, test_mode, feedback_weeks, convergence_days
+    input_file,
+    output_file,
+    n_processors,
+    model_params,
+    test_mode,
+    feedback_weeks,
+    convergence_days,
 ):
     model_params = model_params + STATIC_PARAMS
     run_model(

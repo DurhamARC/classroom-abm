@@ -17,7 +17,16 @@ class TruncatedNormalGenerator:
     be in a particular range, or when standard deviation is updated due convergence of random variables after a given convergence_rate period
     """
 
-    def __init__(self, mean, sd, lower=None, upper=None, rng=None, batch_size=1000, convergence_rate=0):
+    def __init__(
+        self,
+        mean,
+        sd,
+        lower=None,
+        upper=None,
+        rng=None,
+        batch_size=1000,
+        convergence_rate=0,
+    ):
         self.mean = mean
         self.sd = sd
         self.lower = lower
@@ -35,23 +44,35 @@ class TruncatedNormalGenerator:
 
         self.rng = rng or np.random.default_rng()
         self.tn_gen = stats.truncnorm(
-            (self.lower - self.mean) / self.sd, (self.upper - self.mean) / self.sd, loc=self.mean, scale=self.sd
+            (self.lower - self.mean) / self.sd,
+            (self.upper - self.mean) / self.sd,
+            loc=self.mean,
+            scale=self.sd,
         )
         self.batch_size = batch_size
         self._generate_values()
 
     def _generate_values(self, batch_size=0):
-        logger.debug("Generating new values, batch size: %s, mean: %s, standard deviation: %s, convergence rate %s", self.batch_size, self.mean, self.sd, self.convergence_rate)
+        logger.debug(
+            "Generating new values, batch size: %s, mean: %s, standard deviation: %s, convergence rate %s",
+            self.batch_size,
+            self.mean,
+            self.sd,
+            self.convergence_rate,
+        )
         self.values = self.tn_gen.rvs(self.batch_size, random_state=self.rng)
         self.iterator = np.nditer(self.values)
         if self.convergence_rate > 0 and self.convergence_rate <= 1:
-        #    if batch_size > 0:
-        #       self.batch_size = batch_size
+            #    if batch_size > 0:
+            #       self.batch_size = batch_size
             self.sd = self.sd * (1 - self.convergence_rate)
-        #   if self.sd < min_similarity_threshold:
-        ##       self.sd = min_similarity_threshold
+            #   if self.sd < min_similarity_threshold:
+            ##       self.sd = min_similarity_threshold
             self.tn_gen = stats.truncnorm(
-                (self.lower - self.mean) / self.sd, (self.upper - self.mean) / self.sd, loc=self.mean, scale=self.sd
+                (self.lower - self.mean) / self.sd,
+                (self.upper - self.mean) / self.sd,
+                loc=self.mean,
+                scale=self.sd,
             )
 
     def get_value(self):

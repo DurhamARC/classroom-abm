@@ -92,6 +92,7 @@ VARIABLE_PARAM_NAMES = [
     for field in dataclasses.fields(DEFAULT_MODEL_PARAMS)[0:-STATIC_PARAM_COUNT]
 ]
 
+
 @dataclass(unsafe_hash=True)
 class ModelState:
     learning_count: int
