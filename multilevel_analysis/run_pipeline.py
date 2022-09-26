@@ -62,7 +62,7 @@ Full parameter list (defined in data_type.ModelParamType) is:
     maths_ticks_mean: float
     maths_ticks_sd: float
     teacher_quality_factor: float
-    teacher_convergence_rate: float
+    school_convergence_rate: float
 """,
 )
 @click.option(

@@ -95,9 +95,12 @@ class SimModel(Model):
         self.home_learning_steps = 0
         # Calculate number of days from 1st September to 16th July inclusive
         self.start_date = datetime.date(2021, 9, 1)
-        self.current_date = self.start_date
         self.end_date = datetime.date(2022, 7, 16)
         self.total_days = (self.end_date - self.start_date).days
+        # Set the current date as 1st September
+        self.current_date = self.start_date
+        # Set the start date of the convergence period as 1st September
+        self.start_convergence_date = self.current_date
 
         self.ticks_per_school_day = round(
             TruncatedNormalGenerator.get_single_value(
@@ -119,7 +122,7 @@ class SimModel(Model):
             self.model_params.weeks_per_holiday,
         )
 
-        self.curr_feedback_week = 1
+        self.current_feedback_week = 1
 
         # Create truncnorm generators for school and home learning random
         # increments
@@ -139,46 +142,29 @@ class SimModel(Model):
             batch_size=self.ticks_per_home_day * batch_multiplier,
         )
 
-        # Create a random teacher quality feedback factor for variation of the teacher quality variable
-        self.teacher_quality_factor = self.model_params.teacher_quality_factor
-
         # Create TeacherVariable instances for quality and control
         if convergence_days > 0:
-            self.teacher_quality_variable = TeacherVariable(
-                self.model_params.teacher_quality_mean,
-                self.model_params.teacher_quality_sd,
-                self.model_params.teacher_quality_variation_sd,
-                self.rng,
-                self.convergence_days,
-                self.model_params.teacher_convergence_rate,
-                self.teacher_quality_factor,
-            )
-            self.teacher_control_variable = TeacherVariable(
-                self.model_params.teacher_control_mean,
-                self.model_params.teacher_control_sd,
-                self.model_params.teacher_control_variation_sd,
-                self.rng,
-                self.convergence_days,
-                self.model_params.teacher_convergence_rate,
-            )
+            convergence_rate = self.model_params.school_convergence_rate
         else:
-            self.teacher_quality_variable = TeacherVariable(
-                self.model_params.teacher_quality_mean,
-                self.model_params.teacher_quality_sd,
-                self.model_params.teacher_quality_variation_sd,
-                self.rng,
-                self.total_days,
-                0,
-                self.teacher_quality_factor,
-            )
-            self.teacher_control_variable = TeacherVariable(
-                self.model_params.teacher_control_mean,
-                self.model_params.teacher_control_sd,
-                self.model_params.teacher_control_variation_sd,
-                self.rng,
-                self.total_days,
-                0,
-            )
+            convergence_rate = 0
+
+        self.teacher_quality_variable = TeacherVariable(
+            self.model_params.teacher_quality_mean,
+            self.model_params.teacher_quality_sd,
+            self.model_params.teacher_quality_variation_sd,
+            self.rng,
+            self.total_days,
+            convergence_rate,
+            self.model_params.teacher_quality_factor,
+        )
+        self.teacher_control_variable = TeacherVariable(
+            self.model_params.teacher_control_mean,
+            self.model_params.teacher_control_sd,
+            self.model_params.teacher_control_variation_sd,
+            self.rng,
+            self.total_days,
+            convergence_rate,
+        )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
         self.grid_params = get_grid_size(self.class_size, self.model_params.group_size)
@@ -245,8 +231,8 @@ class SimModel(Model):
         )
         self.pupil_state_datacollector.collect(self)
         self.mean_maths = compute_ave(self)
-        self.prev_mean_maths = self.mean_maths
-        self.diff_mean_maths = 0
+        self.previous_mean_maths = self.mean_maths
+        self.difference_mean_maths = 0
 
         self.agent_datacollector = DataCollector(
             agent_reporters={
@@ -364,12 +350,12 @@ class SimModel(Model):
         # - update the difference in the mean maths score since the `feedback_weeks` ago
         # - store the previous mean maths score for the next `feedback_weeks`
         if self.current_date.weekday() == 4 and self.feedback_weeks > 0:
-            if self.curr_feedback_week >= self.feedback_weeks:
-                self.curr_feedback_week = 1
-                self.diff_mean_maths = self.mean_maths - self.prev_mean_maths
-                self.prev_mean_maths = self.mean_maths
+            if self.current_feedback_week >= self.feedback_weeks:
+                self.current_feedback_week = 1
+                self.difference_mean_maths = self.mean_maths - self.previous_mean_maths
+                self.previous_mean_maths = self.mean_maths
             else:
-                self.curr_feedback_week += 1
+                self.current_feedback_week += 1
 
     def update_school(self):
         time_in_day = self.schedule.steps % self.ticks_per_school_day
@@ -390,7 +376,26 @@ class SimModel(Model):
             self.home_learning_days = 0
 
             # Update TeacherVariable instances for quality and control
-            self.teacher_quality_variable.update_current_value(self.diff_mean_maths)
+            ### Calculate number of days passed since the beginning of the convergence period
+            convergence_days_passed = (
+                self.current_date - self.start_convergence_date
+            ).days
+            ### If the convergence period has passed then decrease 'variation_sd' of
+            ### all teacher variables by 'convergence_factor = (1 - convergence_rate)'
+            ### making them closer to 'mean' and
+            ### set the new start date for the convergence period
+            if convergence_days_passed >= self.convergence_days:
+                self.teacher_quality_variable.update_convergence_factor()
+                self.teacher_control_variable.update_convergence_factor()
+                convergence_days_overrun = (
+                    convergence_days_passed - self.convergence_days
+                )
+                self.start_convergence_date = self.current_date - datetime.timedelta(
+                    days=convergence_days_overrun
+                )
+            self.teacher_quality_variable.update_current_value(
+                self.difference_mean_maths
+            )
             self.teacher_control_variable.update_current_value()
 
             # Reset all pupils's states ready for the next day
@@ -418,7 +423,7 @@ class SimModel(Model):
             "Current date %s, weekday %s, feedback week %s",
             self.current_date,
             self.current_date.weekday(),
-            self.curr_feedback_week,
+            self.current_feedback_week,
         )
 
         if self.current_date > self.end_date or self.running == False:

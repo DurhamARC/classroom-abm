@@ -1,4 +1,4 @@
-test_id,teacher_quality_mean,teacher_quality_sd,teacher_quality_variation_sd,teacher_control_mean,teacher_control_sd,teacher_control_variation_sd,random_select,school_learn_factor,home_learn_factor,school_learn_mean_divisor,school_learn_sd,school_learn_random_proportion,conformity_factor,degradation_factor,maths_ticks_mean,maths_ticks_sd,teacher_quality_factor,teacher_convergence_rate
+test_id,teacher_quality_mean,teacher_quality_sd,teacher_quality_variation_sd,teacher_control_mean,teacher_control_sd,teacher_control_variation_sd,random_select,school_learn_factor,home_learn_factor,school_learn_mean_divisor,school_learn_sd,school_learn_random_proportion,conformity_factor,degradation_factor,maths_ticks_mean,maths_ticks_sd,teacher_quality_factor,school_convergence_rate
 1,1,1.26,0.5,1,1.08,0.6,2,0.12,0.0043,800,0.04,0.2,0.999993,0.08,150,50,0.23,0.48
 2,1,1.26,0.5,0,1.08,0.6,2,0.12,0.0043,800,0.04,0.2,0.999993,0.08,150,50,0.23,0.48
 3,0,1.26,0.5,1,1.08,0.6,2,0.12,0.0043,800,0.04,0.2,0.999993,0.08,150,50,0.23,0.48

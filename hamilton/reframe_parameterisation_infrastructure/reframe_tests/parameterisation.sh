@@ -14,6 +14,9 @@ case "$1" in
     "--with-small-dataset")
         export DATASET=../classes_input/test_input_short.csv
         ;;
+    "--with-school-dataset")
+        export DATASET=../classes_input/test_input_school.csv
+        ;;
     (*)
         echo "Please name a dataset for this job. Options are: "
         echo "--with-big-dataset (up to 1hr per run), --with-medium-dataset (under 45 mins), --with-small-dataset (under 5 mins)."

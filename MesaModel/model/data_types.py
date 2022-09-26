@@ -41,8 +41,8 @@ class ModelParamType:
     maths_ticks_sd: float  # (0, *)
 
     # For teacher variables parameterisation
-    teacher_quality_factor: float
-    teacher_convergence_rate: float
+    teacher_quality_factor: float  # a random feedback factor for variation of the teacher quality variable
+    school_convergence_rate: float  # how fast teacher variables converge towards their mean value in one school
 
     # For test purposes
     ticks_per_home_day: int
@@ -74,7 +74,7 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     maths_ticks_mean=302.0,
     maths_ticks_sd=6.15693,
     teacher_quality_factor=0.05,
-    teacher_convergence_rate=0.05,
+    school_convergence_rate=0.05,
     ticks_per_home_day=330,
     number_of_holidays=2,
     weeks_per_holiday=2,
