@@ -19,6 +19,7 @@ INPUT_DIR=~/classroom-abm/hamilton/parameter_input
 
 export PARAMETER_FILE="${INPUT_DIR}/example_lhs_params.csv"
 #export PARAMETER_FILE="${INPUT_DIR}/lhs_params_rate.csv"
+#export PARAMETER_FILE="${INPUT_DIR}/next_lhs_params_2022-09-25_224053.csv"
 export NUM_ITERATIONS=10
 export NUM_REPEATS=2
 export FEEDBACK_WEEKS=1

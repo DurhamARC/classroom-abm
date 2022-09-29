@@ -3,11 +3,11 @@
 # Load env for hamilton8
 
 # User variables, change accordingly
-export REFRAME_TEST="convergence-rate-test"
+export REFRAME_TEST="convergence-rate-1-school"
 # if [ -z "$REFRAME_TEST" ]; then
 #   export REFRAME_TEST="parameterisation_results"
 # fi
-export PARAMETERISATION_RESULTS_DIR=$NOBACKUP/classroom_abm_${REFRAME_TEST}
+export PARAMETERISATION_RESULTS_DIR=$NOBACKUP/classroom_abm/${REFRAME_TEST}
 
 # Don't modify below this line
 
