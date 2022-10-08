@@ -25,6 +25,10 @@ class ModelParamType:
     teacher_quality_mean: float  # [0, 5]
     teacher_quality_sd: float  # (0, *)
     teacher_quality_variation_sd: float  # (0, *)
+
+    # a random feedback factor for variation of the teacher quality variable
+    teacher_quality_feedback_factor: float  # (0, 1)
+
     teacher_control_mean: float  # [0, 5]
     teacher_control_sd: float  # (0, *)
     teacher_control_variation_sd: float  # (0, *)
@@ -36,12 +40,12 @@ class ModelParamType:
     school_learn_random_proportion: float  # (0, 1)
     conformity_factor: float  # (0, 1)
     degradation_factor: float  # (0, 1)
-    # maths_ticks_mean reflects actual minute per day spent in school on Maths
+
+    # maths_ticks reflects actual minute per day spent in school on Maths
     maths_ticks_mean: float  # [170, 660]
     maths_ticks_sd: float  # (0, *)
 
     # For teacher variables parameterisation
-    teacher_quality_factor: float  # a random feedback factor for variation of the teacher quality variable
     school_convergence_rate: float  # how fast teacher variables converge towards their mean value in one school
 
     # For test purposes
@@ -60,9 +64,12 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     teacher_quality_mean=2.56743,
     teacher_quality_sd=0.06792,
     teacher_quality_variation_sd=0.05491,
+    #    teacher_quality_factor=0.95,
+    teacher_quality_feedback_factor=0.05,
     teacher_control_mean=1.17235,
     teacher_control_sd=0.51857,
     teacher_control_variation_sd=0.0003906,
+    #    teacher_control_factor=0.95,
     random_select=1.64603,
     school_learn_factor=0.01139,
     home_learn_factor=0.0003391,
@@ -73,7 +80,6 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     degradation_factor=0.04403,
     maths_ticks_mean=302.0,
     maths_ticks_sd=6.15693,
-    teacher_quality_factor=0.05,
     school_convergence_rate=0.05,
     ticks_per_home_day=330,
     number_of_holidays=2,

@@ -14,12 +14,12 @@ set -e
 
 INPUT_DIR=~/classroom-abm/hamilton/parameter_input
 
-export PARAMETER_FILE="${INPUT_DIR}/example_lhs_params.csv"
-#export PARAMETER_FILE="${INPUT_DIR}/lhs_params_rate.csv"
+#export PARAMETER_FILE="${INPUT_DIR}/example_lhs_params.csv"
+export PARAMETER_FILE="${INPUT_DIR}/lhs_params.csv"
 #export PARAMETER_FILE="${INPUT_DIR}/next_lhs_params_2022-10-05_005331.csv"
-export NUM_ITERATIONS=10
+export NUM_ITERATIONS=2
 export NUM_REPEATS=2
 export FEEDBACK_WEEKS=1
 export CONVERGENCE_DAYS=30
 
-./parameterisation.sh --with-medium-dataset
+./parameterisation.sh --with-tiny-dataset

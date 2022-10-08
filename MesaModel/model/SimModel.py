@@ -155,7 +155,7 @@ class SimModel(Model):
             self.rng,
             self.total_days,
             convergence_rate,
-            self.model_params.teacher_quality_factor,
+            self.model_params.teacher_quality_feedback_factor,
         )
         self.teacher_control = TeacherVariable(
             self.model_params.teacher_control_mean,
@@ -380,9 +380,8 @@ class SimModel(Model):
             convergence_days_passed = (
                 self.current_date - self.start_convergence_date
             ).days
-            ### If the convergence period has passed then decrease 'variation_sd' of
-            ### all teacher variables by 'convergence_factor = (1 - convergence_rate)'
-            ### making them closer to 'mean' and
+            ### If the convergence period has passed then decrease `variation_sd` of
+            ### all teacher variables by `convergence_factor` and
             ### set the new start date for the convergence period
             if convergence_days_passed >= self.convergence_days:
                 self.teacher_quality.update_convergence_factor()
@@ -395,7 +394,7 @@ class SimModel(Model):
                 )
             self.teacher_quality.update_current_value(
                 best_value=self.model_params.teacher_quality_mean,
-                diff=self.diff_mean_maths
+                diff=self.diff_mean_maths,
             )
             self.teacher_control.update_current_value(
                 best_value=self.model_params.teacher_control_mean

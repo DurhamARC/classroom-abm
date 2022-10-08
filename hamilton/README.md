@@ -131,7 +131,7 @@ See [Quick Setup](#quick-setup) for a quick way to set off a new run.
 ### Generating parameters: Latin Hypercube Sampling
 
 If one does not want to generate parameters by Latin Hypercube Sampling (LHS) then skip this step.
-The file `hamilton/parameter_input/lhs_sampling.csv` will be used by default which contains four
+The file `hamilton/parameter_input/lhs_params.csv` will be used by default which contains four
 sets of parameter examples that will fuel four ReFrame test cases.
 
 Better, is to use LHS sampling to generate a parameter csv that can then be passed to ReFrame.

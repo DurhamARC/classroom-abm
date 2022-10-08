@@ -48,6 +48,7 @@ Full parameter list (defined in data_type.ModelParamType) is:
     teacher_quality_mean: float
     teacher_quality_sd: float
     teacher_quality_variation_sd: float
+    teacher_quality_feedback_factor: float
     teacher_control_mean: float
     teacher_control_sd: float
     teacher_control_variation_sd: float
@@ -61,7 +62,6 @@ Full parameter list (defined in data_type.ModelParamType) is:
     degradation_factor: float
     maths_ticks_mean: float
     maths_ticks_sd: float
-    teacher_quality_factor: float
     school_convergence_rate: float
 """,
 )

@@ -17,6 +17,7 @@ PARAM_DICT = {
     "teacher_quality_mean": (1, 5, 2),
     "teacher_quality_sd": (0.1, 0.5, 4),
     "teacher_quality_variation_sd": (0.0, 1, 5),
+    "teacher_quality_feedback_factor": (0.0, 1.0, 5),
     "teacher_control_mean": (1, 5, 2),
     "teacher_control_sd": (0.1, 0.5, 4),
     "teacher_control_variation_sd": (0.0, 1, 7),
@@ -30,7 +31,6 @@ PARAM_DICT = {
     "conformity_factor": (0.99999, 0.999995, 9),
     "maths_ticks_mean": (289.0, 600.0, 0),
     "maths_ticks_sd": (1, 5, 2),
-    "teacher_quality_factor": (0.0, 1.0, 5),
     "school_convergence_rate": (0.0, 1.0, 5),
 }
 
