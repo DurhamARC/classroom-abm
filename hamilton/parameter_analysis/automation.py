@@ -50,6 +50,7 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     using LHS sampling.
     The range is determined by iteration_number and decreases as iteration_number increases.
     """
+    print()
     print("Determining next parameter ranges...")
     param_dict = {}
     valid_keys = VARIABLE_PARAM_NAMES
@@ -96,6 +97,7 @@ def prepare_next_run(
     * Generating a new set of parameters based on the previous best results, saving to file
       `next_lhs_params_<timestamp>.csv`
     """
+    print()
     print("Preparing for the next run...")
     current_data_dir = os.path.join(parameterisation_data_dir, timestamp)
     if os.path.exists(current_data_dir):

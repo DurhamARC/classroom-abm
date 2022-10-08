@@ -148,7 +148,7 @@ class SimModel(Model):
         else:
             convergence_rate = 0
 
-        self.teacher_quality_variable = TeacherVariable(
+        self.teacher_quality = TeacherVariable(
             self.model_params.teacher_quality_mean,
             self.model_params.teacher_quality_sd,
             self.model_params.teacher_quality_variation_sd,
@@ -157,7 +157,7 @@ class SimModel(Model):
             convergence_rate,
             self.model_params.teacher_quality_factor,
         )
-        self.teacher_control_variable = TeacherVariable(
+        self.teacher_control = TeacherVariable(
             self.model_params.teacher_control_mean,
             self.model_params.teacher_control_sd,
             self.model_params.teacher_control_variation_sd,
@@ -231,8 +231,8 @@ class SimModel(Model):
         )
         self.pupil_state_datacollector.collect(self)
         self.mean_maths = compute_ave(self)
-        self.previous_mean_maths = self.mean_maths
-        self.difference_mean_maths = 0
+        self.prev_mean_maths = self.mean_maths
+        self.diff_mean_maths = 0
 
         self.agent_datacollector = DataCollector(
             agent_reporters={
@@ -352,8 +352,8 @@ class SimModel(Model):
         if self.current_date.weekday() == 4 and self.feedback_weeks > 0:
             if self.current_feedback_week >= self.feedback_weeks:
                 self.current_feedback_week = 1
-                self.difference_mean_maths = self.mean_maths - self.previous_mean_maths
-                self.previous_mean_maths = self.mean_maths
+                self.diff_mean_maths = self.mean_maths - self.prev_mean_maths
+                self.prev_mean_maths = self.mean_maths
             else:
                 self.current_feedback_week += 1
 
@@ -385,18 +385,21 @@ class SimModel(Model):
             ### making them closer to 'mean' and
             ### set the new start date for the convergence period
             if convergence_days_passed >= self.convergence_days:
-                self.teacher_quality_variable.update_convergence_factor()
-                self.teacher_control_variable.update_convergence_factor()
+                self.teacher_quality.update_convergence_factor()
+                self.teacher_control.update_convergence_factor()
                 convergence_days_overrun = (
                     convergence_days_passed - self.convergence_days
                 )
                 self.start_convergence_date = self.current_date - datetime.timedelta(
                     days=convergence_days_overrun
                 )
-            self.teacher_quality_variable.update_current_value(
-                self.difference_mean_maths
+            self.teacher_quality.update_current_value(
+                best_value=self.model_params.teacher_quality_mean,
+                diff=self.diff_mean_maths
             )
-            self.teacher_control_variable.update_current_value()
+            self.teacher_control.update_current_value(
+                best_value=self.model_params.teacher_control_mean
+            )
 
             # Reset all pupils's states ready for the next day
             for pupil in self.schedule.agents:

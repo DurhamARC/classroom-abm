@@ -14,6 +14,9 @@ case "$1" in
     "--with-small-dataset")
         export DATASET=../classes_input/test_input_short.csv
         ;;
+    "--with-tiny-dataset")
+        export DATASET=../classes_input/test_input_2_classes.csv
+        ;;
     (*)
         echo "Please name a dataset for this job. Options are: "
         echo "--with-big-dataset (up to 1hr per run), --with-medium-dataset (under 45 mins), --with-small-dataset (under 5 mins)."
@@ -118,6 +121,7 @@ for i in $(seq $NUM_ITERATIONS); do
   cp $PARAMETER_FILE parameters.csv
 
   ZIPFILE=$PARAMETERISATION_RESULTS_DIR/$START_DATETIME.zip
+  echo
   echo "Creating zip $ZIPFILE"
   zip $ZIPFILE *
 

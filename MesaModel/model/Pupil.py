@@ -108,7 +108,7 @@ class Pupil(Agent):
             if (
                 red_count > self.red_green_state_change_threshold
                 or self.randomised_agent_attribute
-                > self.model.teacher_quality_variable.current_value
+                > self.model.teacher_quality.current_value
             ):
                 self.learning_state = PupilLearningState.YELLOW
 
@@ -117,7 +117,7 @@ class Pupil(Agent):
             # more likely if control is low and hyper-impulsive is high
             if (
                 self.randomised_agent_attribute
-                > self.model.teacher_control_variable.current_value
+                > self.model.teacher_control.current_value
                 and self.randomised_agent_attribute < self.hyper_impulsive
             ):
                 self.learning_state = PupilLearningState.RED
@@ -125,7 +125,7 @@ class Pupil(Agent):
             # if teaching is good and they are not too inattentive
             elif (
                 self.randomised_agent_attribute
-                < self.model.teacher_quality_variable.current_value
+                < self.model.teacher_quality.current_value
                 and self.randomised_agent_attribute > self.inattentiveness
             ):
                 self.learning_state = PupilLearningState.GREEN
@@ -145,7 +145,7 @@ class Pupil(Agent):
             if (
                 green_count > self.red_green_state_change_threshold
                 or self.randomised_agent_attribute
-                < self.model.teacher_control_variable.current_value
+                < self.model.teacher_control.current_value
             ):
                 self.learning_state = PupilLearningState.YELLOW
 

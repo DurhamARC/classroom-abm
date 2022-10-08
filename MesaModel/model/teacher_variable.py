@@ -56,18 +56,18 @@ class TeacherVariable:
             self.tng = None
 
         self.current_value = self.base_value
-        self.update_current_value()
+        self.update_current_value(mean)
 
     def update_convergence_factor(self):
         """Updates the convergence factors"""
         if self.convergence_factor > 0.1:
             self.convergence_factor *= 1 - self.convergence_rate
 
-    def update_current_value(self, convergence_rate=0, diff=0):
+    def update_current_value(self, best_value, convergence_rate=0, diff=0):
         """Updates the instance's current_values"""
         if self.tng:
             next_value = self.tng.get_value()
-            next_value = self.mean + self.convergence_factor * (next_value - self.mean)
+            next_value = self.mean + self.convergence_factor * (next_value - best_value)
             self.current_value = (
                 next_value
                 + self.convergence_factor
