@@ -25,6 +25,7 @@ class ModelParamType:
     teacher_quality_mean: float  # [0, 5]
     teacher_quality_sd: float  # (0, *)
     teacher_quality_variation_sd: float  # (0, *)
+    teacher_quality_convergence_rate: float  # (0, 1)
 
     # a random feedback factor for variation of the teacher quality variable
     teacher_quality_feedback_factor: float  # (0, 1)
@@ -32,6 +33,8 @@ class ModelParamType:
     teacher_control_mean: float  # [0, 5]
     teacher_control_sd: float  # (0, *)
     teacher_control_variation_sd: float  # (0, *)
+    teacher_control_convergence_rate: float  # (0, 1)
+
     random_select: float  # [0, 5]
     school_learn_factor: float  # (0, *)
     home_learn_factor: float  # (0, *)
@@ -45,8 +48,9 @@ class ModelParamType:
     maths_ticks_mean: float  # [170, 660]
     maths_ticks_sd: float  # (0, *)
 
-    # For teacher variables parameterisation
-    school_convergence_rate: float  # how fast teacher variables converge towards their mean value in one school
+    # Note: For tuning of teacher variables (quality and control, separately),
+    # convergence rates were introduced (see above); they determine,
+    # how fast a teacher variable converges towards its best/mean value in one school
 
     # For test purposes
     ticks_per_home_day: int
@@ -64,12 +68,12 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     teacher_quality_mean=2.56743,
     teacher_quality_sd=0.06792,
     teacher_quality_variation_sd=0.05491,
-    #    teacher_quality_factor=0.95,
     teacher_quality_feedback_factor=0.05,
+    teacher_quality_convergence_rate=0.05,
     teacher_control_mean=1.17235,
     teacher_control_sd=0.51857,
     teacher_control_variation_sd=0.0003906,
-    #    teacher_control_factor=0.95,
+    teacher_control_convergence_rate=0.05,
     random_select=1.64603,
     school_learn_factor=0.01139,
     home_learn_factor=0.0003391,
@@ -80,7 +84,6 @@ DEFAULT_MODEL_PARAMS = ModelParamType(
     degradation_factor=0.04403,
     maths_ticks_mean=302.0,
     maths_ticks_sd=6.15693,
-    school_convergence_rate=0.05,
     ticks_per_home_day=330,
     number_of_holidays=2,
     weeks_per_holiday=2,

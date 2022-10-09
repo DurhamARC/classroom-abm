@@ -15,28 +15,31 @@ import merge_results
 import plot_correlations
 
 CUSTOM_ROUNDING = {
+    "teacher_quality_convergence_rate": 5,
     "teacher_quality_feedback_factor": 5,
     "teacher_control_variation_sd": 7,
+    "teacher_control_convergence_rate": 5,
     "home_learn_factor": 7,
     "conformity_factor": 9,
     "maths_ticks_mean": 0,
-    "school_convergence_rate": 5,
 }
 
 CUSTOM_LIMITS = {
     "random_select": (1, None),
     "conformity_factor": (None, 1),
     "teacher_quality_variation_sd": (0, None),
+    "teacher_quality_convergence_rate": (0.0, 1.0),
     "teacher_quality_feedback_factor": (0.0, 1.0),
     "teacher_control_variation_sd": (0, None),
-    "school_convergence_rate": (0.0, 1.0),
+    "teacher_control_convergence_rate": (0.0, 1.0),
 }
 
 CUSTOM_PERCENTAGE_CHANGE = {
     "teacher_quality_feedback_factor": 50,
+    "teacher_quality_convergence_rate": 50,
+    "teacher_control_convergence_rate": 50,
     "random_select": 100,
     "conformity_factor": 0.001,
-    "school_convergence_rate": 50,
 }
 DEFAULT_PERCENTAGE_CHANGE = 8
 

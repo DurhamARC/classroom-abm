@@ -94,13 +94,13 @@ for parameterisation runs. **""",
     "--feedback-weeks",
     "-f",
     default=1,
-    help="How often (in weeks) the teacher quality is reassessed in the model",
+    help="How often (in weeks) the teacher quality is reassessed depending on pupils' progress",
 )
 @click.option(
     "--convergence-days",
     "-c",
     default=30,
-    help="How often (in days) the teacher standard deviation is reduced in the model",
+    help="How often (in days) the teacher variables are converged to each other in a school",
 )
 def run_model_cli(
     input_file,

@@ -144,9 +144,11 @@ class SimModel(Model):
 
         # Create TeacherVariable instances for quality and control
         if convergence_days > 0:
-            convergence_rate = self.model_params.school_convergence_rate
+            tq_convergence_rate = self.model_params.teacher_quality_convergence_rate
+            tc_convergence_rate = self.model_params.teacher_control_convergence_rate
         else:
-            convergence_rate = 0
+            tq_convergence_rate = 1
+            tc_convergence_rate = 1
 
         self.teacher_quality = TeacherVariable(
             self.model_params.teacher_quality_mean,
@@ -154,7 +156,7 @@ class SimModel(Model):
             self.model_params.teacher_quality_variation_sd,
             self.rng,
             self.total_days,
-            convergence_rate,
+            tq_convergence_rate,
             self.model_params.teacher_quality_feedback_factor,
         )
         self.teacher_control = TeacherVariable(
@@ -163,7 +165,7 @@ class SimModel(Model):
             self.model_params.teacher_control_variation_sd,
             self.rng,
             self.total_days,
-            convergence_rate,
+            tc_convergence_rate,
         )
 
         # Create grid with torus = False - in a real class students at either ends of classroom don't interact
@@ -381,11 +383,11 @@ class SimModel(Model):
                 self.current_date - self.start_convergence_date
             ).days
             ### If the convergence period has passed then decrease `variation_sd` of
-            ### all teacher variables by `convergence_factor` and
+            ### all teacher variables by `convergence_rate` and
             ### set the new start date for the convergence period
             if convergence_days_passed >= self.convergence_days:
-                self.teacher_quality.update_convergence_factor()
-                self.teacher_control.update_convergence_factor()
+                self.teacher_quality.update_convergence_rate()
+                self.teacher_control.update_convergence_rate()
                 convergence_days_overrun = (
                     convergence_days_passed - self.convergence_days
                 )
@@ -394,7 +396,7 @@ class SimModel(Model):
                 )
             self.teacher_quality.update_current_value(
                 best_value=self.model_params.teacher_quality_mean,
-                diff=self.diff_mean_maths,
+                feedback_variation=self.diff_mean_maths,
             )
             self.teacher_control.update_current_value(
                 best_value=self.model_params.teacher_control_mean

@@ -48,10 +48,12 @@ Full parameter list (defined in data_type.ModelParamType) is:
     teacher_quality_mean: float
     teacher_quality_sd: float
     teacher_quality_variation_sd: float
+    teacher_quality_convergence_rate: float
     teacher_quality_feedback_factor: float
     teacher_control_mean: float
     teacher_control_sd: float
     teacher_control_variation_sd: float
+    teacher_control_convergence_rate: float
     random_select: float
     school_learn_factor: float
     home_learn_factor: float
@@ -62,7 +64,6 @@ Full parameter list (defined in data_type.ModelParamType) is:
     degradation_factor: float
     maths_ticks_mean: float
     maths_ticks_sd: float
-    school_convergence_rate: float
 """,
 )
 @click.option(
@@ -76,13 +77,13 @@ Full parameter list (defined in data_type.ModelParamType) is:
     "--feedback-weeks",
     "-f",
     default=1,
-    help="How often (in weeks) the teacher quality is reassessed in the model",
+    help="How often (in weeks) the teacher quality is reassessed depending on pupils' progress",
 )
 @click.option(
     "--convergence-days",
     "-c",
     default=30,
-    help="How often (in days) the teacher standard deviation is reduced in the model",
+    help="How often (in days) the teacher variables are converged to each other in a school",
 )
 def run_model_and_mlm(
     input_file,
