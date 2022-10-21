@@ -2,15 +2,6 @@
 
 # Load env for hamilton8
 
-# User variables, change accordingly
-export REFRAME_TEST="convergence-rate-best-value-3"
-# if [ -z "$REFRAME_TEST" ]; then
-#   export REFRAME_TEST="parameterisation_results"
-# fi
-export PARAMETERISATION_RESULTS_DIR=$NOBACKUP/classroom_abm/${REFRAME_TEST}
-
-# Don't modify below this line
-
 module purge
 module load python/3.9.9
 
