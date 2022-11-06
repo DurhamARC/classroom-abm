@@ -9,9 +9,9 @@ sys.path.append(this_dir)
 sys.path.append(os.path.join(this_dir, "../../MesaModel"))
 sys.path.append(os.path.join(this_dir, "../parameter_input"))
 
-from model.data_types import VARIABLE_PARAM_NAMES
+from model.data_types import VARIABLE_PARAM_NAMES, BEST_PARAM_NAMES
 import lhs_sampling
-import merge_results
+import mse_results as mse_results
 import plot_correlations
 
 CUSTOM_ROUNDING = {
@@ -53,8 +53,8 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     using LHS sampling.
     The range is determined by iteration_number and decreases as iteration_number increases.
     """
-    print()
-    print("Determining next parameter ranges...")
+    print(f"Calling automation.generate_new_param_file()...")
+    # print()
     param_dict = {}
     valid_keys = VARIABLE_PARAM_NAMES
     for k in best_params.keys():
@@ -80,65 +80,78 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     lhs_sampling.generate_lhs_params(
         num_param_sets=25, output_file=output_filename, param_limits=param_dict
     )
-    print(
-        f"automation.generate_new_param_file(): a new set of 25 parameters in {output_filename} using LHS sampling generated"
-    )
+#    print(f"automation.generate_new_param_file(): a new set of 25 parameters in {output_filename} using LHS sampling generated")
+
+
+def save_best_param_file(best_params, output_file="best_params.csv"):
+    """ Saves the best parameters:
+    * Saving the overall values (shool_id==0) as well as for each school individually (with their school ids) as `best_params`
+    """
+    print(f"Calling automation.save_best_param_file()...")
+    # params = []
+    with open(output_file, "w", newline="") as out_file:
+        csv_file = csv.writer(out_file, lineterminator=os.linesep)
+        csv_file.writerow(["school_id", "test_id"] + BEST_PARAM_NAMES)
+        valid_keys = BEST_PARAM_NAMES
+
+        for school_id in best_params.keys():
+            params = []
+            test_id = int(best_params[school_id]["test_id"])
+            for k in best_params[school_id].keys():
+                if k in valid_keys:
+                    value = best_params[school_id][k]
+                    params.append(value)
+            csv_file.writerow([school_id, test_id, *params,])
 
 
 def prepare_next_run(
     timestamp,
-    output_csv,
-    reframe_data_dir,
+    mse_output_csv,
     parameterisation_data_dir,
     iteration_number,
     merge_csv=None,
 ):
     """Prepares for the next run by:
     * Creating a subdirectory of `parameterisation_data_dir` using `timestamp`
-    * Copying `output_csv` to the directory
+    * Copying the resulting `mse_output_csv` of the last parameterisation test to `parameterisation_data_dir`
     * Creating an ordered CSV and a correlations plot
-    * Generating a new set of parameters based on the previous best results, saving to file
-      `next_lhs_params_<timestamp>.csv`
+    * Generating and saving a new set of parameters based on the previous best results as `next_lhs_params_<timestamp>.csv`
     """
-    print()
-    print("Preparing for the next run...")
+    print(f"Calling automation.prepare_next_run()...")
+#    print()
     current_data_dir = os.path.join(parameterisation_data_dir, timestamp)
+    current_merged_csv = os.path.join(current_data_dir, "all_merged_mses.csv")
     if os.path.exists(current_data_dir):
         print(f"Directory {current_data_dir} already exists. Exiting.")
         sys.exit(1)
 
     os.mkdir(current_data_dir)
-    print(f"automation.prepare_next_run(): {current_data_dir} created")
-    shutil.copy(output_csv, current_data_dir)
-    print(f"automation.prepare_next_run(): {output_csv} copied")
+    shutil.copy(mse_output_csv, current_data_dir)
 
-    # Get dataframes from $OUTPUT_FILE and
+    # Get dataframes from $MSE_OUTPUT_FILE and
     # .. save them in the current merged_mses.csv in the folder of the current iteration
-    merged_dataframe = merge_results.merge_repeats(
-        output_csv, output_dir=current_data_dir
-    )
-    print(
-        f"automation.prepare_next_run(): dataframes from lowest MSE to highest MSE sorted"
-    )
-    plot_correlations.plot_correlations(
-        os.path.join(current_data_dir, "lowest_to_highest_mses.csv")
-    )
-    print(f"automation.prepare_next_run(): correlations plotted")
+    merged_dataframe = mse_results.merge_repeats(mse_output_csv, output_dir=current_data_dir)
+    plot_correlations.plot_correlations(os.path.join(current_data_dir, "lowest_to_highest_mses.csv"))
 
     # Merge the current dataframe with all concatenated merged_mses.csv from previous iterations
     # .. (kept as $MERGE_FILE) and update the $MERGE_FILE
     if merge_csv:
-        merged_dataframe = merge_results.merge_previous_results(
-            merged_dataframe, merge_csv
-        )
+        if os.path.exists(merge_csv):
+            shutil.copy(merge_csv, current_merged_csv)
+        merged_dataframe = mse_results.merge_previous_results(merged_dataframe, current_merged_csv)
+        shutil.copy(current_merged_csv, merge_csv)
 
     # Group by parameters and sort by mean MSE for each parameter set
-    means_dataframe = merge_results.get_means_dataframe(merged_dataframe)
-    print(f"automation.prepare_next_run(): the best mean results sorted")
-    best_params = means_dataframe.iloc[0]
+    means_dataframe = mse_results.get_means_dataframe(merged_dataframe, output_dir=current_data_dir)
+    means_by_school = means_dataframe.groupby("school_id")
+    school_ids = list(means_by_school.groups.keys())
+    print(f"school_ids: {school_ids}")
+    best_params = dict()
+    for i, school_id in enumerate(school_ids):
+        nrows = iteration_number * int(os.environ["NUM_PARAMETERS"])
+        best_params[school_id] = means_dataframe.iloc[i*nrows]
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
-    generate_new_param_file(best_params, next_param_file, iteration_number)
-    print(
-        f"automation.prepare_next_run(): a new param file `next_lhs_params_{timestamp}.csv` generated"
-    )
+    best_param_file = os.path.join(current_data_dir, f"best_params.csv")
+    save_best_param_file(best_params, best_param_file)
+    generate_new_param_file(best_params[0], next_param_file, iteration_number)

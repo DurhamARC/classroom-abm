@@ -17,6 +17,12 @@ case "$1" in
     "--with-tiny-dataset")
         export DATASET=../classes_input/test_input_2_classes.csv
         ;;
+    "--with-all-schools")
+        export DATASET=../classes_input/test_input_school.csv
+        ;;
+    "--with-two-schools")
+        export DATASET=../classes_input/test_input_2_schools.csv
+        ;;
     (*)
         echo "Please name a dataset for this job. Options are: "
         echo "--with-big-dataset (up to 1hr per run), --with-medium-dataset (under 45 mins), --with-small-dataset (under 5 mins)."
@@ -45,11 +51,11 @@ else
   echo "Will run one set of parameters."
 fi
 
-if [[ $HOSTNAME == *ham8.dur.ac.uk ]]; then
-  export HAMILTON_VERSION="hamilton8"
-else
-  export HAMILTON_VERSION="hamilton7"
-fi
+# if [[ $HOSTNAME == *ham8.dur.ac.uk ]]; then
+export HAMILTON_VERSION="hamilton8"
+# else
+#   export HAMILTON_VERSION="hamilton7"
+# fi
 
 source $HOME/.bashrc
 
@@ -74,13 +80,13 @@ else
 fi
 
 for i in $(seq $NUM_ITERATIONS); do
-  START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
-  if [ -n $OUTPUT_FILE ]; then
-    export OUTPUT_FILE="../../mse_results_from_reframe/mse_output_${START_DATETIME}.csv"
+  export START_DATETIME=`date +'%Y-%m-%d_%H%M%S'`
+  if [ -n $MSE_OUTPUT_FILE ]; then
+    export MSE_OUTPUT_FILE="../../mse_results_from_reframe/mse_output_${START_DATETIME}.csv"
   fi
   echo
   echo "Iteration: ${i}/${NUM_ITERATIONS}"
-  echo "Outputting CSV to $OUTPUT_FILE"
+  echo "Outputting CSV to $MSE_OUTPUT_FILE"
 
   export PATH=/apps/infrastructure/modules/default/default/default/Modules/default/bin/:$PATH
   ~/reframe/bin/reframe \
@@ -103,15 +109,14 @@ for i in $(seq $NUM_ITERATIONS); do
 
   # Set up conda env to run generate_next_params
   module purge
-  if [[ $HAMILTON_VERSION == "hamilton7" ]]; then
-    module load miniconda2/4.1.11
-  else
-    source $HOME/.bashrc
-    conda init
-  fi
-
-  source activate classroom_abm
-  python ../../parameter_analysis/cli.py prepare-next-run -t $START_DATETIME -r $OUTPUT_FILE -rd $OUTPUT_DIR -pd $PARAMETERISATION_RESULTS_DIR -it $i -m $MERGE_FILE
+  # if [[ $HAMILTON_VERSION == "hamilton7" ]]; then
+  #   module load miniconda2/4.1.11
+  # else
+  source $HOME/.bashrc
+  conda init
+  # fi
+  conda activate classroom_abm
+  python ../../parameter_analysis/cli.py prepare-next-run -t $START_DATETIME -r $MSE_OUTPUT_FILE -pd $PARAMETERISATION_RESULTS_DIR -it $i -m $MERGE_FILE
 
   # Reset modules for reframe
   module purge
@@ -132,7 +137,9 @@ for i in $(seq $NUM_ITERATIONS); do
   popd > /dev/null
   popd > /dev/null
 
-  if [[ "$i" -lt "$(($NUM_ITERATIONS - 1))" ]]; then
+  if [[ "$i" -lt "$NUM_ITERATIONS" ]]; then
+    echo "Exporting new parameter file next_lhs_params_$START_DATETIME.csv and $PARAMETERISATION_RESULTS_DIR/$START_DATETIME/best_params.csv"
     export PARAMETER_FILE="$PARAMETERISATION_RESULTS_DIR/$START_DATETIME/next_lhs_params_$START_DATETIME.csv"
+    export BEST_PARAMETER_FILE="$PARAMETERISATION_RESULTS_DIR/$START_DATETIME/best_params.csv"
   fi
 done

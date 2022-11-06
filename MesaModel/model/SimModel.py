@@ -2,6 +2,9 @@ import dataclasses
 import datetime
 import logging
 import math
+import os
+import csv
+import sys
 
 import numpy as np
 from mesa import Model
@@ -9,7 +12,7 @@ from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 
-from .data_types import PupilLearningState, ModelParamType
+from .data_types import PupilLearningState, ModelParamType, BestModelParamType, BEST_MODEL_PARAMS, BEST_PARAMS
 from .Pupil import Pupil
 from .teacher_variable import TeacherVariable
 from .truncated_normal_generator import TruncatedNormalGenerator
@@ -38,6 +41,7 @@ class SimModel(Model):
         speedup=1,
         feedback_weeks=0,
         convergence_days=0,
+        best_params_file=None,
         **kwargs,
     ):
         self.data = all_data
@@ -50,10 +54,42 @@ class SimModel(Model):
             self.rng = np.random.default_rng()
             if class_id:
                 self.class_id = class_id
+            
+        self.school_id = self.data.get_school_id(self.class_id)
+        if self.school_id < 0:
+            logger.info("Modelling class: %s", self.class_id)
+        else:
+            logger.info("Modelling (class, school): (%s, %s)", self.class_id, self.school_id)
 
-        logger.info("Modelling class %s", self.class_id)
+        school_ids = 0
+        best_params = None
+        self.best_params = BEST_MODEL_PARAMS
+        if best_params_file:
+            if os.path.exists(best_params_file):
+                with open(best_params_file, "r") as f:
+                    csv_reader = csv.reader(f)
+                    best_params_csv = list(csv_reader)
+                    row_head = best_params_csv[0]
+                    print(f"row_head = {row_head}")
+                    if row_head[0] != "school_id" or row_head[1] != "test_id" or len(best_params_csv) < 2:
+                        print(f"The {best_params_file} file has a wrong format. Exiting.")
+                        sys.exit(1)
+                    for row in best_params_csv:
+                        print(f"Best parameter file contains params: {row}")
+#                        logger.info(f"[{self.class_id}] -> Row[{school_ids}]: {row}")
+                        if row[0].isnumeric() and row[1].isnumeric():
+                            if int(row[0]) == self.school_id:
+                                best_row = row[2:]
+                                best_params = tuple(float(value) for value in best_row)
+                                self.best_params = BestModelParamType(*(best_params))
+                                school_ids += 1
 
         self.model_params = model_params
+        if not school_ids:
+            self.best_params.teacher_quality_mean = self.model_params.teacher_quality_mean
+            self.best_params.teacher_control_mean = self.model_params.teacher_control_mean
+            print("Global best parameters are used as best for every individual school")
+
         self.speedup = speedup
         self.write_file = False
         self.feedback_weeks = feedback_weeks
@@ -395,11 +431,11 @@ class SimModel(Model):
                     days=convergence_days_overrun
                 )
             self.teacher_quality.update_current_value(
-                best_value=self.model_params.teacher_quality_mean,
+                best_value=self.best_params.teacher_quality_mean,
                 feedback_variation=self.diff_mean_maths,
             )
             self.teacher_control.update_current_value(
-                best_value=self.model_params.teacher_control_mean
+                best_value=self.best_params.teacher_control_mean,
             )
 
             # Reset all pupils's states ready for the next day
@@ -445,7 +481,7 @@ class SimModel(Model):
             agent_data = self.agent_datacollector.get_agent_vars_dataframe()
             logger.debug("Got agent data")
             self.output_data_writer.write_data(
-                agent_data, self.class_id, self.class_size
+                agent_data, self.school_id, self.class_id, self.class_size
             )
             logger.debug("Written to output file")
             self.agent_datacollector = None
@@ -453,4 +489,8 @@ class SimModel(Model):
             self.pupil_state_datacollector = None
             self.home_learning_random_gen = None
             self.school_learning_random_gen = None
-            logger.info("Completed run for class %s", self.class_id)
+            if self.school_id < 0:
+                logger.info("Completed run for class: %s", self.class_id)
+            else:
+                # logger.info("Modelling (class, school): (%s, %s)", self.class_id, self.school_id)
+                logger.info("Completed run for (class, school): (%s, %s)", self.class_id, self.school_id)

@@ -10,6 +10,7 @@ from run import run_model
 from model.data_types import (
     ModelParamType,
     DEFAULT_MODEL_PARAMS,
+#    BEST_MODEL_PARAMS,
     STATIC_PARAM_COUNT,
     STATIC_PARAMS,
 )
@@ -85,6 +86,21 @@ Full parameter list (defined in data_type.ModelParamType) is:
     default=30,
     help="How often (in days) the teacher variables are converged to each other in a school",
 )
+@click.option(
+    "--best-params-file",
+    "-bp",
+    type=str,
+    default="",
+    required=False,
+    help="""File containing space separated best model params from the previous simulation
+
+Full parameter list (defined in data_type.BestModelParamType) is:
+
+    teacher_quality_mean: float
+    teacher_control_mean: float
+    mean_squared_error: float
+""",
+)
 def run_model_and_mlm(
     input_file,
     output_file,
@@ -93,9 +109,10 @@ def run_model_and_mlm(
     test_mode,
     feedback_weeks,
     convergence_days,
+    best_params_file,
 ):
     model_params = model_params + STATIC_PARAMS
-    run_model(
+    school_ids = run_model(
         input_file,
         output_file,
         n_processors,
@@ -103,9 +120,15 @@ def run_model_and_mlm(
         test_mode=test_mode,
         feedback_weeks=feedback_weeks,
         convergence_days=convergence_days,
+        best_params_file=best_params_file,
     )
-    mean_squared_error = run_multilevel_analysis(input_file, output_file)
+    mses = run_multilevel_analysis(input_file, output_file, school_ids)
+    mean_squared_error = mses[0]
+    print(f"School: 0")
     print(f"Mean squared error: {mean_squared_error}")
+    for i, school_id in enumerate(school_ids):
+        print(f"School: {school_id}")
+        print(f"Mean squared error: {mses[i+1]}")
     return mean_squared_error
 
 

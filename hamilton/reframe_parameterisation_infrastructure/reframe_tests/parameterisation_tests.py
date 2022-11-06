@@ -21,12 +21,12 @@ with open(os.environ["PARAMETER_FILE"], "r") as f:
             exit(1)
         id += 1
 
-OUTPUT_FILE = os.environ.get(
-    "OUTPUT_FILE",
+MSE_OUTPUT_FILE = os.environ.get(
+    "MSE_OUTPUT_FILE",
     f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv",
 )
-with open(OUTPUT_FILE, "w") as output:
-    output.write("test_id,repeat_no," + ",".join(ROWS[0]) + ",mean_squared_error\n")
+with open(MSE_OUTPUT_FILE, "w") as output:
+    output.write("test_id,school_id,repeat_no," + ",".join(ROWS[0]) + ",mean_squared_error\n")
 
 
 @rfm.parameterized_test(
@@ -45,7 +45,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             self.time_limit = "30m"
         else:
             n_processors = 64 if self.current_system.name == "hamilton8" else 24
-            self.time_limit = "1h" if "_25" in os.environ["DATASET"] else "1h30m"
+            self.time_limit = "1h" if "_25" in os.environ["DATASET"] else "5h"
 
         feedback_weeks = os.environ["FEEDBACK_WEEKS"]
         convergence_days = os.environ["CONVERGENCE_DAYS"]
@@ -61,7 +61,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
 
         self.sanity_patterns = sn.assert_found(r"Mean squared error:", self.stdout)
 
-        execution_dir = os.environ["HOME"] + "/classroom-abm/multilevel_analysis"
+        execution_dir = os.environ["PROJECT_PATH"] + "/multilevel_analysis"
 
         self.keep_files = [
             f"{execution_dir}/pupil_data_output_{test_id}_{iteration}*.csv"
@@ -73,7 +73,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "echo $PATH",
             "source $HOME/.bashrc",
             "conda init",
-            "source activate classroom_abm",
+            "conda activate classroom_abm",
         ]
 
         if self.current_system.name == "hamilton8":
@@ -103,22 +103,76 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             f"{convergence_days}",
         ]
 
-    def extract_mse(self):
-        target = "Mean squared error: "
+    @run_before('run')
+    def copy_to_stagedir(self):
+        # Copy the latest best parameters file to the current reframe stage directory
+        best_params_file = os.environ["BEST_PARAMETER_FILE"]
+        if not os.path.exists(best_params_file):
+            homedir = os.environ["HOME"]
+            best_params_file = os.path.join(homedir, "best_params.csv")
+        if os.path.exists(best_params_file):
+            self.prerun_cmds.extend(
+                [
+                    f"cp {best_params_file} {self.stagedir}/best_params.csv",
+                ],
+            )
+            best_params_file = os.path.join(str(self.stagedir), "best_params.csv")
+            self.executable_opts.extend(
+                [
+                    "--best-params-file",
+                    best_params_file,
+                ],
+            )
+
+    def extract_data(self, target_string):
+        # Search through all lines and extract all values following the given 'target_string'
+        # Expected format of the sequence of all values for the given 'target_string' is
+        # .. a sequence of lines characterising first the total value for all schools (indexed as [0]),
+        # .. then partial values for individual schools indexed as [1], [2], and so on
+        # 1) For the list of schools ("School: "):
+        #   - [0] for all schools;
+        #   - [1], [2], and so on denote indices for individual schools
+        # 2) For the list of MSEs ("Mean squared error: "):
+        #   - [0] the total MSE;
+        #   - [1], [2], and so on partial MSEs for individual schools
+        target = target_string
+        values = []
         with open(os.path.join(str(self.stagedir), str(self.stdout)), "r") as data:
             for line in data:
                 if target in line:
-                    return line.strip(target)
+                    values.extend([line.strip(target)],)
+        if values:
+            return values
         return ""
+
+    # def extract_mse(self):
+    #     target = "Mean squared error: "
+    #     with open(os.path.join(str(self.stagedir), str(self.stdout)), "r") as data:
+    #         for line in data:
+    #             if target in line:
+    #                 return line.strip(target)
+    #     return ""
 
     @run_after("sanity")
     def add_mse_to_csv(self):
         with mutex:
-            with open(OUTPUT_FILE, "a") as output:
-                output.write(
-                    f"{self.test_id},{self.repeat_no},"
-                    + ",".join(ROWS[self.test_id])
-                    + ","
-                )
-                output.write(self.extract_mse().strip("\n"))
-                output.write("\n")
+            school_ids = self.extract_data("School: ")
+            school_mses = self.extract_data("Mean squared error: ")
+            # school_id = school_ids[0].strip("\n")
+            # school_mse = school_mses[0].strip("\n")
+            with open(MSE_OUTPUT_FILE, "a") as output:
+                # output.write(
+                #     f"{self.test_id},{school_id},{self.repeat_no},"
+                #     + ",".join(ROWS[self.test_id])
+                #     + f",{school_mse}"
+                # )
+                # output.write("\n")
+                for i, school_mse in enumerate(school_mses):
+                    school_id = school_ids[i].strip("\n")
+                    school_mse = school_mse.strip("\n")
+                    output.write(
+                        f"{self.test_id},{school_id},{self.repeat_no},"
+                        + ",".join(ROWS[self.test_id])
+                        + f",{school_mse}"
+                    )
+                    output.write("\n")

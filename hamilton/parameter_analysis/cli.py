@@ -4,7 +4,7 @@ import pandas as pd
 
 import automation
 import create_sample as cs
-import merge_results
+import mse_results as mse_results
 import mlm_analysis
 import plot_correlations as pc
 import run_webserver_with_params as rwwp
@@ -46,7 +46,7 @@ def merge_repeats(files, output_dir):
     """Merges the MSE csvs produced by ReFrame's postrun command.
     Creates 2 output CSVs: `merged_mses.csv` (ordered by parameter values)
     and `lowest_to_highest_mses.csv` (ordered by MSE)"""
-    merge_results.merge_repeats(*files, output_dir=output_dir)
+    mse_results.merge_repeats(*files, output_dir=output_dir)
 
 
 @cli.command()
@@ -61,12 +61,12 @@ def merge_repeats(files, output_dir):
     "--limit",
     "-l",
     type=float,
-    default=merge_results.DEFAULT_MSE_LIMIT,
+    default=mse_results.DEFAULT_MSE_LIMIT,
     help="Limit for mean squared error values: only values below the limit will be put in the output file",
 )
 def merge_best_results(directory, limit):
     """Combines the best results from each set in the given directory into a single dataframe, and plots the correlations"""
-    merge_results.merge_best_results(directory, limit)
+    mse_results.merge_best_results(directory, limit)
 
 
 @cli.command()
@@ -133,13 +133,6 @@ def generate_next_params(input_file, output_file, iteration):
     help="CSV file with MSE results from reframe",
 )
 @click.option(
-    "--reframe-data-dir",
-    "-rd",
-    type=str,
-    required=True,
-    help="Data dir with full results from reframe",
-)
-@click.option(
     "--parameterisation-data-dir",
     "-pd",
     type=str,
@@ -163,7 +156,6 @@ def generate_next_params(input_file, output_file, iteration):
 def prepare_next_run(
     timestamp,
     reframe_csv,
-    reframe_data_dir,
     parameterisation_data_dir,
     iteration,
     merge_csv,
@@ -178,7 +170,6 @@ def prepare_next_run(
     automation.prepare_next_run(
         timestamp,
         reframe_csv,
-        reframe_data_dir,
         parameterisation_data_dir,
         iteration,
         merge_csv,

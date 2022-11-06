@@ -12,16 +12,19 @@ set -e
 #   --with-small-dataset
 #   --with-tiny-dataset
 
-INPUT_DIR=~/classroom-abm/hamilton/parameter_input
-export REFRAME_TEST="convergence-rate-best-value-4"
+export PROJECT_PATH=~/Projects/classroom-abm
+INPUT_DIR=$PROJECT_PATH/hamilton/parameter_input
+export REFRAME_TEST="mse-two-schools-best"
 export PARAMETERISATION_RESULTS_DIR=$NOBACKUP/classroom_abm/${REFRAME_TEST}
 
 #export PARAMETER_FILE="${INPUT_DIR}/example_lhs_params.csv"
 #export PARAMETER_FILE="${INPUT_DIR}/lhs_params.csv"
-export PARAMETER_FILE="${INPUT_DIR}/next_lhs_params_2022-10-09_010041.csv"
-export NUM_ITERATIONS=20
+export PARAMETER_FILE="${INPUT_DIR}/next_lhs_params_2022-11-06_210739.csv"
+export NUM_PARAMETERS=$(($(cat $PARAMETER_FILE | wc -l)-1))
+export BEST_PARAMETER_FILE="best_params.csv"
+export NUM_ITERATIONS=10
 export NUM_REPEATS=2
 export FEEDBACK_WEEKS=1
 export CONVERGENCE_DAYS=30
 
-./parameterisation.sh --with-medium-dataset
+./parameterisation.sh --with-two-schools

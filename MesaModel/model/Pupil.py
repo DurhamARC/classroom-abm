@@ -65,7 +65,7 @@ class Pupil(Agent):
         red = 0
         green = 0
         yellow = 0
-        for neighbor in self.model.grid.neighbor_iter(self.pos):
+        for neighbor in self.model.grid.iter_neighbors(self.pos, True):
             neighbourCount += 1
             if neighbor.learning_state == PupilLearningState.RED:
                 red += 1

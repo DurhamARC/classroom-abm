@@ -3,6 +3,7 @@ import subprocess
 import sys
 
 import click
+# from rpy2.robjects.vectors import IntVector
 
 
 def run_rscript(script=None, scriptname=None, args=None):
@@ -51,29 +52,37 @@ def run_rscript(script=None, scriptname=None, args=None):
 def run_mlm(real_data_file, simulated_data_file):
     mse = run_multilevel_analysis(real_data_file, simulated_data_file)
     if mse is not None:
-        click.echo(f"Mean squared error: {mse}")
+        click.echo(f"Mean squared error: {mse[0]}")
 
 
-def run_multilevel_analysis(real_data_file, simulated_data_file):
+def run_multilevel_analysis(real_data_file, simulated_data_file, school_ids):
     here = os.path.dirname(os.path.realpath(__file__))
-    real_data_path = os.path.join(
-        here,
-        real_data_file,
-    )
+    real_data_path = os.path.join(here, real_data_file)
     simulated_data_path = os.path.join(here, simulated_data_file)
+    mses = []
+    # schoolsVector = IntVector(school_ids)
 
     run_rscript(script="renv::restore()")
-    output = run_rscript(
-        scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path, 1]
-    )
+    output = run_rscript(scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path, 0, 1])
     output_lines = output.splitlines()
     try:
         mse = float(output_lines[-1])
     except ValueError:
         print("Could not convert {mse} to float")
         sys.exit(2)
+    mses.append(mse)
+    for school_id in school_ids:
+        run_rscript(script="renv::restore()")
+        output = run_rscript(scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path, school_id, 1])
+        output_lines = output.splitlines()
+        try:
+            mse = float(output_lines[-1])
+        except ValueError:
+            print("Could not convert {mse} to float")
+            sys.exit(2)
+        mses.append(mse)
 
-    return mse
+    return mses
 
 
 if __name__ == "__main__":

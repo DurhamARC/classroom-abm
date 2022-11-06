@@ -148,11 +148,13 @@ def run_model(
     speedup=1,
     feedback_weeks=1,
     convergence_days=30,
+    best_params_file=None,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
 
     class_ids = all_data.get_class_ids()
+    school_ids = all_data.get_school_ids()
     if webserver:
         if all_classes:
             click.echo("Cannot run over all classes in webserver mode (yet!)")
@@ -171,7 +173,7 @@ def run_model(
 
     # Get data first to determine grid size
     model_initial_state = ModelState(0, 0, 0, 0, 0)
-    logging.info("Running on classes: %s", ", ".join([str(i) for i in class_ids]))
+    logging.info("Running on classes: %s", ", ".join([str((i, all_data.get_school_id(i))) for i in class_ids]))
 
     if not model_params:
         model_params = DEFAULT_MODEL_PARAMS
@@ -232,6 +234,7 @@ def run_model(
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
                 "model_params": model_params,
+                "best_params_file": best_params_file,
                 "summary_data": summary_data,
                 "canvas_grid": canvas_grid,
                 "instructions": UserSettableParameter(
@@ -313,6 +316,7 @@ def run_model(
                 "speedup": speedup,
                 "feedback_weeks": feedback_weeks,
                 "convergence_days": convergence_days,
+                "best_params_file": best_params_file,
             },
             nr_processes=n_processors,
             iterations=1,
@@ -320,6 +324,8 @@ def run_model(
         )
 
         batch_run.run_all()
+
+    return school_ids
 
 
 if __name__ == "__main__":

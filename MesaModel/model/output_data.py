@@ -16,6 +16,7 @@ class OutputDataWriter:
             "start_maths",
             "student_id",
             "class_id",
+            "school_id",
             "N_in_class",
             "Ability",
             "Inattentiveness",
@@ -25,8 +26,9 @@ class OutputDataWriter:
         ]
         logger.debug("Finished init, output_filepath: %s", self.output_filepath)
 
-    def write_data(self, agent_df, class_id, class_size):
+    def write_data(self, agent_df, school_id, class_id, class_size):
         # Add class id and size into each row of data frame
+        agent_df["school_id"] = school_id
         agent_df["class_id"] = class_id
         agent_df["N_in_class"] = class_size
 

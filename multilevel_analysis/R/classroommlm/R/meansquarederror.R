@@ -8,9 +8,10 @@
 #' mean squared error of the result.
 #'
 #' @param real_data a Data Frame containing the actual (real) data with headings:
-#'        start_maths,student_id,class_id,N_in_class,Ability,Inattentiveness,hyper_impulsive,Deprivation,end_maths)
+#'        start_maths,student_id,class_id,school_id,N_in_class,Ability,Inattentiveness,hyper_impulsive,Deprivation,end_maths)
 #' @param simulated_data a Data Frame containing the simulated data with headings:
-#'        start_maths,student_id,class_id,N_in_class,Ability,Inattentiveness,hyper_impulsive,Deprivation,end_maths)
+#'        start_maths,student_id,class_id,school_id,N_in_class,Ability,Inattentiveness,hyper_impulsive,Deprivation,end_maths)
+#' @param school_id a school id
 #' @param mlwinpath the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')
 #' @param output_file_prefix the path and file prefix to output the full and null models.
 #'        e.g. if passed '~/classroom_abm/classes_output/2021-09-06_output', will create files:
@@ -21,27 +22,33 @@
 #'        \code{\link{full_model}}
 #' @return the mean squared error score
 #' @export
-classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix, level = 1) {
+classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix, level = 1, school_id = 0) {
   # Run models on real and simulated data
-  real_null_model <- classroommlm::null_model(real_data, mlwinpath)
-  sim_null_model <- classroommlm::null_model(simulated_data, mlwinpath)
+  real_null_model <- classroommlm::null_model(real_data, school_id, mlwinpath)
+  sim_null_model <- classroommlm::null_model(simulated_data, school_id, mlwinpath)
 
   if (level == 1) {
-    real_full_model <- classroommlm::simple_full_model(real_data, mlwinpath)
-    sim_full_model <- classroommlm::simple_full_model(simulated_data, mlwinpath)
+    real_full_model <- classroommlm::simple_full_model(real_data, school_id, mlwinpath)
+    sim_full_model <- classroommlm::simple_full_model(simulated_data, school_id, mlwinpath)
     pupil_properties = c('Start maths', 'Deprivation')
   } else if (level == 2) {
-    real_full_model <- classroommlm::full_model_no_deprivation(real_data, mlwinpath)
-    sim_full_model <- classroommlm::full_model_no_deprivation(simulated_data, mlwinpath)
+    real_full_model <- classroommlm::full_model_no_deprivation(real_data, school_id, mlwinpath)
+    sim_full_model <- classroommlm::full_model_no_deprivation(simulated_data, school_id, mlwinpath)
     pupil_properties = c('Start maths', 'Inattention', 'Ability')
   } else {
-    real_full_model <- classroommlm::full_model(real_data, mlwinpath)
-    sim_full_model <- classroommlm::full_model(simulated_data, mlwinpath)
+    real_full_model <- classroommlm::full_model(real_data, school_id, mlwinpath)
+    sim_full_model <- classroommlm::full_model(simulated_data, school_id, mlwinpath)
     pupil_properties = c('Start maths', 'Inattention', 'Ability', 'Deprivation')
   }
 
-  write.csv(sim_null_model, paste(output_file_prefix, "_null_model.csv", sep=""), row.names = TRUE)
-  write.csv(sim_full_model, paste(output_file_prefix, "_full_model.csv", sep=""), row.names = TRUE)
+  if (school_id == 0){
+    write.csv(sim_null_model, paste(output_file_prefix, "_null_model.csv", sep=""), row.names = TRUE)
+    write.csv(sim_full_model, paste(output_file_prefix, "_full_model.csv", sep=""), row.names = TRUE)
+  }
+  # else {
+  #   write.csv(sim_null_model, paste(output_file_prefix, "_null_model_", as.character(school_id), ".csv", sep=""), row.names = TRUE)
+  #   write.csv(sim_full_model, paste(output_file_prefix, "_full_model_", as.character(school_id), ".csv", sep=""), row.names = TRUE)
+  # }
 
   # Get SDs from data
   real_sds <- c(sd(real_data$start_maths), sd(real_data$Inattentiveness),

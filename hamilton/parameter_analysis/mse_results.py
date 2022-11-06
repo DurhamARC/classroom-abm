@@ -11,7 +11,7 @@ DEFAULT_MSE_LIMIT = 3
 
 
 def merge_best_results(directory, mse_limit=DEFAULT_MSE_LIMIT):
-    print(f"Merging best results in {directory} with limit {mse_limit}...")
+    print(f"Calling mse_results.prepare_next_run()...")
     output_path = os.path.join(directory, "best_mses.csv")
     merged_dataframe = merge_results(
         directory, "lowest_to_highest_mses", output_path, mse_limit
@@ -28,7 +28,7 @@ def merge_best_results(directory, mse_limit=DEFAULT_MSE_LIMIT):
 
 
 def merge_results(directory, filename_pattern, output_file, mse_limit=None):
-    print(f"Merging results in {directory} with limit {mse_limit}...")
+    print(f"Calling mse_results.merge_results()...")
     dataframes = []
 
     for dirpath, dirnames, filenames in os.walk(directory):
@@ -54,7 +54,7 @@ def merge_results(directory, filename_pattern, output_file, mse_limit=None):
 
 
 def merge_previous_results(merged_dataframe, output_file):
-    print("Merging current results with all previous ones...")
+    print(f"Calling mse_results.merge_previous_results() on {output_file}...")
     dataframes = []
 
     if os.path.exists(output_file):
@@ -62,14 +62,17 @@ def merge_previous_results(merged_dataframe, output_file):
     dataframes.append(merged_dataframe)
 
     merged_dataframe = pd.concat(dataframes, axis=0)
-    merged_dataframe = merged_dataframe.sort_values(by=["mean_squared_error"])
+    merged_dataframe.sort_values(by=["school_id", "mean_squared_error"], inplace=True)
     merged_dataframe.to_csv(output_file, sep=",", encoding="utf-8", index=False)
+
+    # print(f"all_merged_dataframe: \n{merged_dataframe.loc[merged_dataframe['test_id']==10]}")
+    # print()
 
     return merged_dataframe
 
 
 def merge_repeats(*args, output_dir=os.getcwd()):
-    print(f"Saving dataframes from {[arg for arg in args]} in {output_dir}...")
+    print(f"Calling mse_results.merge_repeats()...")
 
     dataframes = []
 
@@ -87,7 +90,7 @@ def merge_repeats(*args, output_dir=os.getcwd()):
     )
 
     # Sort dataframe from lowest MSE to highest MSE
-    merged_dataframe = merged_dataframe.sort_values(by=["mean_squared_error"])
+    merged_dataframe = merged_dataframe.sort_values(by=["school_id","mean_squared_error"])
     merged_dataframe.to_csv(
         os.path.join(output_dir, "lowest_to_highest_mses.csv"),
         sep=",",
@@ -97,16 +100,26 @@ def merge_repeats(*args, output_dir=os.getcwd()):
     return merged_dataframe
 
 
-def get_means_dataframe(merged_dataframe):
-    print("Grouping by parameters and sorting by mean MSE for each parameter set...")
-    columns_to_group = VARIABLE_PARAM_NAMES + ["test_id"]
-    print(f"merge_results.get_means_dataframe(): columns_to_group = {columns_to_group}")
+def get_means_dataframe(merged_dataframe, output_dir=os.getcwd()):
+    print(f"Calling mse_results.get_means_dataframe()...")
+    columns_to_group = ["test_id","school_id"] + VARIABLE_PARAM_NAMES
+    # print(f"mse_results.get_means_dataframe(): columns_to_group = {columns_to_group}")
     if "directory" in merged_dataframe.columns:
         columns_to_group.append("directory")
 
+    # print(f"merged_dataframe: \n{merged_dataframe.loc[merged_dataframe['test_id']==10]}")
+    # print()
+    mean_merged_dataframe = merged_dataframe.groupby(list(columns_to_group)).mean().sort_values(by=["school_id","mean_squared_error"])
+    mean_merged_dataframe.reset_index(inplace=True)
+    # print(f"mean_merged_dataframe(reset_index): \n{mean_merged_dataframe.loc[mean_merged_dataframe['test_id']==10]}")
+
+    mean_merged_dataframe.to_csv(
+        os.path.join(output_dir, "mean_mses.csv"),
+        sep=",",
+        encoding="utf-8",
+        index=False,
+    )
+
     return (
-        merged_dataframe.groupby(list(columns_to_group))
-        .mean()
-        .sort_values(by=["mean_squared_error"])
-        .reset_index()
+        mean_merged_dataframe
     )
