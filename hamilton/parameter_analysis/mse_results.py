@@ -16,6 +16,7 @@ def merge_best_results(directory, mse_limit=DEFAULT_MSE_LIMIT):
     merged_dataframe = merge_results(
         directory, "lowest_to_highest_mses", output_path, mse_limit
     )
+    merged_dataframe = merged_dataframe.loc[merged_dataframe['school_id']==0]
 
     means_dataframe = get_means_dataframe(merged_dataframe)
     means_output_path = os.path.join(directory, "best_mse_means.csv")

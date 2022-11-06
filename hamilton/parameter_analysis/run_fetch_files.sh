@@ -13,8 +13,8 @@
 #      (Dmitry's note: in my case, I introduced this variable to store the results on a different partition with larger data storage size)
 
 export USER=lcgk69 # comment out this line if the usernames coincide with each other locally and remotely
-export REFRAME_TEST="convergence-rate-1-school"
-export DATE_TO_FETCH=2022-09-26
+export REFRAME_TEST="mse-two-schools-best"
+export DATE_TO_FETCH=2022-11-06
 export LOCAL_RESULTS_DIR="$HOME/Work/classroom-abm/parameterisation_results"
 
 # Don't modify after this line

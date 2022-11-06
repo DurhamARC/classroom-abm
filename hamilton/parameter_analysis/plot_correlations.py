@@ -18,6 +18,7 @@ def plot_correlations(input_filename, output_filename=None):
         )
 
     df = pd.read_csv(input_filename)
+    df = df.loc[df['school_id']==0]
     try:
         df["is_min_mse"] = df.mean_squared_error == df.mean_squared_error.min()
 
