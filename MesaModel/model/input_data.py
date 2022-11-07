@@ -5,7 +5,8 @@ class InputData:
     def __init__(self, input_filepath):
         all_data = pd.read_csv(input_filepath).dropna()
         self.grouped = all_data.groupby("class_id")
-        self.grouped_by_school = all_data.groupby("school_id")
+        if 'school_id' in all_data:
+            self.grouped_by_school = all_data.groupby("school_id")
 
     def get_class_ids(self):
         return list(self.grouped.groups.keys())

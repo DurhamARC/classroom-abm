@@ -29,7 +29,7 @@ NEW_DIR=$DIR_PREFIX$(printf "%03d" $n)
 mkdir $NEW_DIR
 pushd $NEW_DIR > /dev/null
 
-echo "Fetching file(s): /nobackup/${USER}/classroom_abm_parameterisation_results/${DATE_TO_FETCH}_${TIME_TO_FETCH}.zip"
+echo "Fetching file(s): /nobackup/${USER}/${REMOTE_RESULTS_DIR}/${DATE_TO_FETCH}_${TIME_TO_FETCH}.zip"
 scp -r ${USER}@hamilton8.dur.ac.uk:/nobackup/${USER}/${REMOTE_RESULTS_DIR}/${DATE_TO_FETCH}_${TIME_TO_FETCH}.zip .
 
 pwd
