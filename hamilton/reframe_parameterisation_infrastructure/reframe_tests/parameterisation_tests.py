@@ -170,7 +170,9 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         with mutex:
             school_mses_list = self.extract_data("Mean squared error: ")
             with open(MSE_OUTPUT_FILE, "a") as output:
-                output.write(f"{self.test_id},{self.repeat_no}," + ",".join(ROWS[self.test_id]))
+                output.write(
+                    f"{self.test_id},{self.repeat_no}," + ",".join(ROWS[self.test_id])
+                )
                 for school_mse in school_mses_list:
                     school_mse = school_mse.strip("\n")
                     output.write(f",{school_mse}")

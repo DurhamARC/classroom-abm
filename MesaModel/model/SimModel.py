@@ -74,9 +74,7 @@ class SimModel(Model):
         #     print(f"School {self.school_id}: Teacher Quality converges to the common mean value for all schools")
         # else:
         #     print(f"School {self.school_id}: Teacher Quality converges to the best value for every school individually")
-        self.best_params.teacher_control_mean = (
-            self.model_params.teacher_control_mean
-        )
+        self.best_params.teacher_control_mean = self.model_params.teacher_control_mean
         # print(f"School {self.school_id}: Teacher Control converges to the common mean value for all schools")
 
         self.speedup = speedup

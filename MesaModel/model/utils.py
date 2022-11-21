@@ -144,9 +144,7 @@ def get_best_params(best_params_file, school_id):
                 or row_head[1] != "test_id"
                 or len(best_params_csv) < 2
             ):
-                print(
-                    f"The {best_params_file} file has a wrong format. Exiting."
-                )
+                print(f"The {best_params_file} file has a wrong format. Exiting.")
                 sys.exit(1)
             for row in best_params_csv:
                 if row[0].isnumeric() and row[1].isnumeric():
