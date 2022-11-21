@@ -131,9 +131,9 @@
     },
     "classroommlm": {
       "Package": "classroommlm",
-      "Version": "0.1.6",
+      "Version": "0.1.7",
       "Source": "Cellar",
-      "Hash": "88aa592a8c47958278a711fc76d8fa0f",
+      "Hash": "bd05c305ae527aac39c13c1488f1d026",
       "Requirements": [
         "Metrics",
         "R2MLwiN"

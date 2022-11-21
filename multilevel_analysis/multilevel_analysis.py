@@ -3,7 +3,6 @@ import subprocess
 import sys
 
 import click
-# from rpy2.robjects.vectors import IntVector
 
 
 def run_rscript(script=None, scriptname=None, args=None):
@@ -60,10 +59,12 @@ def run_multilevel_analysis(real_data_file, simulated_data_file, school_ids):
     real_data_path = os.path.join(here, real_data_file)
     simulated_data_path = os.path.join(here, simulated_data_file)
     mses = []
-    # schoolsVector = IntVector(school_ids)
 
     run_rscript(script="renv::restore()")
-    output = run_rscript(scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path, 0, 1])
+    output = run_rscript(
+        scriptname="run_classroommlm.R",
+        args=[real_data_path, simulated_data_path, 0, 1],
+    )
     output_lines = output.splitlines()
     try:
         mse = float(output_lines[-1])
@@ -73,7 +74,10 @@ def run_multilevel_analysis(real_data_file, simulated_data_file, school_ids):
     mses.append(mse)
     for school_id in school_ids:
         run_rscript(script="renv::restore()")
-        output = run_rscript(scriptname="run_classroommlm.R", args=[real_data_path, simulated_data_path, school_id, 1])
+        output = run_rscript(
+            scriptname="run_classroommlm.R",
+            args=[real_data_path, simulated_data_path, school_id, 1],
+        )
         output_lines = output.splitlines()
         try:
             mse = float(output_lines[-1])

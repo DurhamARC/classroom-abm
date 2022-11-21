@@ -26,10 +26,10 @@ class OutputDataWriter:
         ]
         logger.debug("Finished init, output_filepath: %s", self.output_filepath)
 
-    def write_data(self, agent_df, school_id, class_id, class_size):
+    def write_data(self, agent_df, class_id, school_id, class_size):
         # Add class id and size into each row of data frame
-        agent_df["school_id"] = school_id
         agent_df["class_id"] = class_id
+        agent_df["school_id"] = school_id
         agent_df["N_in_class"] = class_size
 
         # Reorder columns to match our data
@@ -47,3 +47,10 @@ class OutputDataWriter:
                 agent_df.to_csv(
                     self.output_filepath, index=False, mode="a", header=False
                 )
+
+    # def add_missing_column(self, agent_df, school_id, columns):
+    #     # Add missing columns in the input file and use the updated input file
+    #     if school_id == 0:
+    #         for column in columns:
+    #             if column == 'school_id':
+    #                 agent_df["school_id"] = 0

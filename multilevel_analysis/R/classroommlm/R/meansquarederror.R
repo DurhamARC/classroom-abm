@@ -23,21 +23,31 @@
 #' @return the mean squared error score
 #' @export
 classroom_mse <- function(real_data, simulated_data, mlwinpath, output_file_prefix, level = 1, school_id = 0) {
+  # Filter dataframes by 'school_id' and exclude the 'school_id' column
+  if(school_id > 0) {
+    real_data <- real_data[real_data$school_id == school_id,]
+  }
+  real_data <- subset(real_data, select=-school_id)
+  if(school_id > 0) {
+    simulated_data <- simulated_data[simulated_data$school_id == school_id,]
+  }
+  simulated_data <- subset(simulated_data, select=-school_id)
+
   # Run models on real and simulated data
-  real_null_model <- classroommlm::null_model(real_data, school_id, mlwinpath)
-  sim_null_model <- classroommlm::null_model(simulated_data, school_id, mlwinpath)
+  real_null_model <- classroommlm::null_model(real_data, mlwinpath)
+  sim_null_model <- classroommlm::null_model(simulated_data, mlwinpath)
 
   if (level == 1) {
-    real_full_model <- classroommlm::simple_full_model(real_data, school_id, mlwinpath)
-    sim_full_model <- classroommlm::simple_full_model(simulated_data, school_id, mlwinpath)
+    real_full_model <- classroommlm::simple_full_model(real_data, mlwinpath)
+    sim_full_model <- classroommlm::simple_full_model(simulated_data, mlwinpath)
     pupil_properties = c('Start maths', 'Deprivation')
   } else if (level == 2) {
-    real_full_model <- classroommlm::full_model_no_deprivation(real_data, school_id, mlwinpath)
-    sim_full_model <- classroommlm::full_model_no_deprivation(simulated_data, school_id, mlwinpath)
+    real_full_model <- classroommlm::full_model_no_deprivation(real_data, mlwinpath)
+    sim_full_model <- classroommlm::full_model_no_deprivation(simulated_data, mlwinpath)
     pupil_properties = c('Start maths', 'Inattention', 'Ability')
   } else {
-    real_full_model <- classroommlm::full_model(real_data, school_id, mlwinpath)
-    sim_full_model <- classroommlm::full_model(simulated_data, school_id, mlwinpath)
+    real_full_model <- classroommlm::full_model(real_data, mlwinpath)
+    sim_full_model <- classroommlm::full_model(simulated_data, mlwinpath)
     pupil_properties = c('Start maths', 'Inattention', 'Ability', 'Deprivation')
   }
 

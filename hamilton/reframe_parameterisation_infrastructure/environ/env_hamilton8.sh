@@ -12,7 +12,7 @@ export RFM_SAVE_LOG_FILES=1
 export config=../config/hamilton.py
 
 if [ -n "$PROJECT_PATH" ]; then
-    PROJECT_PATH=~/Projects/classroom-abm
+    export PROJECT_PATH=~/Projects/classroom-abm
 fi
 
 export PYTHONPATH=$PYTHONPATH:$PROJECT_PATH/MesaModel/hamilton/reframe_parameterisation_infrastructure/reframe_tests

@@ -8,12 +8,8 @@
 #' @param mlwinpath the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')
 #' @return a Data Frame containing the summary data for the null model
 #' @export
-null_model <- function(pupil_data, school_id, mlwinpath){
+null_model <- function(pupil_data, mlwinpath){
   # Create and summarise null model
-  if(school_id > 0) {
-    pupil_data <- pupil_data[pupil_data$school_id == school_id,]
-  }
-  pupil_data <- subset(pupil_data, select=-school_id)
   formula <- end_maths ~ 1 + (1 | class_id) + (1 | student_id)
   features = c()
   run_mlm_with_features(pupil_data, mlwinpath, formula, features)
@@ -27,11 +23,7 @@ null_model <- function(pupil_data, school_id, mlwinpath){
 #' @param mlwinpath the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')
 #' @return a Data Frame containing the summary data for the full model
 #' @export
-full_model <- function(pupil_data, school_id, mlwinpath){
-  if(school_id > 0) {
-    pupil_data <- pupil_data[pupil_data$school_id == school_id,]
-  }
-  pupil_data <- subset(pupil_data, select=-school_id)
+full_model <- function(pupil_data, mlwinpath){
   formula <- end_maths ~ 1 + (1 | class_id) + (1 | student_id) + start_maths + Inattentiveness + Ability + Deprivation
   features = c('Start maths', 'Inattention', 'Ability', 'Deprivation')
   run_mlm_with_features(pupil_data, mlwinpath, formula, features)
@@ -46,15 +38,11 @@ full_model <- function(pupil_data, school_id, mlwinpath){
 #' @param mlwinpath the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')
 #' @return a Data Frame containing the summary data for the full model
 #' @export
-simple_full_model <- function(pupil_data, school_id, mlwinpath){
-  if(school_id > 0) {
-    pupil_data <- pupil_data[pupil_data$school_id == school_id,]
-  }
-  pupil_data <- subset(pupil_data, select=-school_id)
-  sorted_pupil_data <- pupil_data[order(pupil_data$class_id),]
+simple_full_model <- function(pupil_data, mlwinpath){
+#  sorted_pupil_data <- pupil_data[order(pupil_data$class_id),]
   formula <- end_maths ~ 1 + (1 | class_id) + (1 | student_id) + start_maths + Deprivation
   features = c('Start maths', 'Deprivation')
-  run_mlm_with_features(sorted_pupil_data, mlwinpath, formula, features)
+  run_mlm_with_features(pupil_data, mlwinpath, formula, features)
 }
 
 #' Create a full model excluding the Deprivation marker
@@ -66,11 +54,7 @@ simple_full_model <- function(pupil_data, school_id, mlwinpath){
 #' @param mlwinpath the path where mlnscript is installed (e.g. '/opt/mln/mlnscript')
 #' @return a Data Frame containing the summary data for the full model
 #' @export
-full_model_no_deprivation <- function(pupil_data, school_id, mlwinpath){
-  if(school_id > 0) {
-    pupil_data <- pupil_data[pupil_data$school_id == school_id,]
-  }
-  pupil_data <- subset(pupil_data, select=-school_id)
+full_model_no_deprivation <- function(pupil_data, mlwinpath){
   formula <- end_maths ~ 1 + (1 | class_id) + (1 | student_id) + start_maths + Inattentiveness + Ability
   features = c('Start maths', 'Inattention', 'Ability')
   run_mlm_with_features(pupil_data, mlwinpath, formula, features)

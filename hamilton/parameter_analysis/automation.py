@@ -10,6 +10,7 @@ sys.path.append(os.path.join(this_dir, "../../MesaModel"))
 sys.path.append(os.path.join(this_dir, "../parameter_input"))
 
 from model.data_types import VARIABLE_PARAM_NAMES, BEST_PARAM_NAMES
+from model.input_data import InputData
 import lhs_sampling
 import mse_results as mse_results
 import plot_correlations
@@ -80,11 +81,13 @@ def generate_new_param_file(best_params, output_filename, iteration_number):
     lhs_sampling.generate_lhs_params(
         num_param_sets=25, output_file=output_filename, param_limits=param_dict
     )
+
+
 #    print(f"automation.generate_new_param_file(): a new set of 25 parameters in {output_filename} using LHS sampling generated")
 
 
 def save_best_param_file(best_params, output_file="best_params.csv"):
-    """ Saves the best parameters:
+    """Saves the best parameters:
     * Saving the overall values (shool_id==0) as well as for each school individually (with their school ids) as `best_params`
     """
     print(f"Calling automation.save_best_param_file()...")
@@ -101,7 +104,13 @@ def save_best_param_file(best_params, output_file="best_params.csv"):
                 if k in valid_keys:
                     value = best_params[school_id][k]
                     params.append(value)
-            csv_file.writerow([school_id, test_id, *params,])
+            csv_file.writerow(
+                [
+                    school_id,
+                    test_id,
+                    *params,
+                ]
+            )
 
 
 def prepare_next_run(
@@ -118,38 +127,35 @@ def prepare_next_run(
     * Generating and saving a new set of parameters based on the previous best results as `next_lhs_params_<timestamp>.csv`
     """
     print(f"Calling automation.prepare_next_run()...")
-#    print()
     current_data_dir = os.path.join(parameterisation_data_dir, timestamp)
-    current_merged_csv = os.path.join(current_data_dir, "all_merged_mses.csv")
     if os.path.exists(current_data_dir):
         print(f"Directory {current_data_dir} already exists. Exiting.")
         sys.exit(1)
 
     os.mkdir(current_data_dir)
     shutil.copy(mse_output_csv, current_data_dir)
+    input_file = os.path.join(os.environ["PROJECT_PATH"], "multilevel_analysis", os.environ["DATASET"])
+    school_ids = InputData(input_file).get_school_ids()
 
     # Get dataframes from $MSE_OUTPUT_FILE and
     # .. save them in the current merged_mses.csv in the folder of the current iteration
-    merged_dataframe = mse_results.merge_repeats(mse_output_csv, output_dir=current_data_dir)
+    merged_dataframe = mse_results.merge_repeats(mse_output_csv, output_dir=current_data_dir, schools=len(school_ids))
     plot_correlations.plot_correlations(os.path.join(current_data_dir, "lowest_to_highest_mses.csv"))
 
-    # Merge the current dataframe with all concatenated merged_mses.csv from previous iterations
-    # .. (kept as $MERGE_FILE) and update the $MERGE_FILE
-    if merge_csv:
-        if os.path.exists(merge_csv):
-            shutil.copy(merge_csv, current_merged_csv)
-        merged_dataframe = mse_results.merge_previous_results(merged_dataframe, current_merged_csv)
-        shutil.copy(current_merged_csv, merge_csv)
+    # Merge the current dataframe with all previously calculated best means for every school
+    # ($MERGE_FILE stores the best means up-to-date)
 
     # Group by parameters and sort by mean MSE for each parameter set
-    means_dataframe = mse_results.get_means_dataframe(merged_dataframe, output_dir=current_data_dir)
+    means_dataframe = mse_results.get_best_means_dataframe(merged_dataframe, output_file=merge_csv, school_ids=school_ids)
+
+#    means_dataframe = mse_results.get_means_dataframe(school_dataframe, output_dir=current_data_dir)
     means_by_school = means_dataframe.groupby("school_id")
     school_ids = list(means_by_school.groups.keys())
     print(f"school_ids: {school_ids}")
     best_params = dict()
     for i, school_id in enumerate(school_ids):
-        nrows = iteration_number * int(os.environ["NUM_PARAMETERS"])
-        best_params[school_id] = means_dataframe.iloc[i*nrows]
+        nrows = i # * iteration_number * int(os.environ["NUM_PARAMETERS"])
+        best_params[school_id] = means_dataframe.iloc[nrows]
 
     next_param_file = os.path.join(current_data_dir, f"next_lhs_params_{timestamp}.csv")
     best_param_file = os.path.join(current_data_dir, f"best_params.csv")

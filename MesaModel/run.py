@@ -173,7 +173,16 @@ def run_model(
 
     # Get data first to determine grid size
     model_initial_state = ModelState(0, 0, 0, 0, 0)
-    logging.info("Running on classes: %s", ", ".join([str((i, all_data.get_school_id(i))) for i in class_ids]))
+    if school_ids:
+        logging.info(
+            "Running on classes: %s",
+            ", ".join([str((i, all_data.get_school_id(i))) for i in class_ids]),
+        )
+    else:
+        logging.info(
+            "Running on classes: %s",
+            ", ".join([str(i) for i in class_ids]),
+        )
 
     if not model_params:
         model_params = DEFAULT_MODEL_PARAMS

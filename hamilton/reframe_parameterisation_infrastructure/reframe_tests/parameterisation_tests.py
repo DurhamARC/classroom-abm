@@ -6,6 +6,10 @@ from multiprocessing import Lock
 import reframe as rfm
 import reframe.utility.sanity as sn
 
+project_path = os.environ["PROJECT_PATH"]
+os.sys.path.append(project_path)
+from MesaModel.model.input_data import InputData
+
 mutex = Lock()
 with open(os.environ["PARAMETER_FILE"], "r") as f:
     csv_reader = csv.reader(f)
@@ -25,8 +29,14 @@ MSE_OUTPUT_FILE = os.environ.get(
     "MSE_OUTPUT_FILE",
     f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv",
 )
+
+input_file = os.path.join(project_path, "multilevel_analysis", os.environ["DATASET"])
+school_ids = InputData(input_file).get_school_ids()
 with open(MSE_OUTPUT_FILE, "w") as output:
-    output.write("test_id,school_id,repeat_no," + ",".join(ROWS[0]) + ",mean_squared_error\n")
+    output.write("test_id,repeat_no," + ",".join(ROWS[0]) + ",mean_squared_error")
+    for school_id in school_ids:
+        output.write(f",mse_{school_id}")
+    output.write("\n")
 
 
 @rfm.parameterized_test(
@@ -103,7 +113,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             f"{convergence_days}",
         ]
 
-    @run_before('run')
+    @run_before("run")
     def copy_to_stagedir(self):
         # Copy the latest best parameters file to the current reframe stage directory
         best_params_file = os.environ["BEST_PARAMETER_FILE"]
@@ -140,7 +150,9 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         with open(os.path.join(str(self.stagedir), str(self.stdout)), "r") as data:
             for line in data:
                 if target in line:
-                    values.extend([line.strip(target)],)
+                    values.extend(
+                        [line.strip(target)],
+                    )
         if values:
             return values
         return ""
@@ -156,23 +168,10 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
     @run_after("sanity")
     def add_mse_to_csv(self):
         with mutex:
-            school_ids = self.extract_data("School: ")
-            school_mses = self.extract_data("Mean squared error: ")
-            # school_id = school_ids[0].strip("\n")
-            # school_mse = school_mses[0].strip("\n")
+            school_mses_list = self.extract_data("Mean squared error: ")
             with open(MSE_OUTPUT_FILE, "a") as output:
-                # output.write(
-                #     f"{self.test_id},{school_id},{self.repeat_no},"
-                #     + ",".join(ROWS[self.test_id])
-                #     + f",{school_mse}"
-                # )
-                # output.write("\n")
-                for i, school_mse in enumerate(school_mses):
-                    school_id = school_ids[i].strip("\n")
+                output.write(f"{self.test_id},{self.repeat_no}," + ",".join(ROWS[self.test_id]))
+                for school_mse in school_mses_list:
                     school_mse = school_mse.strip("\n")
-                    output.write(
-                        f"{self.test_id},{school_id},{self.repeat_no},"
-                        + ",".join(ROWS[self.test_id])
-                        + f",{school_mse}"
-                    )
-                    output.write("\n")
+                    output.write(f",{school_mse}")
+                output.write("\n")
