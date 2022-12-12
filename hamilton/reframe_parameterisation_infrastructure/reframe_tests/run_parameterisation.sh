@@ -12,14 +12,9 @@ set -e
 #   --with-small-dataset
 #   --with-tiny-dataset
 
-INPUT_DIR=~/classroom-abm/hamilton/parameter_input
-export REFRAME_TEST="convergence-rate-best-value-4"
-export PARAMETERISATION_RESULTS_DIR=$NOBACKUP/classroom_abm/${REFRAME_TEST}
+export REFRAME_TEST="variation-with-feedback"
 
-#export PARAMETER_FILE="${INPUT_DIR}/example_lhs_params.csv"
-#export PARAMETER_FILE="${INPUT_DIR}/lhs_params.csv"
-export PARAMETER_FILE="${INPUT_DIR}/next_lhs_params_2022-10-09_010041.csv"
-export NUM_ITERATIONS=20
+export NUM_ITERATIONS=15
 export NUM_REPEATS=2
 export FEEDBACK_WEEKS=1
 export CONVERGENCE_DAYS=30

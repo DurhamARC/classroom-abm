@@ -61,7 +61,7 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
 
         self.sanity_patterns = sn.assert_found(r"Mean squared error:", self.stdout)
 
-        execution_dir = os.environ["HOME"] + "/classroom-abm/multilevel_analysis"
+        execution_dir = os.environ["CLASSROOMABM_PATH"] + "/multilevel_analysis"
 
         self.keep_files = [
             f"{execution_dir}/pupil_data_output_{test_id}_{iteration}*.csv"
