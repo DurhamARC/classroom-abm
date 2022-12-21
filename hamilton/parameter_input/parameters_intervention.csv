@@ -1,0 +1,2 @@
+test_id,teacher_quality_mean,teacher_quality_sd,teacher_quality_variation_sd,teacher_quality_convergence_rate,teacher_quality_feedback_factor,teacher_control_mean,teacher_control_sd,teacher_control_variation_sd,teacher_control_convergence_rate,random_select,school_learn_factor,home_learn_factor,school_learn_mean_divisor,school_learn_sd,school_learn_random_proportion,conformity_factor,degradation_factor,maths_ticks_mean,maths_ticks_sd
+1,2.29,0.118,0.98,0.49,0.65,1.91,0.383,0.459,0.405,2.4,0.0472,0.000575,1510,0.00525,0.455,0.9999935,0.097,470,1.72

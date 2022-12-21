@@ -115,3 +115,19 @@ class PupilLearningState(Enum):
     GREEN = 1
     YELLOW = 2
     RED = 3
+
+
+@dataclass(unsafe_hash=True)
+class BestModelParamType:
+    teacher_quality_mean: float
+    teacher_control_mean: float
+    mean_squared_error: float
+
+
+BEST_MODEL_PARAMS = BestModelParamType(
+    teacher_quality_mean=2.56743,
+    teacher_control_mean=1.17235,
+    mean_squared_error=0.0,
+)
+
+BEST_PARAM_NAMES = [field.name for field in dataclasses.fields(BEST_MODEL_PARAMS)]

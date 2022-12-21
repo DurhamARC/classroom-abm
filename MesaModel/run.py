@@ -148,6 +148,7 @@ def run_model(
     speedup=1,
     feedback_weeks=1,
     convergence_days=30,
+    best_params_file=None,
 ):
     input_filepath = os.path.join(os.getcwd(), input_file)
     all_data = InputData(input_filepath)
@@ -232,6 +233,7 @@ def run_model(
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
                 "model_params": model_params,
+                "best_params_file": best_params_file,
                 "summary_data": summary_data,
                 "canvas_grid": canvas_grid,
                 "instructions": UserSettableParameter(
@@ -310,6 +312,7 @@ def run_model(
                 "model_initial_state": model_initial_state,
                 "output_data_writer": output_data_writer,
                 "model_params": model_params,
+                "best_params_file": best_params_file,
                 "speedup": speedup,
                 "feedback_weeks": feedback_weeks,
                 "convergence_days": convergence_days,

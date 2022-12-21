@@ -5,8 +5,9 @@ from scipy import stats
 from statistics import stdev
 import statistics
 import math
+import os, csv, sys
 
-from model.data_types import GridParamType, PupilLearningState
+from model.data_types import GridParamType, PupilLearningState, BestModelParamType, BEST_MODEL_PARAMS
 
 
 def get_num_disruptors(model):
@@ -124,3 +125,24 @@ def get_start_state_weights(inattentiveness, hyper_impulsive):
     red_weight = hyper_impulsive / 10
     yellow_weight = 1 - green_weight - red_weight
     return [green_weight, yellow_weight, red_weight]
+
+
+def get_best_params(best_params_file):
+    # Read the best parameters from file
+    if os.path.exists(best_params_file):
+        with open(best_params_file, "r") as f:
+            csv_reader = csv.reader(f)
+            best_params_csv = list(csv_reader)
+            row_head = best_params_csv[0]
+            if (
+                row_head[0] != "test_id"
+                or len(best_params_csv) < 2
+            ):
+                print(f"The {best_params_file} file has a wrong format. Exiting.")
+                sys.exit(1)
+            for row in best_params_csv:
+                if row[0].isnumeric():
+                    best_row = row[1:]
+                    best_params = tuple(float(value) for value in best_row)
+                    return BestModelParamType(*(best_params))
+    return BEST_MODEL_PARAMS

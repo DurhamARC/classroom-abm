@@ -20,6 +20,7 @@ from .utils import (
     get_num_passive,
     get_num_learning,
     get_grid_size,
+    get_best_params,
     #    get_pupil_data,
 )
 
@@ -38,6 +39,7 @@ class SimModel(Model):
         speedup=1,
         feedback_weeks=0,
         convergence_days=0,
+        best_params_file=None,
         **kwargs,
     ):
         self.data = all_data
@@ -53,7 +55,11 @@ class SimModel(Model):
 
         logger.info("Modelling class %s", self.class_id)
 
+        self.best_params = get_best_params(best_params_file)
+
         self.model_params = model_params
+        self.best_params.teacher_quality_mean = self.model_params.teacher_quality_mean
+        self.best_params.teacher_control_mean = self.model_params.teacher_control_mean
         self.speedup = speedup
         self.write_file = False
         self.feedback_weeks = feedback_weeks
@@ -395,11 +401,11 @@ class SimModel(Model):
                     days=convergence_days_overrun
                 )
             self.teacher_quality.update_current_value(
-                best_value=self.model_params.teacher_quality_mean,
+                best_value=self.best_params.teacher_quality_mean,
                 feedback_variation=self.diff_mean_maths,
             )
             self.teacher_control.update_current_value(
-                best_value=self.model_params.teacher_control_mean
+                best_value=self.best_params.teacher_control_mean
             )
 
             # Reset all pupils's states ready for the next day

@@ -4,7 +4,7 @@ import pandas as pd
 
 import automation
 import create_sample as cs
-import merge_results
+import mse_results
 import mlm_analysis
 import plot_correlations as pc
 import run_webserver_with_params as rwwp
@@ -46,7 +46,7 @@ def merge_repeats(files, output_dir):
     """Merges the MSE csvs produced by ReFrame's postrun command.
     Creates 2 output CSVs: `merged_mses.csv` (ordered by parameter values)
     and `lowest_to_highest_mses.csv` (ordered by MSE)"""
-    merge_results.merge_repeats(*files, output_dir=output_dir)
+    mse_results.merge_repeats(*files, output_dir=output_dir)
 
 
 @cli.command()
@@ -61,12 +61,12 @@ def merge_repeats(files, output_dir):
     "--limit",
     "-l",
     type=float,
-    default=merge_results.DEFAULT_MSE_LIMIT,
+    default=mse_results.DEFAULT_MSE_LIMIT,
     help="Limit for mean squared error values: only values below the limit will be put in the output file",
 )
 def merge_best_results(directory, limit):
     """Combines the best results from each set in the given directory into a single dataframe, and plots the correlations"""
-    merge_results.merge_best_results(directory, limit)
+    mse_results.merge_best_results(directory, limit)
 
 
 @cli.command()
@@ -133,15 +133,47 @@ def generate_next_params(input_file, output_file, iteration):
     help="CSV file with MSE results from reframe",
 )
 @click.option(
-    "--reframe-data-dir",
+    "--result-data-dir",
     "-rd",
     type=str,
     required=True,
-    help="Data dir with full results from reframe",
+    help="Data dir to output results",
+)
+def save_run(
+    timestamp,
+    reframe_csv,
+    result_data_dir,
+):
+    """Saves the latest run by:
+    * Creating a subdirectory of `result_data_dir` using `timestamp`
+    * Copying the resulting `reframe_csv` of the last run to `result_data_dir`
+    * Creating an ordered CSV and a correlations plot
+    """
+    automation.save_run(
+        timestamp,
+        reframe_csv,
+        result_data_dir,
+    )
+
+
+@cli.command()
+@click.option(
+    "--timestamp",
+    "-t",
+    type=str,
+    required=True,
+    help="Timestamp to use in filepaths",
 )
 @click.option(
-    "--parameterisation-data-dir",
-    "-pd",
+    "--reframe-csv",
+    "-r",
+    type=str,
+    required=True,
+    help="CSV file with MSE results from reframe",
+)
+@click.option(
+    "--result-data-dir",
+    "-rd",
     type=str,
     required=True,
     help="Data dir to output results and new param file",
@@ -150,7 +182,7 @@ def generate_next_params(input_file, output_file, iteration):
     "--iteration",
     "-it",
     type=int,
-    required=True,
+    default=0,
     help="Iteration number",
 )
 @click.option(
@@ -163,23 +195,18 @@ def generate_next_params(input_file, output_file, iteration):
 def prepare_next_run(
     timestamp,
     reframe_csv,
-    reframe_data_dir,
-    parameterisation_data_dir,
+    result_data_dir,
     iteration,
     merge_csv,
 ):
     """Prepares for the next run by:
-    * Creating a subdirectory of `parameterisation_data_dir` using `timestamp`
-    * Copying `output_csv` to the directory
-    * Creating an ordered CSV and a correlations plot
-    * Generating a new set of parameters based on the previous best results, saving to file
-      `next_lhs_params_<timestamp>.csv`
+    * Saving the last run by calling save_run()
+    * Generating and saving a new set of parameters as `next_lhs_params_<timestamp>.csv` based on the overall best results
     """
     automation.prepare_next_run(
         timestamp,
         reframe_csv,
-        reframe_data_dir,
-        parameterisation_data_dir,
+        result_data_dir,
         iteration,
         merge_csv,
     )

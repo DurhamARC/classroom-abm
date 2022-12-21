@@ -85,6 +85,19 @@ Full parameter list (defined in data_type.ModelParamType) is:
     default=30,
     help="How often (in days) the teacher variables are converged to each other in a school",
 )
+@click.option(
+    "--best-params-file",
+    "-bp",
+    type=str,
+    default="",
+    required=False,
+    help="""File containing space separated best model params from the previous simulation
+Full parameter list (defined in data_type.BestModelParamType) is:
+    teacher_quality_mean: float
+    teacher_control_mean: float
+    mean_squared_error: float
+""",
+)
 def run_model_and_mlm(
     input_file,
     output_file,
@@ -93,6 +106,7 @@ def run_model_and_mlm(
     test_mode,
     feedback_weeks,
     convergence_days,
+    best_params_file,
 ):
     model_params = model_params + STATIC_PARAMS
     run_model(
@@ -103,6 +117,7 @@ def run_model_and_mlm(
         test_mode=test_mode,
         feedback_weeks=feedback_weeks,
         convergence_days=convergence_days,
+        best_params_file=best_params_file,
     )
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
     print(f"Mean squared error: {mean_squared_error}")

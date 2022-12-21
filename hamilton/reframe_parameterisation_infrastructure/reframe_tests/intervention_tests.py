@@ -7,19 +7,55 @@ import reframe as rfm
 import reframe.utility.sanity as sn
 
 mutex = Lock()
-with open(os.environ["PARAMETER_FILE"], "r") as f:
+parameter_file = os.environ["PARAMETER_FILE"]
+with open(parameter_file, "r") as f:
+    csv_reader = csv.reader(f)
+    csv_headings = next(csv_reader)
+    if 'teacher_quality_mean' in csv_headings\
+    and 'teacher_quality_sd' in csv_headings\
+    and 'teacher_control_mean' in csv_headings\
+    and 'teacher_control_sd' in csv_headings:
+        tqm_idx = csv_headings.index('teacher_quality_mean')-1
+        tqsd_idx = csv_headings.index('teacher_quality_sd')-1
+        tcm_idx = csv_headings.index('teacher_control_mean')-1
+        tcsd_idx = csv_headings.index('teacher_control_sd')-1
+        print(f"Indices: {tqm_idx}, {tqsd_idx}, {tcm_idx}, {tcsd_idx}")
+    else:
+        print(f"Parameter file does not contain data for teacher_quality_mean and/or teacher_control_mean")
+        exit(1)
+with open(parameter_file, "r") as f:
     csv_reader = csv.reader(f)
     ROWS = []
     TEST_IDS = []
     id = 0
-    for row in list(csv_reader):
+    rows_list = list(csv_reader)
+    for row in rows_list:
         if row[0] == str(id) or row[0] == "test_id":
             TEST_IDS.append(id)
             ROWS.append(row[1:])
         else:
             print(f"Parameter file does not contain params for test_id {id}")
-            exit(1)
+            exit(2)
+        print(f"[{id}] tq: {row[tqm_idx+1]}, {row[tqsd_idx+1]}; tc: {row[tcm_idx+1]}, {row[tcsd_idx+1]}")
         id += 1
+    len_rows = len(ROWS)
+    for test_id in range(1, len_rows):
+        row = ROWS[test_id].copy()
+        for _ in range(int(os.environ["NUM_ITERATIONS"])):
+            for _ in range(int(os.environ["NUM_INCREMENTS"])):
+                row[tqm_idx] = str(float(row[tqm_idx]) + 0.2*float(row[tqsd_idx]))
+                TEST_IDS.append(id)
+                ROWS.append(row.copy())
+                print(f"[{id}] tq: {row[tqm_idx]}, {row[tqsd_idx]}; tc: {row[tcm_idx]}, {row[tcsd_idx]}")
+                id += 1
+            for _ in range(int(os.environ["NUM_INCREMENTS"])):
+                row[tcm_idx] = str(float(row[tcm_idx]) + 0.2*float(row[tcsd_idx]))
+                TEST_IDS.append(id)
+                ROWS.append(row.copy())
+                print(f"[{id}] tq: {row[tqm_idx]}, {row[tqsd_idx]}; tc: {row[tcm_idx]}, {row[tcsd_idx]}")
+                id += 1
+    for test_id in range(1, len(ROWS)):
+        print(f"[{test_id}] params = {ROWS[test_id]}")
 
 MSE_OUTPUT_FILE = os.environ.get(
     "MSE_OUTPUT_FILE",
@@ -31,15 +67,15 @@ with open(MSE_OUTPUT_FILE, "w") as output:
 
 @rfm.parameterized_test(
     *(
-        [test_id, iteration]
+        [test_id, repeat]
         for test_id in range(1, len(ROWS))
-        for iteration in [
+        for repeat in [
             i + 1 for i in range(int(os.environ["NUM_REPEATS"]))
-        ]  # set to [1] for just one iterations
+        ]  # set to [1] for just one repeat
     )
 )
-class Parameterisation(rfm.RunOnlyRegressionTest):
-    def __init__(self, test_id, iteration):
+class Intervention(rfm.RunOnlyRegressionTest):
+    def __init__(self, test_id, repeat):
         if "short" in os.environ["DATASET"]:
             n_processors = 2
             self.time_limit = "30m"
@@ -64,12 +100,12 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         execution_dir = os.environ["CLASSROOMABM_PATH"] + "/multilevel_analysis"
 
         self.keep_files = [
-            f"{execution_dir}/pupil_data_output_{test_id}_{iteration}*.csv"
+            f"{execution_dir}/pupil_data_output_{test_id}_{repeat}*.csv"
         ]
 
         self.prerun_cmds = [
             f"pushd {execution_dir}",
-            f"rm -rf pupil_data_output_{test_id}_{iteration}.csv",  # prevent appending to previous data
+            f"rm -rf pupil_data_output_{test_id}_{repeat}.csv",  # prevent appending to previous data
             "echo $PATH",
             "source $HOME/.bashrc",
             "conda init",
@@ -85,14 +121,14 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
         self.executable = "$CONDA_PREFIX/bin/python run_pipeline.py"
 
         self.test_id = test_id
-        self.repeat_no = iteration
+        self.repeat_no = repeat
         params = " ".join(ROWS[self.test_id])
 
         self.executable_opts = [
             "--input-file",
             os.environ["DATASET"],
             "--output-file",
-            f"pupil_data_output_{test_id}_{iteration}.csv",
+            f"pupil_data_output_{test_id}_{repeat}.csv",
             "--n-processors",
             f"{n_processors}",
             "--model-params",
@@ -102,27 +138,6 @@ class Parameterisation(rfm.RunOnlyRegressionTest):
             "--convergence-days",
             f"{convergence_days}",
         ]
-
-    @run_before("run")
-    def copy_to_stagedir(self):
-        # Copy the latest best parameters file to the current reframe stage directory
-        best_params_file = os.environ["BEST_PARAMETER_FILE"]
-        if not os.path.exists(best_params_file):
-            homedir = os.environ["HOME"]
-            best_params_file = os.path.join(homedir, "best_params.csv")
-        if os.path.exists(best_params_file):
-            self.prerun_cmds.extend(
-                [
-                    f"cp {best_params_file} {self.stagedir}/best_params.csv",
-                ],
-            )
-            best_params_file = os.path.join(str(self.stagedir), "best_params.csv")
-            self.executable_opts.extend(
-                [
-                    "--best-params-file",
-                    best_params_file,
-                ],
-            )
 
     def extract_mse(self):
         target = "Mean squared error: "
