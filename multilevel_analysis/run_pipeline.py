@@ -13,6 +13,7 @@ from model.data_types import (
     STATIC_PARAM_COUNT,
     STATIC_PARAMS,
 )
+from model.utils import read_maths_score
 
 
 @click.command()
@@ -20,13 +21,13 @@ from model.data_types import (
     "--input-file",
     "-i",
     default="../classes_input/test_input.csv",
-    help="File path containing real data, relative to multilevel_analysis directory. Defaults to ../classes_input/test_input.csv",
+    help="File path containing real data, relative to multilevel_analysis directory. Defaults to `../classes_input/test_input.csv`",
 )
 @click.option(
     "--output-file",
     "-o",
     default=f"../classes_output/output{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv",
-    help="Output file path, relative to current working directory.",
+    help="File path containing simulated data, relative to multilevel_analysis directory. Defaults to `../classes_output/output<timestamp>.csv`",
 )
 @click.option(
     "--n-processors",
@@ -120,7 +121,10 @@ def run_model_and_mlm(
         best_params_file=best_params_file,
     )
     mean_squared_error = run_multilevel_analysis(input_file, output_file)
+    avg_maths_score = read_maths_score(output_file)
     print(f"Mean squared error: {mean_squared_error}")
+    if avg_maths_score:
+        print(f"Average maths score: {avg_maths_score}")
     return mean_squared_error
 
 

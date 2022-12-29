@@ -88,9 +88,9 @@
     },
     "classroommlm": {
       "Package": "classroommlm",
-      "Version": "0.1.4",
+      "Version": "0.1.9",
       "Source": "Local",
-      "Hash": "8378d69c0ee2509aebf83441780ea678"
+      "Hash": "5a0ada7dc9e56dd43d097634ce53ef23"
     },
     "cli": {
       "Package": "cli",

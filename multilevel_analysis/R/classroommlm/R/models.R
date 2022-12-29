@@ -39,7 +39,7 @@ full_model <- function(pupil_data, mlwinpath){
 #' @return a Data Frame containing the summary data for the full model
 #' @export
 simple_full_model <- function(pupil_data, mlwinpath){
-  sorted_pupil_data <- pupil_data[order(pupil_data$class_id),]
+#  sorted_pupil_data <- pupil_data[order(pupil_data$class_id),]
   formula <- end_maths ~ 1 + (1 | class_id) + (1 | student_id) + start_maths + Deprivation
   features = c('Start maths', 'Deprivation')
   run_mlm_with_features(pupil_data, mlwinpath, formula, features)
@@ -93,6 +93,11 @@ run_mlm_with_features <- function(pupil_data, mlwinpath, formula, features){
   full_model.summary_table <- rbind(full_model.summary_table,
                                     "% of variance at class level" = c(
                                       full_model.percentage_variance_class_level,
+                                      NA
+                                    ))
+  full_model.summary_table <- rbind(full_model.summary_table,
+                                    "Average maths score" = c(
+                                      mean(sorted_pupil_data$end_maths),
                                       NA
                                     ))
   full_model.summary_table

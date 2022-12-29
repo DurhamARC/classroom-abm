@@ -24,14 +24,14 @@ def get_means_dataframe(merged_dataframe, output_dir=os.getcwd()):
     )
 
 
-def merge_results(directory, filename_pattern, output_file, mse_limit=None):
+def merge_results(directory, filename_pattern, output_file, sort_values_by="mean_squared_error", mse_limit=None):
     print(f"Calling mse_results.merge_results()...")
     dataframes = []
 
     for dirpath, dirnames, filenames in os.walk(directory):
         if not (
             "corrupted" in dirpath
-            or "interventions" in dirpath
+            # or "interventions" in dirpath
             or "test_data" in dirpath
         ):
             for f in filenames:
@@ -45,21 +45,26 @@ def merge_results(directory, filename_pattern, output_file, mse_limit=None):
                     dataframes.append(df)
 
     merged_dataframe = pd.concat(dataframes, axis=0).sort_values(
-        by=["mean_squared_error"]
+        by=[sort_values_by]
     )
     merged_dataframe.to_csv(output_file, sep=",", encoding="utf-8", index=False)
     return merged_dataframe
 
 
-def merge_best_results(directory, mse_limit=DEFAULT_MSE_LIMIT):
-    print(f"Calling mse_results.prepare_next_run()...")
-    output_path = os.path.join(directory, "best_mses.csv")
+def merge_best_results(directory, sort_values_by="mean_squared_error", mse_limit=DEFAULT_MSE_LIMIT):
+    """Combines the best results from each set in the given directory into a single dataframe, and plots the correlations"""
+    print(f"Calling mse_results.merge_best_results()...")
+    if sort_values_by == "mean_squared_error":
+        output_path = os.path.join(directory, "best_mses.csv")
+        means_output_path = os.path.join(directory, "best_mse_means.csv")
+    else:
+        output_path = os.path.join(directory, f"{sort_values_by}s.csv")
+        means_output_path = os.path.join(directory, f"{sort_values_by}_means.csv")
     merged_dataframe = merge_results(
-        directory, "lowest_to_highest_mses", output_path, mse_limit
+        directory, "lowest_to_highest_mses", output_path, sort_values_by, mse_limit
     )
 
     means_dataframe = get_means_dataframe(merged_dataframe)
-    means_output_path = os.path.join(directory, "best_mse_means.csv")
     means_dataframe.to_csv(
         means_output_path,
         sep=",",

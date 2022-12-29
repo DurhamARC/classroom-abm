@@ -6,7 +6,7 @@ import automation
 import create_sample as cs
 import mse_results
 import mlm_analysis
-import plot_correlations as pc
+import plot_grids as pg
 import run_webserver_with_params as rwwp
 
 
@@ -31,7 +31,53 @@ def cli():
 )
 def plot_correlations(input_file, output_file):
     """Creates a set of basic correlation plots from each parameter type to MSE."""
-    pc.plot_correlations(input_file, output_file)
+    pg.plot_correlations(input_file, output_file)
+
+
+@cli.command()
+@click.option(
+    "--input-file",
+    "-i",
+    type=str,
+    required=True,
+    help="Input CSV file path. CSV should be in the output format produced by reframe or one of the tools here.",
+)
+@click.option(
+    "--output-file",
+    "-o",
+    default=None,
+    help="Output file path, relative to current working directory. If not provided, will create file scores.png in same directory as input file.",
+)
+def plot_scores(input_file, output_file):
+    """Creates a set of basic scores plots from each parameter type to avg_maths_score."""
+    pg.plot_scores(input_file, output_file)
+
+
+@cli.command()
+@click.option(
+    "--directory",
+    "-d",
+    type=str,
+    required=True,
+    help="Directory to search for best MSE values",
+)
+@click.option(
+    "--sort",
+    "-s",
+    type=str,
+    default="mean_squared_error",
+    help="The column to sort values by",
+)
+@click.option(
+    "--limit",
+    "-l",
+    type=float,
+    default=mse_results.DEFAULT_MSE_LIMIT,
+    help="Limit for mean squared error values: only values below the limit will be put in the output file",
+)
+def merge_best_results(directory, sort_values_by, limit):
+    """Combines the best results from each set in the given directory into a single dataframe, and plots the correlations"""
+    mse_results.merge_best_results(directory, sort_values_by, limit)
 
 
 @cli.command()
@@ -47,26 +93,6 @@ def merge_repeats(files, output_dir):
     Creates 2 output CSVs: `merged_mses.csv` (ordered by parameter values)
     and `lowest_to_highest_mses.csv` (ordered by MSE)"""
     mse_results.merge_repeats(*files, output_dir=output_dir)
-
-
-@cli.command()
-@click.option(
-    "--directory",
-    "-d",
-    type=str,
-    required=True,
-    help="Directory to search for best MSE values",
-)
-@click.option(
-    "--limit",
-    "-l",
-    type=float,
-    default=mse_results.DEFAULT_MSE_LIMIT,
-    help="Limit for mean squared error values: only values below the limit will be put in the output file",
-)
-def merge_best_results(directory, limit):
-    """Combines the best results from each set in the given directory into a single dataframe, and plots the correlations"""
-    mse_results.merge_best_results(directory, limit)
 
 
 @cli.command()

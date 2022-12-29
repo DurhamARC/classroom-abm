@@ -39,36 +39,36 @@ with open(parameter_file, "r") as f:
         print(f"[{id}] tq: {row[tqm_idx+1]}, {row[tqsd_idx+1]}; tc: {row[tcm_idx+1]}, {row[tcsd_idx+1]}")
         id += 1
     len_rows = len(ROWS)
+    num_iter = int(os.environ["NUM_ITERATIONS"])
+    num_incr = int(os.environ["NUM_INCREMENTS"])
+    incr_factor = float(os.environ["INCR_FACTOR"])
     for test_id in range(1, len_rows):
         row = ROWS[test_id].copy()
-        for _ in range(int(os.environ["NUM_ITERATIONS"])):
-            for _ in range(int(os.environ["NUM_INCREMENTS"])):
-                row[tqm_idx] = str(float(row[tqm_idx]) + 0.2*float(row[tqsd_idx]))
-                TEST_IDS.append(id)
-                ROWS.append(row.copy())
-                print(f"[{id}] tq: {row[tqm_idx]}, {row[tqsd_idx]}; tc: {row[tcm_idx]}, {row[tcsd_idx]}")
-                id += 1
-            for _ in range(int(os.environ["NUM_INCREMENTS"])):
-                row[tcm_idx] = str(float(row[tcm_idx]) + 0.2*float(row[tcsd_idx]))
-                TEST_IDS.append(id)
-                ROWS.append(row.copy())
-                print(f"[{id}] tq: {row[tqm_idx]}, {row[tqsd_idx]}; tc: {row[tcm_idx]}, {row[tcsd_idx]}")
-                id += 1
-    for test_id in range(1, len(ROWS)):
-        print(f"[{test_id}] params = {ROWS[test_id]}")
+        row_new = row.copy()
+        for it in range(num_iter):
+            for iq in range(0,num_incr):
+                row_new[tqm_idx] = str(float(row[tqm_idx]) + incr_factor*(it*num_incr+iq)*float(row[tqsd_idx]))
+                for ic in range(0,num_incr):
+                    row_new[tcm_idx] = str(float(row[tcm_idx]) + incr_factor*(it*num_incr+ic)*float(row[tcsd_idx]))
+                    TEST_IDS.append(id)
+                    ROWS.append(row_new.copy())
+                    print(f"[{id}] tq: {row_new[tqm_idx]}, {row_new[tqsd_idx]}; tc: {row_new[tcm_idx]}, {row_new[tcsd_idx]}")
+                    id += 1
+    for test_id in range(1, len(ROWS)-len_rows+1):
+        print(f"[{test_id}] params = {ROWS[test_id+len_rows-1]}")
 
 MSE_OUTPUT_FILE = os.environ.get(
     "MSE_OUTPUT_FILE",
     f"../../mse_results_from_reframe/mse_output_{datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')}.csv",
 )
 with open(MSE_OUTPUT_FILE, "w") as output:
-    output.write("test_id,repeat_no," + ",".join(ROWS[0]) + ",mean_squared_error\n")
+    output.write("test_id,repeat_no," + ",".join(ROWS[0]) + ",mean_squared_error,avg_maths_score\n")
 
 
 @rfm.parameterized_test(
     *(
         [test_id, repeat]
-        for test_id in range(1, len(ROWS))
+        for test_id in range(1, len(ROWS)-len_rows+1)
         for repeat in [
             i + 1 for i in range(int(os.environ["NUM_REPEATS"]))
         ]  # set to [1] for just one repeat
@@ -95,17 +95,18 @@ class Intervention(rfm.RunOnlyRegressionTest):
             "hamilton8:multi_cpu_shared",
         ]
 
-        self.sanity_patterns = sn.assert_found(r"Mean squared error:", self.stdout)
+        self.sanity_patterns = sn.assert_found(r"Average maths score:", self.stdout)
 
         execution_dir = os.environ["CLASSROOMABM_PATH"] + "/multilevel_analysis"
+        pupil_data_filename = f"pupil_data_output_{test_id}_{repeat}"
 
         self.keep_files = [
-            f"{execution_dir}/pupil_data_output_{test_id}_{repeat}*.csv"
+            f"{execution_dir}/{pupil_data_filename}*.csv"
         ]
 
         self.prerun_cmds = [
             f"pushd {execution_dir}",
-            f"rm -rf pupil_data_output_{test_id}_{repeat}.csv",  # prevent appending to previous data
+            f"rm -rf {pupil_data_filename}.csv",  # prevent appending to previous data
             "echo $PATH",
             "source $HOME/.bashrc",
             "conda init",
@@ -122,13 +123,13 @@ class Intervention(rfm.RunOnlyRegressionTest):
 
         self.test_id = test_id
         self.repeat_no = repeat
-        params = " ".join(ROWS[self.test_id])
+        params = " ".join(ROWS[self.test_id+len_rows-1])
 
         self.executable_opts = [
             "--input-file",
             os.environ["DATASET"],
             "--output-file",
-            f"pupil_data_output_{test_id}_{repeat}.csv",
+            f"{pupil_data_filename}.csv",
             "--n-processors",
             f"{n_processors}",
             "--model-params",
@@ -139,8 +140,7 @@ class Intervention(rfm.RunOnlyRegressionTest):
             f"{convergence_days}",
         ]
 
-    def extract_mse(self):
-        target = "Mean squared error: "
+    def extract_data(self, target):
         with open(os.path.join(str(self.stagedir), str(self.stdout)), "r") as data:
             for line in data:
                 if target in line:
@@ -153,8 +153,9 @@ class Intervention(rfm.RunOnlyRegressionTest):
             with open(MSE_OUTPUT_FILE, "a") as output:
                 output.write(
                     f"{self.test_id},{self.repeat_no},"
-                    + ",".join(ROWS[self.test_id])
+                    + ",".join(ROWS[self.test_id+len_rows-1])
                     + ","
-                )
-                output.write(self.extract_mse().strip("\n"))
-                output.write("\n")
+                    + self.extract_data("Mean squared error: ").strip("\n")
+                    + ","
+                    + self.extract_data("Average maths score: ").strip("\n")
+                    + "\n")

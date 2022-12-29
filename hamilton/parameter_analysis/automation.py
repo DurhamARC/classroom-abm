@@ -12,7 +12,7 @@ sys.path.append(os.path.join(this_dir, "../parameter_input"))
 from model.data_types import VARIABLE_PARAM_NAMES, BEST_PARAM_NAMES
 import lhs_sampling
 import mse_results
-import plot_correlations
+import plot_grids as pg
 
 CUSTOM_ROUNDING = {
     "teacher_quality_convergence_rate": 5,
@@ -122,7 +122,7 @@ def save_run(
     # Get dataframes from $MSE_OUTPUT_FILE and
     # .. save them in the current merged_mses.csv in the folder of the current iteration
     sorted_merged_dataframe = mse_results.merge_repeats(reframe_csv, output_dir=current_data_dir)
-    plot_correlations.plot_correlations(os.path.join(current_data_dir, "lowest_to_highest_mses.csv"))
+    pg.plot_correlations(os.path.join(current_data_dir, "lowest_to_highest_mses.csv"))
 
     return sorted_merged_dataframe
 

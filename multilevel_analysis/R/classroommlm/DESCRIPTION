@@ -1,9 +1,16 @@
 Package: classroommlm
 Type: Package
 Title: Classroom MultiLevel Modelling
-Version: 0.1.4
-Author: Alison Clarke <alison.r.clarke@durham.ac.uk>
-Maintainer: Alison Clarke <alison.r.clarke@durham.ac.uk>
+Version: 0.1.9
+Authors@R:
+    c(person(given = "Dmitry",
+             family = "Nikolaenko",
+             role = c("ctb","cre"),
+             email = "dmitry.nikolaenko@durham.ac.uk"),
+      person(given = "Alison",
+             family = "Clarke",
+             role = "aut",
+             email = "alison.r.clarke@durham.ac.uk"))
 Description: Creates a null and full model from a set of classroom data, and calculates and error score.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -11,7 +18,7 @@ LazyData: true
 Imports:
     Metrics,
     R2MLwiN (>= 0.8-7)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Suggests: 
     testthat (>= 3.0.0),
     withr

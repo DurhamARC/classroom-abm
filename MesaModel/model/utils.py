@@ -146,3 +146,25 @@ def get_best_params(best_params_file):
                     best_params = tuple(float(value) for value in best_row)
                     return BestModelParamType(*(best_params))
     return BEST_MODEL_PARAMS
+
+
+def read_maths_score(output_file):
+    if os.path.exists(output_file):
+        with open(output_file, "r") as f:
+            csv_reader = csv.reader(f)
+            csv_headings = next(csv_reader)
+            if 'end_maths' in csv_headings:
+                idx = csv_headings.index('end_maths')
+                # print(f"Index for the end_maths column: {idx}")
+            else:
+                print(f"The output file does not contain data for end_maths")
+                exit(1)
+        with open(output_file, "r") as f:
+            csv_reader = csv.reader(f)
+            maths_scores = []
+            rows_list = list(csv_reader)
+            for row in rows_list[1:]:
+                maths_scores.append(float(row[idx]))
+        avg_maths_score = round(statistics.mean(maths_scores), 3)
+        return avg_maths_score
+    return None
